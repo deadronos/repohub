@@ -31,7 +31,14 @@ create policy "Users can update their own projects"
   to authenticated
   using ( true );
 
--- 5. Storage Bucket (You likely need to create 'projects' bucket in Supabase Dashboard manually, but here is the policy if you could run it)
--- Note: Storage policies are often separate in Supabase, but typically:
--- create policy "Public Access" on storage.objects for select using ( bucket_id = 'projects' );
--- create policy "Authenticated Upload" on storage.objects for insert to authenticated with check ( bucket_id = 'projects' );
+-- 5. Storage Policies (Run these AFTER creating a 'projects' bucket in the Storage dashboard)
+-- Make the 'projects' bucket PUBLIC:
+create policy "Public Access" 
+  on storage.objects for select 
+  using ( bucket_id = 'projects' );
+
+-- Allow authenticated users (you) to upload:
+create policy "Authenticated Upload" 
+  on storage.objects for insert 
+  to authenticated 
+  with check ( bucket_id = 'projects' );
