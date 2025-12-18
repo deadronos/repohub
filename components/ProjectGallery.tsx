@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Github, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
@@ -9,6 +9,19 @@ import { capitalize, truncate } from '@/utils/string';
 export default function ProjectGallery({ projects }: { projects: Project[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedId(null);
+      }
+    };
+
+    if (selectedId) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedId]);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 md:p-8">
       {projects.map((project) => (
@@ -16,7 +29,16 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
           layoutId={project.id}
           key={project.id}
           onClick={() => setSelectedId(project.id)}
-          className="cursor-pointer group relative overflow-hidden rounded-2xl glass-panel h-80 transition-all hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(0,240,255,0.2)]"
+          role="button"
+          tabIndex={0}
+          aria-label={`View details for ${project.title}`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setSelectedId(project.id);
+            }
+          }}
+          className="cursor-pointer group relative overflow-hidden rounded-2xl glass-panel h-80 transition-all hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(0,240,255,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
           whileHover={{ scale: 1.02, y: -5 }}
         >
           {/* Background Image with Overlay */}
@@ -80,7 +102,8 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
                         e.stopPropagation();
                         setSelectedId(null);
                       }}
-                      className="absolute top-4 right-4 z-50 p-2 bg-black/60 rounded-full text-white hover:bg-white/20 transition-colors"
+                      aria-label="Close project details"
+                      className="absolute top-4 right-4 z-50 p-2 bg-black/60 rounded-full text-white hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
                     >
                       <X size={20} />
                     </button>
