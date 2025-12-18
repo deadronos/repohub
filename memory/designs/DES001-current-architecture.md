@@ -155,6 +155,7 @@ Fields used by UI and admin:
 ## Performance Notes (As Built)
 
 - `ParticleBackground` is dynamically imported with `ssr: false` and mounted during browser idle time, reducing initial JS and avoiding SSR work for three.js.
+- `ParticleBackground` listens for `webglcontextlost` / `webglcontextrestored` and pauses the R3F frameloop when the context is lost.
 - `ProjectGallery` keeps `layoutId={project.id}` across card and modal, and wraps content in a `LayoutGroup` to preserve smooth shared-layout transitions after refactoring.
 
 ## Deferred Improvements
