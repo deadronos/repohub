@@ -58,4 +58,32 @@ describe('ProjectGallery Component', () => {
   
   // Note: Closing the modal might be harder to test if it relies on AnimatePresence exit animations 
   // without complex setup, but we can try checking if the content disappears or close button click.
+
+  it('cards are accessible with keyboard', () => {
+    render(<ProjectGallery projects={mockProjects} />);
+
+    const card = screen.getAllByRole('button')[0];
+    expect(card).toHaveAttribute('tabIndex', '0');
+    expect(card).toHaveAttribute('aria-label', 'View details for Project One');
+  });
+
+  it('opens modal on Enter key', () => {
+    render(<ProjectGallery projects={mockProjects} />);
+
+    const card = screen.getAllByRole('button')[0];
+    fireEvent.keyDown(card, { key: 'Enter' });
+
+    expect(screen.getByText('A longer description for project one.')).toBeInTheDocument();
+  });
+
+  it('modal close button has aria-label', () => {
+    render(<ProjectGallery projects={mockProjects} />);
+
+    // Open modal first
+    const card = screen.getAllByRole('button')[0];
+    fireEvent.click(card);
+
+    const closeButton = screen.getByLabelText('Close project details');
+    expect(closeButton).toBeInTheDocument();
+  });
 });
