@@ -16,7 +16,7 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
           key={project.id}
           onClick={() => setSelectedId(project.id)}
           className="cursor-pointer group relative overflow-hidden rounded-2xl glass-panel h-80 transition-all hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(0,240,255,0.2)]"
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: 1.02, y: -5 }}
         >
           {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0 bg-neutral-900">
@@ -41,7 +41,7 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
               {project.tags?.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs bg-white/5 border border-white/10 text-white px-2 py-1 rounded-full backdrop-blur-md"
+                  className="text-xs bg-cyan-900/30 border border-cyan-500/30 text-cyan-200 px-2 py-1 rounded-full backdrop-blur-md"
                 >
                   {tag}
                 </span>
@@ -56,13 +56,13 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
         {selectedId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedId(null)}
-              className="absolute inset-0 bg-black/90 backdrop-blur-md"
-            />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedId(null)}
+                className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+              />
 
             {/* Expanded Card */}
             {projects.map(
@@ -71,7 +71,7 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
                   <motion.div
                     layoutId={project.id}
                     key={project.id}
-                    className="relative w-full max-w-2xl bg-[#0a0a0f] rounded-3xl overflow-hidden border border-zinc-700 shadow-2xl z-50 flex flex-col max-h-[90vh]"
+                    className="relative w-full max-w-2xl bg-[#0a0a0f] rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_50px_rgba(0,240,255,0.15)] z-50 flex flex-col max-h-[90vh]"
                   >
                     {/* Close Button */}
                     <button
