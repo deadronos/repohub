@@ -8,7 +8,7 @@ import prettier from 'eslint-config-prettier/flat';
 
 export default defineConfig([
   {
-    ignores: ['.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
+    ignores: ['.next/**', 'out/**', 'build/**', 'coverage/**', 'next-env.d.ts'],
   },
 
   ...nextCoreWebVitals,

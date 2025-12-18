@@ -1,13 +1,11 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
-import * as THREE from 'three';
+import type * as THREE from 'three';
 
-interface ParticlesProps {
-  [key: string]: any;
-}
+type ParticlesProps = ComponentProps<typeof Points>;
 
 // Generate random particle positions
 const generateParticles = (count: number) => {
@@ -98,9 +96,41 @@ function Particles(props: ParticlesProps) {
 }
 
 export default function ParticleBackground() {
+  const [webglStatus, setWebglStatus] = useState<'ok' | 'lost'>('ok');
+  const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    if (!canvasElement) return;
+
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      setWebglStatus('lost');
+    };
+
+    const handleContextRestored = () => {
+      setWebglStatus('ok');
+    };
+
+    canvasElement.addEventListener('webglcontextlost', handleContextLost);
+    canvasElement.addEventListener('webglcontextrestored', handleContextRestored);
+
+    return () => {
+      canvasElement.removeEventListener('webglcontextlost', handleContextLost);
+      canvasElement.removeEventListener('webglcontextrestored', handleContextRestored);
+    };
+  }, [canvasElement]);
+
   return (
-    <div className="fixed inset-0 z-[-1] pointer-events-none bg-[#050510]">
-      <Canvas camera={{ position: [0, 0, 20], fov: 75 }}>
+    <div
+      className="fixed inset-0 z-[-1] pointer-events-none bg-[#050510]"
+      data-testid="particle-background"
+      data-webgl-status={webglStatus}
+    >
+      <Canvas
+        camera={{ position: [0, 0, 20], fov: 75 }}
+        frameloop={webglStatus === 'lost' ? 'never' : 'always'}
+        onCreated={({ gl }) => setCanvasElement(gl.domElement)}
+      >
         <Particles />
       </Canvas>
     </div>
