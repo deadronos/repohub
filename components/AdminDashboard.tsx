@@ -283,8 +283,15 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
 
     if (actionError) {
       setProjects(previousProjects);
-      setError(actionError);
       setOrderStatus('idle');
+
+      if (actionError === 'Project order contains unknown ids') {
+        setError('Order was out of date. Refreshed list.');
+        router.refresh();
+        return;
+      }
+
+      setError(actionError);
       return;
     }
 

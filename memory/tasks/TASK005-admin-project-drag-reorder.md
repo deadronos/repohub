@@ -15,7 +15,7 @@ post_date: "2025-12-18"
 
 **Status:** Completed  
 **Added:** 2025-12-18  
-**Updated:** 2025-12-18  
+**Updated:** 2025-12-19  
 
 ## Original Request
 
@@ -62,4 +62,8 @@ We can add a `sort_order` column to `projects`, update list queries to order by 
 ### 2025-12-19
 
 - Switched reorder persistence to update-only to prevent accidental inserts.
+- Added batch RPC update and stale-list auto-refresh behavior.
+- Surfaced database errors in dev-only action responses.
+- Updated AdminDashboard tests for stale list handling.
+- Ran `npm run lint`, `npm run typecheck`, and `npm run test`.
 - Ran `npm run lint` and `npm run test`.

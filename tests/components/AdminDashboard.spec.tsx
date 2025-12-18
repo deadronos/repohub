@@ -151,4 +151,21 @@ describe('AdminDashboard drag ordering', () => {
     expect(headings[0]?.textContent).toBe('Project One');
     expect(headings[1]?.textContent).toBe('Project Two');
   });
+
+  it('refreshes the list when ids are out of date', async () => {
+    updateOrderMock.mockResolvedValue({ error: 'Project order contains unknown ids' });
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
+
+    await act(async () => {
+      await latestDndContextProps?.onDragEnd?.(event);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Order was out of date. Refreshed list.')).toBeInTheDocument();
+    });
+
+    expect(refreshSpy).toHaveBeenCalled();
+  });
 });
