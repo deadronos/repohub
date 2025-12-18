@@ -6,22 +6,23 @@ A **Cyber-Minimalist** portfolio and project gallery built with the latest web t
 
 ## ✨ Features
 
-*   **Cyber-Minimalist Design**: Dark mode, neon glows, and glassmorphism UI.
-*   **Bento Grid Layout**: Responsive, masonry-style grid for project cards.
-*   **Zero-Layout Shift Transitions**: Clicking a card expands it into a details modal using `framer-motion` layout animations.
-*   **Secure Admin Dashboard**:
-    *   Protected route `/admin` (Middleware + Supabase Auth).
-    *   **CRUD Operations**: Create, Read, Update, and Delete projects.
-    *   **Image Upload**: Drag & drop upload directly to public Supabase Storage.
-*   **Tech Stack**:
-    *   **Framework**: Next.js 16 (App Router)
-    *   **Backend**: Supabase (PostgreSQL + Auth + Storage)
-    *   **Styling**: Tailwind CSS v4
-    *   **Icons**: Lucide React
+- **Cyber-Minimalist Design**: Dark mode, neon glows, and glassmorphism UI.
+- **Bento Grid Layout**: Responsive, masonry-style grid for project cards.
+- **Zero-Layout Shift Transitions**: Clicking a card expands it into a details modal using `framer-motion` layout animations.
+- **Secure Admin Dashboard**:
+  - Protected route `/admin` (Middleware + Supabase Auth).
+  - **CRUD Operations**: Create, Read, Update, and Delete projects.
+  - **Image Upload**: Drag & drop upload directly to public Supabase Storage.
+- **Tech Stack**:
+  - **Framework**: Next.js 16 (App Router)
+  - **Backend**: Supabase (PostgreSQL + Auth + Storage)
+  - **Styling**: Tailwind CSS v4
+  - **Icons**: Lucide React
 
 ## 🛠️ Setup Guide
 
 ### 1. Prerequisites
+
 - Node.js 18+
 - A [Supabase](https://supabase.com) account
 
@@ -78,7 +79,9 @@ create policy "Authenticated Upload" on storage.objects for insert to authentica
 > **Important**: Go to Supabase Storage -> Create a new bucket named `projects` and make sure **"Public Bucket"** is enabled.
 
 ### 5. Create Admin User
+
 Since there is no public sign-up page:
+
 1. Go to Supabase Dashboard -> **Authentication** -> **Users**.
 2. Click **Add User** and create your admin credentials.
 

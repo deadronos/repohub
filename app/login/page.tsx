@@ -1,4 +1,4 @@
-import { login } from '@/app/actions'
+import { login } from '@/app/actions';
 
 export default function LoginPage() {
   return (
@@ -28,5 +28,5 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

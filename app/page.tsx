@@ -1,13 +1,13 @@
-import { createClient } from '@/utils/supabase/server'
-import ProjectGallery from '@/components/ProjectGallery'
-import { Project } from '@/types'
+import { createClient } from '@/utils/supabase/server';
+import ProjectGallery from '@/components/ProjectGallery';
+import { Project } from '@/types';
 
 export default async function Home() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const { data: projects } = await supabase
     .from('projects')
     .select('*')
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false });
 
   return (
     <main className="min-h-screen p-8 md:p-12 relative overflow-hidden">
@@ -22,17 +22,17 @@ export default async function Home() {
           PROJECT HUB
         </h1>
         <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-           A curated collection of web experiments, games, and repositories.
+          A curated collection of web experiments, games, and repositories.
         </p>
       </header>
-      
+
       <ProjectGallery projects={(projects as Project[]) || []} />
-      
+
       {!projects?.length && (
-         <div className="text-center text-zinc-500 mt-20">
-            <p>No projects found. time to build something.</p>
-         </div>
+        <div className="text-center text-zinc-500 mt-20">
+          <p>No projects found. time to build something.</p>
+        </div>
       )}
     </main>
-  )
+  );
 }
