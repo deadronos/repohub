@@ -30,13 +30,13 @@ The repo is small and already implements a complete “public gallery + protecte
 
 ### Subtasks
 
-| ID  | Description | Status | Updated | Notes |
-| --- | ----------- | ------ | ------- | ----- |
-| 1.1 | Scan key source files | Complete | 2025-12-18 | App/pages, components, Supabase utils, schema |
-| 1.2 | Create core Memory Bank docs | Complete | 2025-12-18 | Core context files created |
-| 1.3 | Write DES001 as-built design | Complete | 2025-12-18 | Captures routes, auth, storage, data model |
-| 1.4 | Create memory/files repo map | Complete | 2025-12-18 | File-level documentation added |
-| 1.5 | Update tasks index | Complete | 2025-12-18 | TASK001 listed |
+| ID  | Description                  | Status   | Updated    | Notes                                         |
+| --- | ---------------------------- | -------- | ---------- | --------------------------------------------- |
+| 1.1 | Scan key source files        | Complete | 2025-12-18 | App/pages, components, Supabase utils, schema |
+| 1.2 | Create core Memory Bank docs | Complete | 2025-12-18 | Core context files created                    |
+| 1.3 | Write DES001 as-built design | Complete | 2025-12-18 | Captures routes, auth, storage, data model    |
+| 1.4 | Create memory/files repo map | Complete | 2025-12-18 | File-level documentation added                |
+| 1.5 | Update tasks index           | Complete | 2025-12-18 | TASK001 listed                                |
 
 ## Progress Log
 
