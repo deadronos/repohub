@@ -11,6 +11,7 @@
 - `/admin` is protected by middleware redirect.
 - Admin dashboard supports create/update/delete flows.
 - Image uploads store to Supabase Storage and render via Next Image.
+- Project actions share helpers for form parsing/validation, storage uploads, and revalidation.
 
 ## What’s Missing / Incomplete
 

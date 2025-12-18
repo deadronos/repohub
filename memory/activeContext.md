@@ -15,7 +15,10 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 
 ## Recent Changes
 
-- Added `@next/bundle-analyzer` and wrapped `next.config.ts` export; validated with `npm run lint` and `npm run typecheck`.
+- Split server actions into auth and project modules, with shared project helpers for form parsing, validation, uploads, and revalidation.
+- Centralized project list fetching in a `listProjects()` helper and updated pages to use it.
+- Extracted the admin project form and particle system into focused components; updated unit tests for new helpers.
+- Added `getActionError` to safely read server action errors in client code; lint and typecheck now pass.
 
 ## Next Steps
 
