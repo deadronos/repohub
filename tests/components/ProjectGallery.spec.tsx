@@ -86,4 +86,24 @@ describe('ProjectGallery Component', () => {
     const closeButton = screen.getByLabelText('Close project details');
     expect(closeButton).toBeInTheDocument();
   });
+
+  it('images have correct sizes attribute for performance', () => {
+    render(<ProjectGallery projects={mockProjects} />);
+
+    // Find image by alt text. There might be multiple if duplicates exist, but here Project One is unique in the list.
+    const img = screen.getByAltText('Project One');
+    expect(img).toHaveAttribute('sizes', '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw');
+  });
+
+  it('modal image has correct sizes attribute', () => {
+    render(<ProjectGallery projects={mockProjects} />);
+    fireEvent.click(screen.getByText('Project One'));
+
+    // Both the grid item and modal item have the same alt text
+    const images = screen.getAllByAltText('Project One');
+    // The modal is rendered last
+    const modalImg = images[images.length - 1];
+
+    expect(modalImg).toHaveAttribute('sizes', '(max-width: 768px) 100vw, 672px');
+  });
 });

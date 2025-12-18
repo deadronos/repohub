@@ -48,6 +48,8 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
                 src={project.image_url}
                 alt={project.title}
                 fill
+                // ⚡ Bolt: Optimize image loading by serving correct size for grid layout (1col -> 2col -> 3col)
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 grayscale group-hover:grayscale-0"
               />
             )}
@@ -114,6 +116,8 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
                           src={project.image_url}
                           alt={project.title}
                           fill
+                          // ⚡ Bolt: Optimize image loading for modal (max width constrained to 42rem/672px)
+                          sizes="(max-width: 768px) 100vw, 672px"
                           className="object-cover"
                         />
                       )}
