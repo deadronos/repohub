@@ -17,6 +17,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 - Create/maintain `DES001` with architecture + data flows.
 - Create/maintain `TASK001` with documentation backfill work tracked.
 - Add a `memory/files/` repo map to speed future onboarding.
+- Update AGENTS.md to prefer strict typing and require `npm run test`, `npm run lint`, and `npm run typecheck` before handing off. Add a sanity test + `npm run check` script to run these validations.
 
 ## Known Gaps / Risks
 
