@@ -1,6 +1,7 @@
 export type Project = {
   id: string;
   created_at: string;
+  sort_order: number;
   title: string;
   description: string | null;
   short_description: string | null;
