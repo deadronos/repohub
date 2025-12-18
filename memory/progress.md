@@ -5,6 +5,8 @@
 ## What Works
 
 - Home page renders a grid of projects with modal expansion.
+- 3D particle background loads lazily on the client (idle) to reduce initial load cost.
+- `ProjectGallery` is split into `ProjectCard` and `ProjectModal` for maintainability.
 - Supabase SSR client wiring (server, browser, middleware) is in place.
 - `/admin` is protected by middleware redirect.
 - Admin dashboard supports create/update/delete flows.

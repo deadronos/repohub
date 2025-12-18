@@ -11,6 +11,11 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 - Public gallery at `/` fetching `projects` from Supabase.
 - Protected admin route `/admin` enforced by middleware (redirects to `/login`).
 - Server Actions implement login + project CRUD + storage uploads.
+- Optional bundle analysis via `ANALYZE=true` (Next config uses `@next/bundle-analyzer`).
+
+## Recent Changes
+
+- Added `@next/bundle-analyzer` and wrapped `next.config.ts` export; validated with `npm run lint` and `npm run typecheck`.
 
 ## Next Steps
 
