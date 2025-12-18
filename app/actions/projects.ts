@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
 import { parseProjectFormData, validateProjectInput } from '@/utils/projects/form';
+import { buildProjectOrderUpdates, validateProjectOrder } from '@/utils/projects/order';
 import { uploadProjectImage } from '@/utils/projects/storage';
 
 type ActionResult = { success: true } | { error: string };
@@ -21,6 +22,22 @@ const getUser = async (supabase: SupabaseClient) => {
     data: { user },
   } = await supabase.auth.getUser();
   return user;
+};
+
+const getNextSortOrder = async (supabase: SupabaseClient) => {
+  const { data, error } = await supabase
+    .from(PROJECTS_TABLE)
+    .select('sort_order')
+    .order('sort_order', { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error('Failed to fetch sort order:', error);
+    return 1;
+  }
+
+  const currentMax = data?.[0]?.sort_order ?? 0;
+  return currentMax + 1;
 };
 
 export async function createProject(formData: FormData): Promise<ActionResult> {
@@ -44,6 +61,7 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
 
   const imageUrl = await uploadProjectImage(supabase, parsed.imageFile);
   const tags = parsed.tags.length > 0 ? parsed.tags : null;
+  const sortOrder = await getNextSortOrder(supabase);
 
   const { error } = await supabase.from(PROJECTS_TABLE).insert({
     title: parsed.title,
@@ -54,6 +72,34 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
     tags,
     image_url: imageUrl ?? '',
     created_at: new Date().toISOString(),
+    sort_order: sortOrder,
+  });
+
+  if (error) {
+    console.error('Database error:', error);
+    return { error: 'Failed' };
+  }
+
+  revalidateProjects();
+  return { success: true };
+}
+
+export async function updateProjectOrder(orderedIds: string[]): Promise<ActionResult> {
+  const supabase = await createClient();
+  const user = await getUser(supabase);
+
+  if (!user) {
+    return { error: 'Unauthorized' };
+  }
+
+  const validationError = validateProjectOrder(orderedIds);
+  if (validationError) {
+    return { error: validationError };
+  }
+
+  const updates = buildProjectOrderUpdates(orderedIds);
+  const { error } = await supabase.from(PROJECTS_TABLE).upsert(updates, {
+    onConflict: 'id',
   });
 
   if (error) {

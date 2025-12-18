@@ -2,6 +2,7 @@
 create table projects (
   id uuid default gen_random_uuid() primary key,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  sort_order integer not null default 0,
   title text not null,
   description text,
   short_description text,
