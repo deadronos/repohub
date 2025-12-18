@@ -49,6 +49,8 @@
 ## Tests
 
 - `tests/components/ProjectGallery.spec.tsx` — gallery interactions and accessibility (open/close modal, sizes attrs, escape/backdrop).
+- `tests/components/ParticleBackgroundLazy.spec.tsx` — background lazy-load behavior (idle + fallback + cleanup).
+- `tests/components/ParticleBackground.spec.tsx` — WebGL context loss/restored handling (pauses/resumes R3F frameloop).
 - `tests/components/GlobalUI.spec.tsx` — `loading`, `not-found`, `error` smoke tests.
 - `tests/unit/string.spec.ts` — string utility tests (`utils/string`).
 - `tests/unit/validation.spec.ts` — input validation tests (`utils/validation`).

@@ -48,6 +48,14 @@ flowchart TD
 - Background may appear slightly after the main content on slower devices.
 - If `requestIdleCallback` is unavailable, a short timer fallback is used.
 
+### WebGL Context Loss Handling
+
+**Approach**
+
+- Add `webglcontextlost` / `webglcontextrestored` listeners to the canvas element created by React Three Fiber.
+- Call `event.preventDefault()` on context loss to allow the browser to attempt restoration.
+- Track a simple `data-webgl-status` state (`ok`/`lost`) and pause R3F rendering via `frameloop="never"` when lost.
+
 ### Split ProjectGallery into Components
 
 **Approach**
@@ -82,8 +90,10 @@ flowchart TD
 
 - Automated: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`
 - Manual: refresh `/` and confirm content renders before background; open/close modal (click, `Esc`, backdrop); verify responsiveness.
+- Tests added:
+  - `tests/components/ParticleBackgroundLazy.spec.tsx` (idle + fallback + cleanup)
+  - `tests/components/ParticleBackground.spec.tsx` (context loss/restored behavior)
 
 ## Follow-Ups (Optional)
 
 - If modal code becomes heavy later: dynamically import modal content and prefetch on card hover/focus to avoid first-open hitch while keeping `layoutId` transitions smooth.
-

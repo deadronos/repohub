@@ -31,4 +31,6 @@
 - `npm run typecheck` ✅
 - `npm run test` ✅
 - `npm run build` ✅
-
+- Added test coverage for:
+  - `ParticleBackgroundLazy` idle + fallback + cleanup timers
+  - `ParticleBackground` WebGL context loss/restored (pauses/resumes frameloop)

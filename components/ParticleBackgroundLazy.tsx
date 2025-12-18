@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-const ParticleBackground = dynamic(() => import('./ParticleBackground'), {
+const ParticleBackground = dynamic(() => import('@/components/ParticleBackground'), {
   ssr: false,
   loading: () => null,
 });
