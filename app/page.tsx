@@ -18,7 +18,7 @@ export default async function Home() {
       </div>
 
       <header className="mb-12 text-center relative z-10">
-        <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-cyan-500 mb-4 tracking-tight drop-shadow-sm">
+        <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 mb-4 tracking-tight drop-shadow-sm pb-2">
           PROJECT HUB
         </h1>
         <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
@@ -30,7 +30,7 @@ export default async function Home() {
 
       {!projects?.length && (
         <div className="text-center text-zinc-500 mt-20">
-          <p>No projects found. time to build something.</p>
+          <p>No projects found. Time to build something.</p>
         </div>
       )}
     </main>
