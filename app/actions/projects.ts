@@ -98,13 +98,35 @@ export async function updateProjectOrder(orderedIds: string[]): Promise<ActionRe
     return { error: validationError };
   }
 
-  const updates = buildProjectOrderUpdates(orderedIds);
-  const { error } = await supabase.from(PROJECTS_TABLE).upsert(updates, {
-    onConflict: 'id',
-  });
+  const { data: existingIds, error: existingError } = await supabase
+    .from(PROJECTS_TABLE)
+    .select('id')
+    .in('id', orderedIds)
+    .returns<{ id: string }[]>();
 
-  if (error) {
-    console.error('Database error:', error);
+  if (existingError) {
+    console.error('Database error:', existingError);
+    return { error: 'Failed' };
+  }
+
+  const existingIdSet = new Set(existingIds.map((row) => row.id));
+  if (existingIdSet.size !== orderedIds.length) {
+    return { error: 'Project order contains unknown ids' };
+  }
+
+  const updates = buildProjectOrderUpdates(orderedIds);
+  const updateResults = await Promise.all(
+    updates.map((update) =>
+      supabase
+        .from(PROJECTS_TABLE)
+        .update({ sort_order: update.sort_order })
+        .eq('id', update.id),
+    ),
+  );
+
+  const updateError = updateResults.find((result) => result.error)?.error;
+  if (updateError) {
+    console.error('Database error:', updateError);
     return { error: 'Failed' };
   }
 

@@ -58,3 +58,8 @@ We can add a `sort_order` column to `projects`, update list queries to order by 
 - Added ordering helper tests and updated gallery fixtures.
 - Ran `npm run test`.
 - Ran `npm run typecheck`.
+
+### 2025-12-19
+
+- Switched reorder persistence to update-only to prevent accidental inserts.
+- Ran `npm run lint` and `npm run test`.
