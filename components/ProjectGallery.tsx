@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Github, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import type { Project } from '@/types';
+import { capitalize, truncate } from '@/utils/string';
 
 export default function ProjectGallery({ projects }: { projects: Project[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -36,14 +37,14 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
             <h3 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">
               {project.title}
             </h3>
-            <p className="text-zinc-400 text-sm line-clamp-2">{project.short_description}</p>
+            <p className="text-zinc-400 text-sm line-clamp-2">{truncate(project.short_description || '', 100)}</p>
             <div className="flex gap-2 mt-3 flex-wrap">
               {project.tags?.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
                   className="text-xs bg-cyan-900/30 border border-cyan-500/30 text-cyan-200 px-2 py-1 rounded-full backdrop-blur-md"
                 >
-                  {tag}
+                  {capitalize(tag || '')}
                 </span>
               ))}
             </div>
@@ -108,7 +109,7 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
                                 key={tag}
                                 className="text-xs border border-cyan-900 text-cyan-300 bg-cyan-950/30 px-2 py-1 rounded-full"
                               >
-                                {tag}
+                                {capitalize(tag || '')}
                               </span>
                             ))}
                           </div>
