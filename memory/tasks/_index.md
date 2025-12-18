@@ -2,7 +2,7 @@
 
 ## In Progress
 
-(none)
+- [TASK002] Global UI Improvements and Admin UX
 
 ## Pending
 

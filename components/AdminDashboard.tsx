@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Project } from '@/types';
 import { createProject, updateProject, deleteProjects } from '@/app/actions';
 import Link from 'next/link';
-import { Plus, Trash2, Edit2, X, Upload } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Plus, Trash2, Edit2, X, Upload, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 
 interface AdminDashboardProps {
@@ -12,10 +13,17 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ initialProjects }: AdminDashboardProps) {
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Sync state with server data when it changes (e.g. after router.refresh())
+  useEffect(() => {
+    setProjects(initialProjects);
+  }, [initialProjects]);
 
   // Toggle selection for deletion
   const toggleSelection = (id: string) => {
@@ -32,19 +40,34 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
     if (!confirm(`Are you sure you want to delete ${selectedIds.size} projects?`)) return;
 
     const ids = Array.from(selectedIds);
-    await deleteProjects(ids);
+
+    // Optimistic Update
+    const originalProjects = [...projects];
     setProjects(projects.filter((p) => !selectedIds.has(p.id)));
     setSelectedIds(new Set());
+    setError(null);
+
+    const result = await deleteProjects(ids);
+
+    if (result?.error) {
+       // Revert
+       setProjects(originalProjects);
+       setError(result.error);
+    } else {
+       router.refresh();
+    }
   };
 
   const openEdit = (project: Project) => {
     setEditingProject(project);
     setIsFormOpen(true);
+    setError(null);
   };
 
   const closeForm = () => {
     setEditingProject(null);
     setIsFormOpen(false);
+    setError(null);
   };
 
   return (
@@ -63,10 +86,22 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         </Link>
       </div>
 
+      {/* Global Error Message */}
+      {error && (
+        <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-xl mb-6 flex items-center gap-3 animate-pulse">
+           <AlertCircle size={20} />
+           {error}
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="flex gap-4 mb-8">
         <button
-          onClick={() => setIsFormOpen(true)}
+          onClick={() => {
+            setEditingProject(null);
+            setIsFormOpen(true);
+            setError(null);
+          }}
           className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]"
         >
           <Plus size={18} /> Add New Project
@@ -111,7 +146,6 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
                   src={project.image_url}
                   alt={project.title}
                   fill
-                  // ⚡ Bolt: Optimize image loading by serving correct size for grid layout
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover opacity-60"
                 />
@@ -136,7 +170,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         ))}
       </div>
 
-      {/* Edit/Create Modal - Keeping it simple by using a full screen overlay or just reused form logic */}
+      {/* Edit/Create Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-[#0a0a0f] border border-zinc-800 w-full max-w-3xl rounded-2xl p-8 max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(0,0,0,0.8)]">
@@ -155,9 +189,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
               project={editingProject}
               onComplete={() => {
                 closeForm();
-                // In a real app we'd reload data or update local state smarter
-                // For now, let's just assume we want to refresh everything
-                window.location.reload();
+                router.refresh();
               }}
             />
           </div>
@@ -174,13 +206,27 @@ function ProjectForm({
   project?: Project | null;
   onComplete: () => void;
 }) {
+  const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
   async function handleSubmit(formData: FormData) {
+    setLoading(true);
+    setFormError(null);
+
+    let result;
     if (project) {
-      await updateProject(formData);
+      result = await updateProject(formData);
     } else {
-      await createProject(formData);
+      result = await createProject(formData);
     }
-    onComplete();
+
+    setLoading(false);
+
+    if (result?.error) {
+      setFormError(result.error);
+    } else {
+      onComplete();
+    }
   }
 
   return (
@@ -188,6 +234,12 @@ function ProjectForm({
       <input type="hidden" name="id" value={project?.id} />
       {project?.image_url && (
         <input type="hidden" name="current_image_url" value={project.image_url} />
+      )}
+
+      {formError && (
+         <div className="bg-red-900/30 text-red-300 p-3 rounded-lg border border-red-800 text-sm">
+           {formError}
+         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -273,9 +325,14 @@ function ProjectForm({
 
       <button
         type="submit"
-        className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl mt-4 transition-colors"
+        disabled={loading}
+        className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl mt-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        {project ? 'Save Changes' : 'Initialize Project Node'}
+        {loading ? (
+            <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        ) : (
+            project ? 'Save Changes' : 'Initialize Project Node'
+        )}
       </button>
     </form>
   );
