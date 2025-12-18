@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { Project } from '@/types';
 import { createProject, updateProject } from '@/app/actions/projects';
 import { Upload } from 'lucide-react';
+import { getActionError } from '@/utils/actions';
 
 type ProjectFormProps = {
   project?: Project | null;
@@ -19,11 +20,12 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
     setFormError(null);
 
     const result = project ? await updateProject(formData) : await createProject(formData);
+    const actionError = getActionError(result);
 
     setLoading(false);
 
-    if (result?.error) {
-      setFormError(result.error);
+    if (actionError) {
+      setFormError(actionError);
     } else {
       onComplete();
     }

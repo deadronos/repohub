@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Plus, Trash2, Edit2, X, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import ProjectForm from '@/components/AdminProjectForm';
+import { getActionError } from '@/utils/actions';
 
 interface AdminDashboardProps {
   initialProjects: Project[];
@@ -49,11 +50,12 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
     setError(null);
 
     const result = await deleteProjects(ids);
+    const actionError = getActionError(result);
 
-    if (result?.error) {
+    if (actionError) {
        // Revert
        setProjects(originalProjects);
-       setError(result.error);
+       setError(actionError);
     } else {
        router.refresh();
     }
