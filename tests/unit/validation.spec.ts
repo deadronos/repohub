@@ -65,6 +65,10 @@ describe('Validation Utils', () => {
       expect(validateProjectInput({ title: 'Test', repo_url: 'javascript:alert(1)' })).toContain('Invalid Repository URL');
     });
 
+    it('should fail if demo_url is invalid', () => {
+      expect(validateProjectInput({ title: 'Test', demo_url: 'javascript:alert(1)' })).toContain('Invalid Demo URL');
+    });
+
     it('should pass if optional urls are empty', () => {
       expect(validateProjectInput({ title: 'Test', repo_url: '' })).toEqual([]);
     });

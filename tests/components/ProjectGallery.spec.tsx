@@ -1,6 +1,15 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import ProjectGallery from '@/components/ProjectGallery';
+
+// Mock AnimatePresence to remove exit animations so components unmount immediately in tests
+vi.mock('framer-motion', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('framer-motion')>();
+  return {
+    ...actual,
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  };
+});
 import type { Project } from '@/types';
 
 const mockProjects: Project[] = [
@@ -105,5 +114,54 @@ describe('ProjectGallery Component', () => {
     const modalImg = images[images.length - 1];
 
     expect(modalImg).toHaveAttribute('sizes', '(max-width: 768px) 100vw, 672px');
+  });
+
+  it('closes modal on Escape key', async () => {
+    render(<ProjectGallery projects={mockProjects} />);
+    fireEvent.click(screen.getByText('Project One'));
+    expect(screen.getByText('A longer description for project one.')).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+
+    await waitFor(() => {
+        expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
+    });
+  });
+
+  it('closes modal when close button is clicked', async () => {
+    render(<ProjectGallery projects={mockProjects} />);
+    fireEvent.click(screen.getByText('Project One'));
+    expect(screen.getByText('A longer description for project one.')).toBeInTheDocument();
+
+    const closeButton = screen.getByLabelText('Close project details');
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+        expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
+    });
+  });
+
+  it('closes modal when backdrop is clicked', async () => {
+    render(<ProjectGallery projects={mockProjects} />);
+    fireEvent.click(screen.getByText('Project One'));
+    expect(screen.getByText('A longer description for project one.')).toBeInTheDocument();
+
+    const backdrop = screen.getByTestId('modal-backdrop');
+    fireEvent.click(backdrop);
+
+    await waitFor(() => {
+        expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
+    });
+  });
+
+  it('handles projects with empty tags', () => {
+     const projectsWithEmptyTags = [{
+         ...mockProjects[0],
+         id: '3',
+         tags: [''],
+         title: 'Project Three'
+     }];
+     render(<ProjectGallery projects={projectsWithEmptyTags} />);
+     expect(screen.getByText('Project Three')).toBeInTheDocument();
   });
 });
