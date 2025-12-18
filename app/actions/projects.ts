@@ -24,12 +24,13 @@ const getUser = async (supabase: SupabaseClient) => {
   return user;
 };
 
-const getNextSortOrder = async (supabase: SupabaseClient) => {
+const getNextSortOrder = async (supabase: SupabaseClient): Promise<number> => {
   const { data, error } = await supabase
     .from(PROJECTS_TABLE)
     .select('sort_order')
     .order('sort_order', { ascending: false })
-    .limit(1);
+    .limit(1)
+    .returns<{ sort_order: number }[]>();
 
   if (error) {
     console.error('Failed to fetch sort order:', error);
