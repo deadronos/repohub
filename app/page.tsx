@@ -1,13 +1,8 @@
-import { createClient } from '@/utils/supabase/server';
+import { listProjects } from '@/utils/projects/queries';
 import ProjectGallery from '@/components/ProjectGallery';
-import { Project } from '@/types';
 
 export default async function Home() {
-  const supabase = await createClient();
-  const { data: projects } = await supabase
-    .from('projects')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const projects = await listProjects();
 
   return (
     <main className="min-h-screen p-8 md:p-12 relative overflow-hidden">
@@ -26,9 +21,9 @@ export default async function Home() {
         </p>
       </header>
 
-      <ProjectGallery projects={(projects as Project[]) || []} />
+      <ProjectGallery projects={projects} />
 
-      {!projects?.length && (
+      {!projects.length && (
         <div className="text-center text-zinc-500 mt-20">
           <p>No projects found. Time to build something.</p>
         </div>
