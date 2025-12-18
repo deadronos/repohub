@@ -111,6 +111,8 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
                   src={project.image_url}
                   alt={project.title}
                   fill
+                  // ⚡ Bolt: Optimize image loading by serving correct size for grid layout
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover opacity-60"
                 />
               ) : (
