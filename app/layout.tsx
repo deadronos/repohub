@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import ParticleBackground from '@/components/ParticleBackground';
+import ParticleBackgroundLazy from '@/components/ParticleBackgroundLazy';
 import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ParticleBackground />
+        <ParticleBackgroundLazy />
         <Analytics />
         {children}
       </body>
