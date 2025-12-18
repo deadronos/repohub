@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
+import { sanitizeFilename, validateProjectInput } from '@/utils/validation';
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -43,11 +44,17 @@ export async function createProject(formData: FormData) {
   const tagsStr = formData.get('tags') as string;
   const tags = tagsStr.split(',').map((t) => t.trim());
 
+  // Security Validation
+  const validationErrors = validateProjectInput({ title, repo_url, demo_url });
+  if (validationErrors.length > 0) {
+    return { error: validationErrors.join(', ') };
+  }
+
   const imageFile = formData.get('image') as File;
   let image_url = '';
 
   if (imageFile && imageFile.size > 0) {
-    const filename = `${Date.now()}-${imageFile.name}`;
+    const filename = `${Date.now()}-${sanitizeFilename(imageFile.name)}`;
     const { data, error } = await supabase.storage.from('projects').upload(filename, imageFile, {
       cacheControl: '3600',
       upsert: false,
@@ -106,11 +113,17 @@ export async function updateProject(formData: FormData) {
   const tagsStr = formData.get('tags') as string;
   const tags = tagsStr.split(',').map((t) => t.trim());
 
+  // Security Validation
+  const validationErrors = validateProjectInput({ title, repo_url, demo_url });
+  if (validationErrors.length > 0) {
+    return { error: validationErrors.join(', ') };
+  }
+
   const imageFile = formData.get('image') as File;
   let image_url = formData.get('current_image_url') as string;
 
   if (imageFile && imageFile.size > 0) {
-    const filename = `${Date.now()}-${imageFile.name}`;
+    const filename = `${Date.now()}-${sanitizeFilename(imageFile.name)}`;
     const { data, error } = await supabase.storage.from('projects').upload(filename, imageFile, {
       cacheControl: '3600',
       upsert: false,
