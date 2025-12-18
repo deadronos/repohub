@@ -87,6 +87,7 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedId(null)}
                 className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                data-testid="modal-backdrop"
               />
 
             {/* Expanded Card */}
