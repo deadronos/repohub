@@ -38,7 +38,7 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
               setSelectedId(project.id);
             }
           }}
-          className="cursor-pointer group relative overflow-hidden rounded-2xl glass-panel h-80 transition-all hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(0,240,255,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+          className="cursor-pointer group relative overflow-hidden rounded-2xl glass-panel h-80 transition-all hover:border-[#00f0ff]/50 hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
           whileHover={{ scale: 1.02, y: -5 }}
         >
           {/* Background Image with Overlay */}
