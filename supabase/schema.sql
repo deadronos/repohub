@@ -43,3 +43,20 @@ create policy "Authenticated Upload"
   on storage.objects for insert 
   to authenticated 
   with check ( bucket_id = 'projects' );
+
+-- 6. Project ordering helper (batch update)
+create or replace function update_project_order(ordered_ids uuid[])
+returns integer
+language sql
+as $$
+  with updates as (
+    update projects
+    set sort_order = ord.ordinality
+    from unnest(ordered_ids) with ordinality as ord(id, ordinality)
+    where projects.id = ord.id
+    returning projects.id
+  )
+  select count(*) from updates;
+$$;
+
+grant execute on function update_project_order(uuid[]) to authenticated;

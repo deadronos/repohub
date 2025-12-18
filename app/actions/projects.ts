@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
 import { parseProjectFormData, validateProjectInput } from '@/utils/projects/form';
-import { buildProjectOrderUpdates, validateProjectOrder } from '@/utils/projects/order';
+import { validateProjectOrder } from '@/utils/projects/order';
 import { uploadProjectImage } from '@/utils/projects/storage';
 
 type ActionResult = { success: true } | { error: string };
@@ -15,6 +15,17 @@ const PROJECTS_TABLE = 'projects';
 const revalidateProjects = () => {
   revalidatePath('/');
   revalidatePath('/admin');
+};
+
+const formatDatabaseError = (error: unknown): string => {
+  if (process.env.NODE_ENV !== 'production' && error && typeof error === 'object') {
+    const message = (error as Record<string, unknown>).message;
+    if (typeof message === 'string' && message.trim().length > 0) {
+      return message;
+    }
+  }
+
+  return 'Failed';
 };
 
 const getUser = async (supabase: SupabaseClient) => {
@@ -78,7 +89,7 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
 
   if (error) {
     console.error('Database error:', error);
-    return { error: 'Failed' };
+    return { error: formatDatabaseError(error) };
   }
 
   revalidateProjects();
@@ -98,36 +109,21 @@ export async function updateProjectOrder(orderedIds: string[]): Promise<ActionRe
     return { error: validationError };
   }
 
-  const { data: existingIds, error: existingError } = await supabase
-    .from(PROJECTS_TABLE)
-    .select('id')
-    .in('id', orderedIds)
-    .returns<{ id: string }[]>();
+  const { data: updatedCount, error: updateError } = await supabase
+    .rpc('update_project_order', { ordered_ids: orderedIds })
+    .returns<number>();
 
-  if (existingError) {
-    console.error('Database error:', existingError);
-    return { error: 'Failed' };
-  }
-
-  const existingIdSet = new Set(existingIds.map((row) => row.id));
-  if (existingIdSet.size !== orderedIds.length) {
-    return { error: 'Project order contains unknown ids' };
-  }
-
-  const updates = buildProjectOrderUpdates(orderedIds);
-  const updateResults = await Promise.all(
-    updates.map((update) =>
-      supabase
-        .from(PROJECTS_TABLE)
-        .update({ sort_order: update.sort_order })
-        .eq('id', update.id),
-    ),
-  );
-
-  const updateError = updateResults.find((result) => result.error)?.error;
   if (updateError) {
     console.error('Database error:', updateError);
+    return { error: formatDatabaseError(updateError) };
+  }
+
+  if (typeof updatedCount !== 'number') {
     return { error: 'Failed' };
+  }
+
+  if (updatedCount !== orderedIds.length) {
+    return { error: 'Project order contains unknown ids' };
   }
 
   revalidateProjects();
@@ -175,7 +171,7 @@ export async function updateProject(formData: FormData): Promise<ActionResult> {
 
   if (error) {
     console.error('Database error:', error);
-    return { error: 'Failed' };
+    return { error: formatDatabaseError(error) };
   }
 
   revalidateProjects();
@@ -194,7 +190,7 @@ export async function deleteProjects(ids: string[]): Promise<ActionResult> {
 
   if (error) {
     console.error('Database error:', error);
-    return { error: 'Failed' };
+    return { error: formatDatabaseError(error) };
   }
 
   revalidateProjects();

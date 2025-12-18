@@ -13,7 +13,7 @@ post_date: "2025-12-18"
 
 ## Status
 
-Implemented (2025-12-18)
+Implemented (2025-12-19)
 
 ## Problem
 
@@ -64,6 +64,12 @@ Server Action:
 export async function updateProjectOrder(orderedIds: string[]): Promise<ActionResult>
 ```
 
+Database Function:
+
+```sql
+update_project_order(ordered_ids uuid[]) returns integer
+```
+
 Helper:
 
 ```ts
@@ -91,12 +97,14 @@ flowchart TD
 | Action returns error | Revert to previous order | Global error banner |
 | Duplicate IDs in payload | Reject request | Error banner, no reorder |
 | Supabase update failure | Revert order | Error banner |
+| Stale list (unknown ids) | Refresh list | "Order was out of date" banner |
 
 ## Validation Plan
 
 - Unit: verify `buildProjectOrderUpdates` and payload validation.
 - Unit: update gallery test fixtures for new `sort_order` field.
 - Manual: drag a project, confirm new order persists after refresh.
+- Manual: simulate stale list (delete row in another session), drag, and confirm auto-refresh.
 
 ## Dependencies
 
