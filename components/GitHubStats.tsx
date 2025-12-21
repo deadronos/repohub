@@ -40,15 +40,15 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
     <div className="flex gap-3 text-xs font-mono text-zinc-400 mt-2 items-center" data-testid="github-stats">
       <div className="flex items-center gap-1" title="Stars">
         <Star className="w-3 h-3 text-[var(--neon-blue)]" />
-        <span>{stats.stars.toLocaleString()}</span>
+        <span>{stats.stars.toLocaleString('en-US')}</span>
       </div>
       <div className="flex items-center gap-1" title="Forks">
         <GitFork className="w-3 h-3 text-[var(--neon-pink)]" />
-        <span>{stats.forks.toLocaleString()}</span>
+        <span>{stats.forks.toLocaleString('en-US')}</span>
       </div>
       <div className="flex items-center gap-1" title="Last Updated">
         <Calendar className="w-3 h-3 text-zinc-500" />
-        <span>{new Date(stats.lastPushedAt).toLocaleDateString()}</span>
+        <span>{new Date(stats.lastPushedAt).toLocaleDateString('en-US')}</span>
       </div>
     </div>
   );
