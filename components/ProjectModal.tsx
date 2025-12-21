@@ -5,6 +5,7 @@ import { ExternalLink, Github, X } from 'lucide-react';
 import Image from 'next/image';
 import type { Project } from '@/types';
 import { capitalize } from '@/utils/string';
+import GitHubStatsDisplay from '@/components/GitHubStats';
 
 type ProjectModalProps = {
   project: Project;
@@ -59,6 +60,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-3xl font-bold text-white text-glow">{project.title}</h2>
+              {project.repo_url && <GitHubStatsDisplay repoUrl={project.repo_url} />}
               <div className="flex gap-2 mt-3 flex-wrap">
                 {project.tags?.map((tag) => (
                   <span

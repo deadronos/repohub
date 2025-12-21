@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import type { Project } from '@/types';
 import { capitalize, truncate } from '@/utils/string';
+import GitHubStatsDisplay from '@/components/GitHubStats';
 
 type ProjectCardProps = {
   project: Project;
@@ -49,6 +50,13 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
         <p className="text-zinc-400 text-sm line-clamp-2">
           {truncate(project.short_description || '', 100)}
         </p>
+
+        {project.repo_url && (
+          <div onClick={(e) => e.stopPropagation()}>
+            <GitHubStatsDisplay repoUrl={project.repo_url} />
+          </div>
+        )}
+
         <div className="flex gap-2 mt-3 flex-wrap">
           {project.tags?.slice(0, 3).map((tag) => (
             <span
