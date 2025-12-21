@@ -1,4 +1,5 @@
 import { isValidUrl } from '@/utils/validation';
+import { getFormString } from '@/utils/form';
 
 export interface ProjectInput {
   title: string;
@@ -17,15 +18,6 @@ export type ProjectFormData = {
   imageFile: File | null;
   current_image_url: string;
 };
-
-const getFormString = (formData: FormData, key: string) => {
-  const value = formData.get(key);
-  return typeof value === 'string' ? value.trim() : '';
-};
-
-export function sanitizeFilename(filename: string): string {
-  return filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-}
 
 export function normalizeTags(tagsValue?: string | null): string[] {
   if (!tagsValue) return [];
