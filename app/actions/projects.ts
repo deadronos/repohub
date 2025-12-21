@@ -7,6 +7,7 @@ import { createClient } from '@/utils/supabase/server';
 import { parseProjectFormData, validateProjectInput } from '@/utils/projects/form';
 import { validateProjectOrder } from '@/utils/projects/order';
 import { uploadProjectImage } from '@/utils/projects/storage';
+import { formatError } from '@/utils/actions';
 
 type ActionResult = { success: true } | { error: string };
 
@@ -15,17 +16,6 @@ const PROJECTS_TABLE = 'projects';
 const revalidateProjects = () => {
   revalidatePath('/');
   revalidatePath('/admin');
-};
-
-const formatDatabaseError = (error: unknown): string => {
-  if (process.env.NODE_ENV !== 'production' && error && typeof error === 'object') {
-    const message = (error as Record<string, unknown>).message;
-    if (typeof message === 'string' && message.trim().length > 0) {
-      return message;
-    }
-  }
-
-  return 'Failed';
 };
 
 const getUser = async (supabase: SupabaseClient) => {
@@ -89,7 +79,7 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
 
   if (error) {
     console.error('Database error:', error);
-    return { error: formatDatabaseError(error) };
+    return { error: formatError(error) };
   }
 
   revalidateProjects();
@@ -115,7 +105,7 @@ export async function updateProjectOrder(orderedIds: string[]): Promise<ActionRe
 
   if (updateError) {
     console.error('Database error:', updateError);
-    return { error: formatDatabaseError(updateError) };
+    return { error: formatError(updateError) };
   }
 
   if (typeof updatedCount !== 'number') {
@@ -171,7 +161,7 @@ export async function updateProject(formData: FormData): Promise<ActionResult> {
 
   if (error) {
     console.error('Database error:', error);
-    return { error: formatDatabaseError(error) };
+    return { error: formatError(error) };
   }
 
   revalidateProjects();
@@ -190,7 +180,7 @@ export async function deleteProjects(ids: string[]): Promise<ActionResult> {
 
   if (error) {
     console.error('Database error:', error);
-    return { error: formatDatabaseError(error) };
+    return { error: formatError(error) };
   }
 
   revalidateProjects();

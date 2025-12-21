@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { sanitizeFilename } from '@/utils/projects/form';
+import { sanitizeFilename } from '@/utils/string';
 
 const PROJECTS_BUCKET = 'projects';
 

@@ -19,3 +19,13 @@ export function capitalize(text: string): string {
   if (!text) return '';
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+
+/**
+ * Sanitizes a filename by replacing unsafe characters with underscores.
+ * Allows alphanumeric characters, dots, underscores, and hyphens.
+ * @param filename The filename to sanitize.
+ * @returns The sanitized filename.
+ */
+export function sanitizeFilename(filename: string): string {
+  return filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+}
