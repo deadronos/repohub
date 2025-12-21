@@ -2,6 +2,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ProjectGallery from '@/components/ProjectGallery';
 
+// Mock GitHubStatsDisplay
+vi.mock('@/components/GitHubStats', () => ({
+  default: () => <div data-testid="github-stats-mock" />,
+}));
+
 // Mock AnimatePresence to remove exit animations so components unmount immediately in tests
 vi.mock('framer-motion', async (importOriginal) => {
   const actual = await importOriginal<typeof import('framer-motion')>();
