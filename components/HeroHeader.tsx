@@ -7,7 +7,7 @@ export default function HeroHeader() {
         PROJECT HUB
       </h1>
       <p className="text-zinc-300 text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-relaxed">
-        Exploring the digital frontier. A curated showcase of web experiments, immersive games, and open-source repositories.
+        Exploring the digital frontier. A curated showcase of web experiments, immersive games, and open-source repositories. Mostly tested on Desktop-Browsers for now.
       </p>
 
       <a
