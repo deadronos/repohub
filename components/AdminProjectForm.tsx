@@ -46,59 +46,74 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
-          <label className="text-sm text-zinc-400">Project Title</label>
+          <label htmlFor="title" className="text-sm text-zinc-400">
+            Project Title <span className="text-red-500">*</span>
+          </label>
           <input
+            id="title"
             name="title"
             defaultValue={project?.title}
             required
+            placeholder="e.g. AI Portfolio"
             className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-sm text-zinc-400">Short Description (Card)</label>
+          <label htmlFor="short_description" className="text-sm text-zinc-400">
+            Short Description (Card) <span className="text-red-500">*</span>
+          </label>
           <input
+            id="short_description"
             name="short_description"
             defaultValue={project?.short_description || ''}
             required
+            placeholder="Brief overview for the card..."
             className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
           />
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm text-zinc-400">Full Description</label>
+        <label htmlFor="description" className="text-sm text-zinc-400">Full Description</label>
         <textarea
+          id="description"
           name="description"
           defaultValue={project?.description || ''}
           rows={4}
+          placeholder="Detailed project explanation..."
           className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
-          <label className="text-sm text-zinc-400">Repo URL</label>
+          <label htmlFor="repo_url" className="text-sm text-zinc-400">Repo URL</label>
           <input
+            id="repo_url"
             name="repo_url"
             defaultValue={project?.repo_url || ''}
             type="url"
+            placeholder="https://github.com/..."
             className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="text-sm text-zinc-400">Demo URL</label>
+          <label htmlFor="demo_url" className="text-sm text-zinc-400">Demo URL</label>
           <input
+            id="demo_url"
             name="demo_url"
             defaultValue={project?.demo_url || ''}
             type="url"
+            placeholder="https://..."
             className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
           />
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm text-zinc-400">Tags (comma separated)</label>
+        <label htmlFor="tags" className="text-sm text-zinc-400">Tags (comma separated)</label>
         <input
+          id="tags"
           name="tags"
           defaultValue={project?.tags?.join(', ') || ''}
           placeholder="Next.js, TypeScript, AI"
@@ -107,9 +122,10 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm text-zinc-400">Project Cover Image</label>
+        <label htmlFor="image" className="text-sm text-zinc-400">Project Cover Image</label>
         <div className="border border-dashed border-zinc-700 rounded-lg p-6 flex flex-col items-center justify-center text-zinc-500 hover:border-cyan-500/50 hover:bg-cyan-900/10 transition-colors cursor-pointer relative bg-zinc-900/50">
           <input
+            id="image"
             type="file"
             name="image"
             accept="image/*"
