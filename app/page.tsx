@@ -1,5 +1,6 @@
 import { listProjects } from '@/utils/projects/queries';
 import ProjectGallery from '@/components/ProjectGallery';
+import HeroHeader from '@/components/HeroHeader';
 
 export default async function Home() {
   const projects = await listProjects();
@@ -12,14 +13,7 @@ export default async function Home() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]" />
       </div>
 
-      <header className="mb-12 text-center relative z-10">
-        <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 mb-4 tracking-tight drop-shadow-sm pb-2">
-          PROJECT HUB
-        </h1>
-        <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-          A curated collection of web experiments, games, and repositories.
-        </p>
-      </header>
+      <HeroHeader />
 
       <ProjectGallery projects={projects} />
 
