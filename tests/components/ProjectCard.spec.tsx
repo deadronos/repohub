@@ -59,6 +59,15 @@ describe('ProjectCard component', () => {
     expect(onClick).toHaveBeenCalledTimes(2);
   });
 
+  it('invokes onClick on mouse click', () => {
+    const onClick = vi.fn();
+    render(<ProjectCard project={baseProject} onClick={onClick} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'View details for My Project' }));
+    expect(onClick).toHaveBeenCalledWith('p1');
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
   it('does not invoke onClick for unrelated keys (bad/edge case)', () => {
     const onClick = vi.fn();
     render(<ProjectCard project={baseProject} onClick={onClick} />);
@@ -93,5 +102,32 @@ describe('ProjectCard component', () => {
 
     expect(screen.getByTestId('github-stats')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'My Project' })).toBeInTheDocument();
+  });
+
+  it('does not trigger card onClick when clicking GitHubStats (edge case)', () => {
+    const onClick = vi.fn();
+    const project: Project = {
+      ...baseProject,
+      repo_url: 'https://github.com/me/repo',
+    };
+
+    render(<ProjectCard project={project} onClick={onClick} />);
+    fireEvent.click(screen.getByTestId('github-stats'));
+
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('filters empty/whitespace tags (bad input)', () => {
+    const onClick = vi.fn();
+    const project: Project = {
+      ...baseProject,
+      tags: ['  ', '', 'react'],
+    };
+
+    const { container } = render(<ProjectCard project={project} onClick={onClick} />);
+    expect(screen.getByText('React')).toBeInTheDocument();
+
+    const chips = container.querySelectorAll('span.text-xs');
+    expect(chips).toHaveLength(1);
   });
 });

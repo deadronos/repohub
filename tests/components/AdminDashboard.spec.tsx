@@ -6,6 +6,8 @@ import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
 import type { DragEndEvent } from '@dnd-kit/core';
 import type { ReactNode } from 'react';
 
+let useSortableArgs: Array<{ id: string; disabled?: boolean }> = [];
+
 let latestDndContextProps: { onDragEnd?: (event: DragEndEvent) => void | Promise<void> } | null =
   null;
 const refreshSpy = vi.fn();
@@ -48,7 +50,9 @@ vi.mock('@dnd-kit/sortable', () => ({
   },
   rectSortingStrategy: () => undefined,
   sortableKeyboardCoordinates: () => undefined,
-  useSortable: () => ({
+  useSortable: (args: { id: string; disabled?: boolean }) => {
+    useSortableArgs.push({ id: String(args.id), disabled: args.disabled });
+    return {
     attributes: {},
     listeners: {},
     setNodeRef: () => undefined,
@@ -56,7 +60,8 @@ vi.mock('@dnd-kit/sortable', () => ({
     transform: null,
     transition: undefined,
     isDragging: false,
-  }),
+    };
+  },
 }));
 
 vi.mock('@dnd-kit/utilities', () => ({
@@ -102,6 +107,7 @@ describe('AdminDashboard drag ordering', () => {
 
   beforeEach(() => {
     latestDndContextProps = null;
+    useSortableArgs = [];
     refreshSpy.mockReset();
     updateOrderMock.mockReset();
     deleteProjectsMock.mockReset();
@@ -113,6 +119,51 @@ describe('AdminDashboard drag ordering', () => {
 
     expect(screen.getByLabelText('Reorder Project One')).toBeInTheDocument();
     expect(screen.getByLabelText('Reorder Project Two')).toBeInTheDocument();
+  });
+
+  it('renders fallbacks for missing image and tags', () => {
+    const projects: Project[] = [
+      ...mockProjects,
+      {
+        id: '3',
+        title: 'Project Three',
+        short_description: 'Third',
+        description: null,
+        tags: null,
+        image_url: null,
+        created_at: '2023-01-03T00:00:00Z',
+        sort_order: 3,
+        demo_url: null,
+        repo_url: null,
+        is_featured: false,
+      },
+    ];
+
+    render(<AdminDashboard initialProjects={projects} />);
+
+    // Project Two + Three have null images
+    expect(screen.getAllByText('No Image').length).toBeGreaterThanOrEqual(2);
+    // Project Three has null tags
+    expect(screen.getByText('No tags')).toBeInTheDocument();
+  });
+
+  it('opens and closes the create modal', () => {
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Add New Project/i }));
+    expect(screen.getByRole('heading', { name: 'Initialize New Project' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close project form' }));
+    expect(
+      screen.queryByRole('heading', { name: 'Initialize New Project' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('opens edit modal from a project card', () => {
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Project One' }));
+    expect(screen.getByRole('heading', { name: 'Edit Project' })).toBeInTheDocument();
   });
 
   it('reorders items and persists order on drag end', async () => {
@@ -134,6 +185,54 @@ describe('AdminDashboard drag ordering', () => {
     expect(headings[1]?.textContent).toBe('Project One');
     expect(refreshSpy).toHaveBeenCalled();
     expect(screen.getByText('Order saved')).toBeInTheDocument();
+  });
+
+  it('shows saving status and passes disabled=true to sortable while persisting (edge case)', async () => {
+    let resolveOrder: ((value: unknown) => void) | null = null;
+    const pending = new Promise((resolve) => {
+      resolveOrder = resolve;
+    });
+
+    updateOrderMock.mockReturnValue(pending as Promise<unknown>);
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
+
+    await act(async () => {
+      void latestDndContextProps?.onDragEnd?.(event);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Saving order...')).toBeInTheDocument();
+    });
+
+    expect(useSortableArgs.some((a) => a.disabled === true)).toBe(true);
+
+    await act(async () => {
+      resolveOrder?.({ success: true });
+      await Promise.resolve();
+    });
+  });
+
+  it('resets saved status back to idle after timeout (edge case)', async () => {
+    vi.useFakeTimers();
+    updateOrderMock.mockResolvedValue({ success: true });
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
+
+    await act(async () => {
+      await latestDndContextProps?.onDragEnd?.(event);
+    });
+
+    expect(screen.getByText('Order saved')).toBeInTheDocument();
+
+    await act(async () => {
+      vi.advanceTimersByTime(1500);
+    });
+
+    expect(screen.queryByText('Order saved')).not.toBeInTheDocument();
+    vi.useRealTimers();
   });
 
   it('reverts order and shows error when save fails', async () => {

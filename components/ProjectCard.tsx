@@ -12,6 +12,10 @@ type ProjectCardProps = {
 };
 
 export default function ProjectCard({ project, onClick }: ProjectCardProps) {
+  const visibleTags = (project.tags ?? [])
+    .filter((tag) => typeof tag === 'string' && tag.trim().length > 0)
+    .slice(0, 3);
+
   return (
     <motion.div
       layoutId={project.id}
@@ -58,7 +62,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
         )}
 
         <div className="flex gap-2 mt-3 flex-wrap">
-          {project.tags?.slice(0, 3).map((tag) => (
+          {visibleTags.map((tag) => (
             <span
               key={tag}
               className="text-xs bg-cyan-900/30 border border-cyan-500/30 text-cyan-200 px-2 py-1 rounded-full backdrop-blur-md"
