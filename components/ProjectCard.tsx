@@ -1,10 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import type { Project } from '@/types';
-import { capitalize, truncate } from '@/utils/string';
+import { truncate } from '@/utils/string';
 import GitHubStatsDisplay from '@/components/GitHubStats';
+import ProjectImage from '@/components/projects/ProjectImage';
+import ProjectTags from '@/components/projects/ProjectTags';
 
 type ProjectCardProps = {
   project: Project;
@@ -12,10 +13,6 @@ type ProjectCardProps = {
 };
 
 export default function ProjectCard({ project, onClick }: ProjectCardProps) {
-  const visibleTags = (project.tags ?? [])
-    .filter((tag) => typeof tag === 'string' && tag.trim().length > 0)
-    .slice(0, 3);
-
   return (
     <motion.div
       layoutId={project.id}
@@ -34,16 +31,13 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
     >
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0 bg-neutral-900">
-        {project.image_url && (
-          <Image
-            src={project.image_url}
-            alt={project.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 grayscale group-hover:grayscale-0"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050510] via-[#050510]/40 to-transparent" />
+        <ProjectImage
+          imageUrl={project.image_url}
+          alt={project.title}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 grayscale group-hover:grayscale-0"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-[#050510] via-[#050510]/40 to-transparent" />
       </div>
 
       {/* Card Content */}
@@ -61,16 +55,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
           </div>
         )}
 
-        <div className="flex gap-2 mt-3 flex-wrap">
-          {visibleTags.map((tag) => (
-            <span
-              key={tag}
-              className="text-xs bg-cyan-900/30 border border-cyan-500/30 text-cyan-200 px-2 py-1 rounded-full backdrop-blur-md"
-            >
-              {capitalize(tag || '')}
-            </span>
-          ))}
-        </div>
+        <ProjectTags tags={project.tags} variant="card" limit={3} />
       </div>
     </motion.div>
   );

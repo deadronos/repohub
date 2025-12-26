@@ -20,6 +20,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 - Extracted the admin project form and particle system into focused components; updated unit tests for new helpers.
 - Added `getActionError` to safely read server action errors in client code; lint and typecheck now pass.
 - Standardized server action return shape via `ActionResult<T>` and centralized project identifiers in `utils/projects/constants.ts`.
+- Extracted shared UI helpers to reduce duplication: `ProjectTags`, `ProjectImage`, `useEscapeKey`, and `useIsMountedRef`.
 
 ## Next Steps
 

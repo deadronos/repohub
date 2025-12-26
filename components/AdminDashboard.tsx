@@ -25,9 +25,10 @@ import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, Edit2, X, AlertCircle, GripVertical } from 'lucide-react';
-import Image from 'next/image';
 import ProjectForm from '@/components/AdminProjectForm';
 import { getActionError } from '@/utils/actions';
+import ProjectImage from '@/components/projects/ProjectImage';
+import ProjectTags from '@/components/projects/ProjectTags';
 
 interface AdminDashboardProps {
   initialProjects: Project[];
@@ -64,6 +65,7 @@ function AdminProjectCard({
             type="checkbox"
             checked={isSelected}
             onChange={() => onToggleSelect?.()}
+            aria-label={`Select ${project.title}`}
             className="absolute top-3 left-3 z-20 w-5 h-5 accent-cyan-500 cursor-pointer"
           />
 
@@ -81,29 +83,23 @@ function AdminProjectCard({
       )}
 
       <div className="relative h-40 w-full bg-zinc-950">
-        {project.image_url ? (
-          <Image
-            src={project.image_url}
-            alt={project.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover opacity-60"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-zinc-700">
-            No Image
-          </div>
-        )}
+        <ProjectImage
+          imageUrl={project.image_url}
+          alt={project.title}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover opacity-60"
+          fallback={
+            <div className="w-full h-full flex items-center justify-center text-zinc-700">
+              No Image
+            </div>
+          }
+        />
       </div>
 
       <div className="p-4">
         <h3 className="font-bold text-white truncate">{project.title}</h3>
         <p className="text-zinc-500 text-sm truncate">{project.short_description}</p>
-        <div className="flex gap-1 mt-2">
-          <div className="text-xs text-zinc-600 border border-zinc-800 px-2 py-0.5 rounded">
-            {project.tags?.[0] || 'No tags'}
-          </div>
-        </div>
+        <ProjectTags tags={project.tags} variant="admin" limit={1} emptyLabel="No tags" />
       </div>
     </div>
   );

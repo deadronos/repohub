@@ -1,5 +1,6 @@
 import { isValidUrl } from '@/utils/validation';
 import { getFormString } from '@/utils/form';
+import { normalizeGitHubRepoUrl } from '@/utils/github-url';
 
 export interface ProjectInput {
   title: string;
@@ -29,13 +30,15 @@ export function normalizeTags(tagsValue?: string | null): string[] {
 
 export function parseProjectFormData(formData: FormData): ProjectFormData {
   const imageEntry = formData.get('image');
+  const repoUrl = getFormString(formData, 'repo_url');
+  const normalizedRepoUrl = isValidUrl(repoUrl) ? normalizeGitHubRepoUrl(repoUrl) : null;
 
   return {
     id: getFormString(formData, 'id'),
     title: getFormString(formData, 'title'),
     short_description: getFormString(formData, 'short_description'),
     description: getFormString(formData, 'description'),
-    repo_url: getFormString(formData, 'repo_url'),
+    repo_url: normalizedRepoUrl ?? repoUrl,
     demo_url: getFormString(formData, 'demo_url'),
     tags: normalizeTags(getFormString(formData, 'tags')),
     imageFile: imageEntry instanceof File ? imageEntry : null,

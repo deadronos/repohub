@@ -1,23 +1,11 @@
 import { unstable_cache } from 'next/cache';
+import { normalizeGitHubRepoUrl, parseGitHubUrl } from '@/utils/github-url';
 
 export type GitHubStats = {
   stars: number;
   forks: number;
   lastPushedAt: string;
 };
-
-export function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
-  if (!url) return null;
-  try {
-    const parsed = new URL(url);
-    if (parsed.hostname !== 'github.com' && parsed.hostname !== 'www.github.com') return null;
-    const parts = parsed.pathname.split('/').filter(Boolean);
-    if (parts.length < 2) return null;
-    return { owner: parts[0], repo: parts[1] };
-  } catch {
-    return null;
-  }
-}
 
 async function fetchStatsInternal(owner: string, repo: string): Promise<GitHubStats | null> {
   try {
@@ -51,12 +39,23 @@ async function fetchStatsInternal(owner: string, repo: string): Promise<GitHubSt
   }
 }
 
-export const getGitHubStats = unstable_cache(
-  async (url: string) => {
-    const meta = parseGitHubUrl(url);
+const getGitHubStatsCached = unstable_cache(
+  async (normalizedUrl: string) => {
+    const meta = parseGitHubUrl(normalizedUrl);
     if (!meta) return null;
     return fetchStatsInternal(meta.owner, meta.repo);
   },
   ['github-stats'],
-  { revalidate: 3600 }
+  { revalidate: 3600 },
 );
+
+export async function getGitHubStats(url: string): Promise<GitHubStats | null> {
+  const normalized = normalizeGitHubRepoUrl(url);
+  if (!normalized) {
+    return null;
+  }
+
+  return getGitHubStatsCached(normalized);
+}
+
+export { parseGitHubUrl, normalizeGitHubRepoUrl };
