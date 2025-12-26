@@ -1,8 +1,8 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import AdminDashboard from '@/components/AdminDashboard';
 import type { Project } from '@/types';
-import { updateProjectOrder } from '@/app/actions/projects';
+import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
 import type { DragEndEvent } from '@dnd-kit/core';
 import type { ReactNode } from 'react';
 
@@ -98,11 +98,14 @@ const mockProjects: Project[] = [
 
 describe('AdminDashboard drag ordering', () => {
   const updateOrderMock = vi.mocked(updateProjectOrder);
+  const deleteProjectsMock = vi.mocked(deleteProjects);
 
   beforeEach(() => {
     latestDndContextProps = null;
     refreshSpy.mockReset();
     updateOrderMock.mockReset();
+    deleteProjectsMock.mockReset();
+    vi.restoreAllMocks();
   });
 
   it('renders drag handles for each project', () => {
@@ -167,5 +170,62 @@ describe('AdminDashboard drag ordering', () => {
     });
 
     expect(refreshSpy).toHaveBeenCalled();
+  });
+
+  it('does not delete when confirm is cancelled (bad/edge case)', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    deleteProjectsMock.mockResolvedValue({ success: true });
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]!);
+
+    const deleteButton = screen.getByRole('button', { name: /Delete Selected \(1\)/i });
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(deleteProjectsMock).not.toHaveBeenCalled();
+    });
+  });
+
+  it('optimistically deletes selected projects and refreshes on success', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    deleteProjectsMock.mockResolvedValue({ success: true });
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]!);
+
+    fireEvent.click(screen.getByRole('button', { name: /Delete Selected \(1\)/i }));
+
+    // Optimistic removal
+    await waitFor(() => {
+      expect(screen.queryByText('Project One')).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(deleteProjectsMock).toHaveBeenCalledWith(['1']);
+    });
+
+    expect(refreshSpy).toHaveBeenCalled();
+  });
+
+  it('reverts optimistic delete and shows error when delete fails (bad case)', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    deleteProjectsMock.mockResolvedValue({ error: 'Failed to delete' });
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]!);
+
+    fireEvent.click(screen.getByRole('button', { name: /Delete Selected \(1\)/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to delete')).toBeInTheDocument();
+    });
+
+    // Reverted
+    expect(screen.getByText('Project One')).toBeInTheDocument();
+    expect(screen.getByText('Project Two')).toBeInTheDocument();
   });
 });
