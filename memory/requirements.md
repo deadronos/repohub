@@ -14,3 +14,9 @@
 
 5. WHEN an authenticated user uploads a project image, THE SYSTEM SHALL upload the file to the Supabase Storage bucket `projects` and persist the public URL in `projects.image_url`.  
    Acceptance: image renders in both gallery card and modal.
+
+6. WHEN a project has a valid GitHub repository URL, THE SYSTEM SHALL display GitHub stats (stars, forks, last push date).  
+   Acceptance: set `repo_url` to a GitHub repo → UI shows stats and date.
+
+7. WHEN an admin drags and reorders projects, THE SYSTEM SHALL persist the new order and render projects sorted by `sort_order`.  
+   Acceptance: reorder in `/admin` → refresh home page → ordering matches.

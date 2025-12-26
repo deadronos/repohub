@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+import { useIsMountedRef } from '@/utils/hooks/useIsMountedRef';
 
 const ParticleBackground = dynamic(() => import('@/components/ParticleBackground'), {
   ssr: false,
@@ -19,16 +20,16 @@ type WindowWithIdleCallback = Window &
 
 export default function ParticleBackgroundLazy() {
   const [shouldRender, setShouldRender] = useState(false);
+  const isMountedRef = useIsMountedRef();
 
   useEffect(() => {
-    let isMounted = true;
     let timeoutId: number | null = null;
     let idleCallbackId: number | null = null;
 
     const win = window as WindowWithIdleCallback;
 
     const onIdle = () => {
-      if (!isMounted) return;
+      if (!isMountedRef.current) return;
       setShouldRender(true);
     };
 
@@ -39,7 +40,6 @@ export default function ParticleBackgroundLazy() {
     }
 
     return () => {
-      isMounted = false;
       if (idleCallbackId !== null && typeof win.cancelIdleCallback === 'function') {
         win.cancelIdleCallback(idleCallbackId);
       }
@@ -47,7 +47,7 @@ export default function ParticleBackgroundLazy() {
         win.clearTimeout(timeoutId);
       }
     };
-  }, []);
+  }, [isMountedRef]);
 
   if (!shouldRender) return null;
   return <ParticleBackground />;

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
-import { parseGitHubUrl, getGitHubStats } from '../../utils/github';
+import { getGitHubStats, normalizeGitHubRepoUrl, parseGitHubUrl } from '../../utils/github';
 
 // Mock next/cache
 vi.mock('next/cache', () => ({
@@ -40,6 +40,26 @@ describe('utils/github', () => {
 
     it('returns null for empty strings', () => {
       expect(parseGitHubUrl('')).toBeNull();
+    });
+  });
+
+  describe('normalizeGitHubRepoUrl', () => {
+    it('normalizes www + extra paths to canonical repo URL', () => {
+      expect(
+        normalizeGitHubRepoUrl('https://www.github.com/facebook/react/tree/main/packages'),
+      ).toBe('https://github.com/facebook/react');
+    });
+
+    it('strips .git suffix', () => {
+      expect(normalizeGitHubRepoUrl('https://github.com/owner/repo.git')).toBe(
+        'https://github.com/owner/repo',
+      );
+    });
+
+    it('supports scp-like git@github.com URLs', () => {
+      expect(normalizeGitHubRepoUrl('git@github.com:owner/repo.git')).toBe(
+        'https://github.com/owner/repo',
+      );
     });
   });
 
@@ -99,6 +119,31 @@ describe('utils/github', () => {
       const stats = await getGitHubStats('invalid-url');
       expect(stats).toBeNull();
       expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('normalizes repo URL before fetching (www + extra path)', async () => {
+      const mockResponse = {
+        stargazers_count: 100,
+        forks_count: 20,
+        pushed_at: '2023-01-01T00:00:00Z',
+      };
+
+      (global.fetch as Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      const stats = await getGitHubStats('https://www.github.com/owner/repo/tree/main');
+      expect(stats).toEqual({
+        stars: 100,
+        forks: 20,
+        lastPushedAt: '2023-01-01T00:00:00Z',
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.github.com/repos/owner/repo',
+        expect.any(Object),
+      );
     });
   });
 });

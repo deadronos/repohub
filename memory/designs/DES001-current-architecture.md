@@ -19,8 +19,10 @@ Server components / server files:
 - `app/layout.tsx` (global shell)
 - `app/page.tsx` (public gallery server fetch)
 - `app/admin/page.tsx` (admin server fetch)
-- `app/actions.ts` (Next.js Server Actions)
-- `proxy.ts` (Next.js Middleware entrypoint)
+- `app/actions/auth.ts` (Next.js Server Actions: auth)
+- `app/actions/projects.ts` (Next.js Server Actions: projects CRUD + ordering)
+- `app/actions/github.ts` (Next.js Server Actions: GitHub stats)
+- `proxy.ts` (middleware delegate; see note in Auth & Session)
 
 Client components:
 
@@ -51,11 +53,22 @@ updateSession()]
 client]:::client
     PBL -->|dynamic import ssr:false| PB[components/ParticleBackground.tsx
 client (three.js)]:::client
-    Home[app/page.tsx] --> SS[utils/supabase/server.ts
-createClient()]
-    Admin[app/admin/page.tsx] --> SS
-    Actions[app/actions.ts
-Server Actions] --> SS
+    Home[app/page.tsx] --> PQ[utils/projects/queries.ts
+  getCachedProjects()]
+    PQ --> SC[utils/supabase/static.ts
+  createStaticClient()]
+
+    Admin[app/admin/page.tsx] --> SS[utils/supabase/server.ts
+  createClient()]
+
+    AuthActions[app/actions/auth.ts]
+    ProjectActions[app/actions/projects.ts]
+    GithubActions[app/actions/github.ts]
+
+    AuthActions --> SS
+    ProjectActions --> SS
+    GithubActions --> GH[utils/github.ts
+  getGitHubStats()]
     Gallery[components/ProjectGallery.tsx
 client]:::client
     Card[components/ProjectCard.tsx
@@ -71,7 +84,8 @@ client]:::client
 
   SS -->|SQL| DB[(Supabase Postgres
 projects)]
-  Actions -->|Upload| ST[(Supabase Storage
+  SC -->|SQL| DB
+  ProjectActions -->|Upload| ST[(Supabase Storage
 bucket: projects)]
 
   classDef client fill:#111,stroke:#0ff,stroke-width:1px;
@@ -79,7 +93,7 @@ bucket: projects)]
 
 ## Routes
 
-- `/` (public): server fetch of `projects`, rendered as `ProjectGallery`.
+- `/` (public): cached server read of `projects`, rendered as `ProjectGallery`.
 - `/admin` (protected): server fetch of `projects`, rendered as `AdminDashboard`.
 - `/login` (public): email/password form posting to `login` server action.
 - `/_not-found` (static): rendered by `app/not-found.tsx`.
@@ -112,10 +126,16 @@ Fields used by UI and admin:
 
 ### Server Actions (Mutation API)
 
-- `login(formData: FormData): Promise<void>`
-- `createProject(formData: FormData): Promise<{ success: true } | { error: string }>`
-- `updateProject(formData: FormData): Promise<{ success: true } | { error: string }>`
-- `deleteProjects(ids: string[]): Promise<{ success: true } | { error: string }>`
+- `login(formData: FormData): Promise<void>` (redirects on success/failure)
+- `createProject(formData: FormData): Promise<ActionResult<true>>`
+- `updateProject(formData: FormData): Promise<ActionResult<true>>`
+- `deleteProjects(ids: string[]): Promise<ActionResult<true>>`
+- `updateProjectOrder(orderedIds: string[]): Promise<ActionResult<true>>`
+- `fetchGitHubStatsAction(url: string): Promise<ActionResult<GitHubStats>>`
+
+### Optional Environment Variables
+
+- `GITHUB_TOKEN` (increases rate limits for GitHub API requests)
 
 ## Auth & Session
 
@@ -123,11 +143,15 @@ Fields used by UI and admin:
 - Middleware calls `supabase.auth.getUser()` via SSR client.
 - If path starts with `/admin` and no user exists → redirect to `/login`.
 
+Note: Next.js middleware typically uses a `middleware.ts` entrypoint. If the intent is to rely on Next middleware, ensure an actual middleware entrypoint exists.
+
 ## UI Composition Notes
 
 - `app/layout.tsx` renders `ParticleBackgroundLazy`, which dynamically imports `ParticleBackground` on the client.
 - `ParticleBackground` uses React Three Fiber (`@react-three/fiber`) and drei (`@react-three/drei`) and is intentionally isolated from SSR.
 - `ProjectGallery` uses Framer Motion shared layout transitions (`layoutId`) and is split into `ProjectCard` and `ProjectModal` for maintainability.
+- Project image and tag rendering are shared via `components/projects/ProjectImage.tsx` and `components/projects/ProjectTags.tsx`.
+- Client lifecycle behavior is standardized via `utils/hooks/useEscapeKey.ts` and `utils/hooks/useIsMountedRef.ts`.
 
 ## Storage Upload Flow
 
@@ -138,13 +162,13 @@ Fields used by UI and admin:
 
 ## Error Handling (As Built)
 
-| Area                 | Failure                         | Current behavior                                             |
-| -------------------- | ------------------------------- | ------------------------------------------------------------ |
-| Login                | invalid credentials             | redirects to `/login?message=Could not authenticate user`    |
-| Create/Update        | storage upload fails            | logs to `console.error`, continues (may store blank/old URL) |
-| Create/Update/Delete | DB mutation fails               | logs to `console.error`, returns `{ error: 'Failed' }`       |
-| Auth                 | unauthenticated access to admin | middleware redirect to `/login`                              |
-| Global routes        | render-time error / not found   | `app/error.tsx` / `app/not-found.tsx` render themed UI        |
+| Area                 | Failure                          | Current behavior
+| -------------------- | -------------------------------- | ------------------------------------------------------------
+| Login                | invalid credentials              | redirects to `/login?message=Could not authenticate user`
+| Create/Update        | storage upload fails             | logs to `console.error`, continues (may store blank/old URL)
+| Create/Update/Delete | DB mutation fails                | logs to `console.error`, returns `{ error: 'Failed' }`
+| Auth                 | unauthenticated access to admin  | middleware redirect to `/login`
+| Global routes        | render-time error / not found    | `app/error.tsx` / `app/not-found.tsx` render themed UI
 
 ## Security Notes
 
@@ -157,6 +181,8 @@ Fields used by UI and admin:
 - `ParticleBackground` is dynamically imported with `ssr: false` and mounted during browser idle time, reducing initial JS and avoiding SSR work for three.js.
 - `ParticleBackground` listens for `webglcontextlost` / `webglcontextrestored` and pauses the R3F frameloop when the context is lost.
 - `ProjectGallery` keeps `layoutId={project.id}` across card and modal, and wraps content in a `LayoutGroup` to preserve smooth shared-layout transitions after refactoring.
+- Home page projects are cached using `unstable_cache` with a Supabase static client (`utils/supabase/static.ts`) and tagged as `projects`.
+- GitHub stats fetching normalizes repo URLs to improve cache hits (`utils/github-url.ts`).
 
 ## Deferred Improvements
 
