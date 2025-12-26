@@ -1,3 +1,5 @@
+export type ActionResult<T> = { data: T } | { error: string };
+
 export function getActionError(result: unknown): string | null {
   if (!result || typeof result !== 'object') {
     return null;

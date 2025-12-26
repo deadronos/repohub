@@ -1,7 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { sanitizeFilename } from '@/utils/string';
-
-const PROJECTS_BUCKET = 'projects';
+import { PROJECTS_BUCKET } from '@/utils/projects/constants';
 
 export async function uploadProjectImage(
   supabase: SupabaseClient,

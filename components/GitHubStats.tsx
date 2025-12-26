@@ -13,14 +13,15 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
     let mounted = true;
 
     if (!repoUrl) {
-        setLoading(false);
-        return;
+      setLoading(false);
+      return;
     }
 
     async function load() {
       try {
         const res = await fetchGitHubStatsAction(repoUrl);
-        if (mounted && res.data) {
+        if (!mounted) return;
+        if ('data' in res) {
           setStats(res.data);
         }
       } catch (e) {
@@ -30,7 +31,9 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
       }
     }
     void load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [repoUrl]);
 
   if (loading) return <div className="animate-pulse h-4 w-24 bg-white/5 rounded mt-2" />;
@@ -39,11 +42,11 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
   return (
     <div className="flex gap-3 text-xs font-mono text-zinc-400 mt-2 items-center" data-testid="github-stats">
       <div className="flex items-center gap-1" title="Stars">
-        <Star className="w-3 h-3 text-[var(--neon-blue)]" />
+        <Star className="w-3 h-3 text-(--neon-blue)" />
         <span>{stats.stars.toLocaleString('en-US')}</span>
       </div>
       <div className="flex items-center gap-1" title="Forks">
-        <GitFork className="w-3 h-3 text-[var(--neon-pink)]" />
+        <GitFork className="w-3 h-3 text-(--neon-pink)" />
         <span>{stats.forks.toLocaleString('en-US')}</span>
       </div>
       <div className="flex items-center gap-1" title="Last Updated">

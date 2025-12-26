@@ -1,6 +1,6 @@
 # Active Context
 
-**Updated:** 2025-12-18
+**Updated:** 2025-12-26
 
 ## Current Focus
 
@@ -19,6 +19,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 - Centralized project list fetching in a `listProjects()` helper and updated pages to use it.
 - Extracted the admin project form and particle system into focused components; updated unit tests for new helpers.
 - Added `getActionError` to safely read server action errors in client code; lint and typecheck now pass.
+- Standardized server action return shape via `ActionResult<T>` and centralized project identifiers in `utils/projects/constants.ts`.
 
 ## Next Steps
 
