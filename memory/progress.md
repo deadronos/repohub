@@ -1,6 +1,6 @@
 # Progress
 
-**Updated:** 2025-12-18
+**Updated:** 2025-12-26
 
 ## What Works
 
@@ -8,10 +8,16 @@
 - 3D particle background loads lazily on the client (idle) to reduce initial load cost.
 - `ProjectGallery` is split into `ProjectCard` and `ProjectModal` for maintainability.
 - Supabase SSR client wiring (server, browser, middleware) is in place.
-- `/admin` is protected by middleware redirect.
+- Route protection logic exists for `/admin` (redirect to `/login` when unauthenticated).
 - Admin dashboard supports create/update/delete flows.
 - Image uploads store to Supabase Storage and render via Next Image.
 - Project actions share helpers for form parsing/validation, storage uploads, and revalidation.
+- Projects are ordered by `sort_order` and can be re-ordered in admin (persisted via a Supabase SQL function).
+- Home page project reads are cached with Next `unstable_cache` using a Supabase “static” client.
+- GitHub stats are fetched server-side via a server action and displayed on project cards/modals.
+- Shared UI primitives reduce duplication (`ProjectImage`, `ProjectTags`) and shared hooks reduce subtle client bugs (`useEscapeKey`, `useIsMountedRef`).
+- Formatting is centralized (`utils/format.ts`) and reused in GitHub stats UI.
+- Unit tests cover key UI and utility paths; `npm run test` and `npm run test:coverage` are green on this branch.
 
 ## What’s Missing / Incomplete
 
@@ -21,10 +27,11 @@
 
 ## Known Issues
 
-- `supabase/schema.sql` lacks `DELETE` policy for `projects`, but the app calls delete.
+- `supabase/schema.sql` lacks a `DELETE` policy for `projects`, but the app calls delete.
+- No explicit admin role check: any authenticated user can mutate if RLS allows it.
 
 ## Suggested Next Improvements (Not Implemented)
 
 - Add explicit `DELETE` policy (and possibly tighter policies scoped to owner/admin).
-- Add form validation (zod) and display errors in UI.
-- Avoid `window.location.reload()` in admin; update local state or re-fetch.
+- Ensure route protection uses a Next middleware entrypoint (`middleware.ts`) if the intent is to rely on Next middleware (the repo currently has `proxy.ts`).
+- Add schema validation (zod) for FormData and display structured errors in UI.

@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { ExternalLink, Github, X } from 'lucide-react';
-import Image from 'next/image';
 import type { Project } from '@/types';
-import { capitalize } from '@/utils/string';
 import GitHubStatsDisplay from '@/components/GitHubStats';
+import ProjectImage from '@/components/projects/ProjectImage';
+import ProjectTags from '@/components/projects/ProjectTags';
 
 type ProjectModalProps = {
   project: Project;
@@ -44,16 +44,13 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         </button>
 
         <div className="relative h-64 shrink-0 bg-neutral-900">
-          {project.image_url && (
-            <Image
-              src={project.image_url}
-              alt={project.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 672px"
-              className="object-cover"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] to-transparent opacity-80" />
+          <ProjectImage
+            imageUrl={project.image_url}
+            alt={project.title}
+            sizes="(max-width: 768px) 100vw, 672px"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0f] to-transparent opacity-80" />
         </div>
 
         <div className="p-8 overflow-y-auto">
@@ -61,16 +58,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             <div>
               <h2 className="text-3xl font-bold text-white text-glow">{project.title}</h2>
               {project.repo_url && <GitHubStatsDisplay repoUrl={project.repo_url} />}
-              <div className="flex gap-2 mt-3 flex-wrap">
-                {project.tags?.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs border border-cyan-900 text-cyan-300 bg-cyan-950/30 px-2 py-1 rounded-full"
-                  >
-                    {capitalize(tag || '')}
-                  </span>
-                ))}
-              </div>
+              <ProjectTags tags={project.tags} variant="modal" />
             </div>
           </div>
 

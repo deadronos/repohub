@@ -7,11 +7,8 @@ import { createClient } from '@/utils/supabase/server';
 import { parseProjectFormData, validateProjectInput } from '@/utils/projects/form';
 import { validateProjectOrder } from '@/utils/projects/order';
 import { uploadProjectImage } from '@/utils/projects/storage';
-import { formatError } from '@/utils/actions';
-
-type ActionResult = { success: true } | { error: string };
-
-const PROJECTS_TABLE = 'projects';
+import { formatError, type ActionResult } from '@/utils/actions';
+import { PROJECTS_TABLE } from '@/utils/projects/constants';
 
 const revalidateProjects = () => {
   revalidatePath('/');
@@ -42,7 +39,7 @@ const getNextSortOrder = async (supabase: SupabaseClient): Promise<number> => {
   return currentMax + 1;
 };
 
-export async function createProject(formData: FormData): Promise<ActionResult> {
+export async function createProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
   const user = await getUser(supabase);
 
@@ -83,10 +80,10 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
   }
 
   revalidateProjects();
-  return { success: true };
+  return { data: true };
 }
 
-export async function updateProjectOrder(orderedIds: string[]): Promise<ActionResult> {
+export async function updateProjectOrder(orderedIds: string[]): Promise<ActionResult<true>> {
   const supabase = await createClient();
   const user = await getUser(supabase);
 
@@ -117,10 +114,10 @@ export async function updateProjectOrder(orderedIds: string[]): Promise<ActionRe
   }
 
   revalidateProjects();
-  return { success: true };
+  return { data: true };
 }
 
-export async function updateProject(formData: FormData): Promise<ActionResult> {
+export async function updateProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
   const user = await getUser(supabase);
 
@@ -165,10 +162,10 @@ export async function updateProject(formData: FormData): Promise<ActionResult> {
   }
 
   revalidateProjects();
-  return { success: true };
+  return { data: true };
 }
 
-export async function deleteProjects(ids: string[]): Promise<ActionResult> {
+export async function deleteProjects(ids: string[]): Promise<ActionResult<true>> {
   const supabase = await createClient();
   const user = await getUser(supabase);
 
@@ -184,5 +181,5 @@ export async function deleteProjects(ids: string[]): Promise<ActionResult> {
   }
 
   revalidateProjects();
-  return { success: true };
+  return { data: true };
 }

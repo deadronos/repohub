@@ -22,8 +22,8 @@ vi.mock('@/utils/actions', () => ({
 }));
 
 function fillRequiredFields() {
-  const titleInput = screen.getByLabelText(/Project Title/i) as HTMLInputElement;
-  const shortDescInput = screen.getByLabelText(/Short Description/i) as HTMLInputElement;
+  const titleInput = screen.getByLabelText(/Project Title/i);
+  const shortDescInput = screen.getByLabelText(/Short Description/i);
 
   fireEvent.input(titleInput, { target: { value: 'My Project' } });
   fireEvent.input(shortDescInput, { target: { value: 'Short desc' } });
@@ -67,7 +67,7 @@ describe('AdminProjectForm Accessibility', () => {
   });
 
   it('submits createProject when no project and calls onComplete on success', async () => {
-    createProjectMock.mockResolvedValue({ success: true });
+    createProjectMock.mockResolvedValue({ data: true });
     getActionErrorMock.mockReturnValue(null);
     const onComplete = vi.fn();
 
@@ -84,7 +84,7 @@ describe('AdminProjectForm Accessibility', () => {
   });
 
   it('submits updateProject when editing and calls onComplete on success', async () => {
-    updateProjectMock.mockResolvedValue({ success: true });
+    updateProjectMock.mockResolvedValue({ data: true });
     getActionErrorMock.mockReturnValue(null);
     const onComplete = vi.fn();
 

@@ -20,12 +20,22 @@
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
+Optional:
+
+- `GITHUB_TOKEN` (GitHub API token; helps avoid rate limits for stats fetching)
+
 Defined in `env.example` and expected in `.env.local`.
 
 ## Local Development
 
 - Install: `npm install`
 - Run: `npm run dev`
+
+## Validation
+
+- Tests: `npm run test` (or `npm run test:coverage`)
+- Typecheck: `npm run typecheck`
+- Lint: `npm run lint`
 
 ## Supabase Setup
 

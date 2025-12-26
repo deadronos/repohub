@@ -167,7 +167,7 @@ describe('AdminDashboard drag ordering', () => {
   });
 
   it('reorders items and persists order on drag end', async () => {
-    updateOrderMock.mockResolvedValue({ success: true });
+    updateOrderMock.mockResolvedValue({ data: true });
     render(<AdminDashboard initialProjects={mockProjects} />);
 
     const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
@@ -188,17 +188,17 @@ describe('AdminDashboard drag ordering', () => {
   });
 
   it('shows saving status and passes disabled=true to sortable while persisting (edge case)', async () => {
-    let resolveOrder: ((value: unknown) => void) | null = null;
-    const pending = new Promise((resolve) => {
+    let resolveOrder: ((value: { data: true }) => void) | null = null;
+    const pending = new Promise<{ data: true }>((resolve) => {
       resolveOrder = resolve;
     });
 
-    updateOrderMock.mockReturnValue(pending as Promise<unknown>);
+    updateOrderMock.mockReturnValue(pending);
     render(<AdminDashboard initialProjects={mockProjects} />);
 
     const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
 
-    await act(async () => {
+    act(() => {
       void latestDndContextProps?.onDragEnd?.(event);
     });
 
@@ -209,14 +209,14 @@ describe('AdminDashboard drag ordering', () => {
     expect(useSortableArgs.some((a) => a.disabled === true)).toBe(true);
 
     await act(async () => {
-      resolveOrder?.({ success: true });
+      resolveOrder?.({ data: true });
       await Promise.resolve();
     });
   });
 
   it('resets saved status back to idle after timeout (edge case)', async () => {
     vi.useFakeTimers();
-    updateOrderMock.mockResolvedValue({ success: true });
+    updateOrderMock.mockResolvedValue({ data: true });
     render(<AdminDashboard initialProjects={mockProjects} />);
 
     const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
@@ -227,7 +227,7 @@ describe('AdminDashboard drag ordering', () => {
 
     expect(screen.getByText('Order saved')).toBeInTheDocument();
 
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(1500);
     });
 
@@ -273,11 +273,15 @@ describe('AdminDashboard drag ordering', () => {
 
   it('does not delete when confirm is cancelled (bad/edge case)', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(false);
-    deleteProjectsMock.mockResolvedValue({ success: true });
+    deleteProjectsMock.mockResolvedValue({ data: true });
     render(<AdminDashboard initialProjects={mockProjects} />);
 
     const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]!);
+    const firstCheckbox = checkboxes[0];
+    if (!firstCheckbox) {
+      throw new Error('Expected at least one checkbox');
+    }
+    fireEvent.click(firstCheckbox);
 
     const deleteButton = screen.getByRole('button', { name: /Delete Selected \(1\)/i });
     fireEvent.click(deleteButton);
@@ -289,11 +293,15 @@ describe('AdminDashboard drag ordering', () => {
 
   it('optimistically deletes selected projects and refreshes on success', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
-    deleteProjectsMock.mockResolvedValue({ success: true });
+    deleteProjectsMock.mockResolvedValue({ data: true });
     render(<AdminDashboard initialProjects={mockProjects} />);
 
     const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]!);
+    const firstCheckbox = checkboxes[0];
+    if (!firstCheckbox) {
+      throw new Error('Expected at least one checkbox');
+    }
+    fireEvent.click(firstCheckbox);
 
     fireEvent.click(screen.getByRole('button', { name: /Delete Selected \(1\)/i }));
 
@@ -315,7 +323,11 @@ describe('AdminDashboard drag ordering', () => {
     render(<AdminDashboard initialProjects={mockProjects} />);
 
     const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]!);
+    const firstCheckbox = checkboxes[0];
+    if (!firstCheckbox) {
+      throw new Error('Expected at least one checkbox');
+    }
+    fireEvent.click(firstCheckbox);
 
     fireEvent.click(screen.getByRole('button', { name: /Delete Selected \(1\)/i }));
 
