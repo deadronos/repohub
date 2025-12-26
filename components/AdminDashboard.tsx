@@ -72,6 +72,7 @@ function AdminProjectCard({
           <button
             type="button"
             onClick={onEdit}
+            aria-label={`Edit ${project.title}`}
             className="absolute top-3 right-3 z-20 p-2 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cyan-600"
           >
             <Edit2 size={16} />
@@ -385,6 +386,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
           <div className="bg-[#0a0a0f] border border-zinc-800 w-full max-w-3xl rounded-2xl p-8 max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(0,0,0,0.8)]">
             <button
               onClick={closeForm}
+              aria-label="Close project form"
               className="absolute top-4 right-4 text-zinc-500 hover:text-white"
             >
               <X size={24} />

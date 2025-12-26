@@ -1,9 +1,9 @@
-import { listProjects } from '@/utils/projects/queries';
+import { getCachedProjects } from '@/utils/projects/queries';
 import ProjectGallery from '@/components/ProjectGallery';
 import HeroHeader from '@/components/HeroHeader';
 
 export default async function Home() {
-  const projects = await listProjects();
+  const projects = await getCachedProjects();
 
   return (
     <main className="min-h-screen p-8 md:p-12 relative overflow-hidden">
