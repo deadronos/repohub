@@ -19,6 +19,7 @@
 - Extract admin form and particle logic into focused components.
 - Keep UI behavior, Supabase patterns, and routes unchanged.
 - Preserve revalidation behavior for `/` and `/admin`.
+- Standardize server action return shapes to reduce client-side ambiguity.
 
 ## Non-Goals
 
@@ -32,7 +33,14 @@
 
 - `app/actions/auth.ts`: authentication flow only.
 - `app/actions/projects.ts`: create/update/delete project actions.
+- `app/actions/github.ts`: GitHub stats server action.
 - `utils/actions.ts`: type-safe error extraction for client usage.
+
+Server actions share a common return shape:
+
+```ts
+export type ActionResult<T> = { data: T } | { error: string };
+```
 
 ### Project Helpers
 
@@ -45,6 +53,13 @@
   - `uploadProjectImage` for uploads + public URL creation.
 - `utils/projects/queries.ts`
   - `listProjects` for the ordered list query used by `/` and `/admin`.
+  - `getCachedProjects` for cached home-page reads (Next `unstable_cache`).
+
+- `utils/projects/constants.ts`
+  - Centralized identifiers: table/bucket/cache-tag.
+
+- `utils/projects/order.ts`
+  - `validateProjectOrder` for drag-reorder input validation.
 
 ### UI Extraction
 
@@ -81,5 +96,5 @@ flowchart TD
 
 ## Follow-Ups (Optional)
 
-- Consider a typed action result wrapper (shared union) once Next typed server
-  actions are stable for client usage.
+- Add explicit `DELETE` policy in Supabase RLS if deletes fail.
+- Consider schema validation (zod) for FormData and structured UI errors.

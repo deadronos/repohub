@@ -21,6 +21,10 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 - Added `getActionError` to safely read server action errors in client code; lint and typecheck now pass.
 - Standardized server action return shape via `ActionResult<T>` and centralized project identifiers in `utils/projects/constants.ts`.
 - Extracted shared UI helpers to reduce duplication: `ProjectTags`, `ProjectImage`, `useEscapeKey`, and `useIsMountedRef`.
+- Added shared formatting helpers (`utils/format.ts`) and migrated GitHub stats UI to use them.
+- Added GitHub repo URL parsing/normalization (`utils/github-url.ts`) and normalized URLs before caching/fetching stats.
+- Added a Supabase “static” client (`utils/supabase/static.ts`) for cached home-page reads.
+- Extracted particle generation/frame logic into `utils/particles.ts` with unit tests.
 
 ## Next Steps
 
