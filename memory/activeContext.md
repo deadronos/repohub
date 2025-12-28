@@ -1,6 +1,6 @@
 # Active Context
 
-**Updated:** 2025-12-26
+**Updated:** 2025-12-28
 
 ## Current Focus
 
@@ -25,6 +25,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 - Added GitHub repo URL parsing/normalization (`utils/github-url.ts`) and normalized URLs before caching/fetching stats.
 - Added a Supabase “static” client (`utils/supabase/static.ts`) for cached home-page reads.
 - Extracted particle generation/frame logic into `utils/particles.ts` with unit tests.
+- Added client-side image optimization for the 500 KB Supabase Storage bucket limit and surfaced actionable upload errors end-to-end (DES005/TASK007).
 
 ## Next Steps
 
