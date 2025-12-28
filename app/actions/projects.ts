@@ -58,7 +58,12 @@ export async function createProject(formData: FormData): Promise<ActionResult<tr
     return { error: validationErrors.join(', ') };
   }
 
-  const imageUrl = await uploadProjectImage(supabase, parsed.imageFile);
+  const imageUpload = await uploadProjectImage(supabase, parsed.imageFile);
+  if ('error' in imageUpload) {
+    return { error: imageUpload.error };
+  }
+
+  const imageUrl = imageUpload.data;
   const tags = parsed.tags.length > 0 ? parsed.tags : null;
   const sortOrder = await getNextSortOrder(supabase);
 
@@ -140,7 +145,12 @@ export async function updateProject(formData: FormData): Promise<ActionResult<tr
     return { error: validationErrors.join(', ') };
   }
 
-  const imageUrl = await uploadProjectImage(supabase, parsed.imageFile);
+  const imageUpload = await uploadProjectImage(supabase, parsed.imageFile);
+  if ('error' in imageUpload) {
+    return { error: imageUpload.error };
+  }
+
+  const imageUrl = imageUpload.data;
   const tags = parsed.tags.length > 0 ? parsed.tags : null;
 
   const { error } = await supabase
