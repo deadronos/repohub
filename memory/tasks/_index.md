@@ -8,7 +8,7 @@ categories: ["Engineering"]
 tags: ["tasks", "memory"]
 ai_note: "Updated by AI."
 summary: "Index of project tasks and statuses."
-post_date: "2025-12-18"
+post_date: "2025-12-28"
 ---
 
 # Tasks Index
@@ -26,5 +26,6 @@ post_date: "2025-12-18"
 - [TASK003] Page load improvements - Lazy-load particle background; split ProjectGallery (2025-12-18)
 - [TASK004] Actions clustering and documentation backfill (2025-12-18)
 - [TASK006] Shared UI + GitHub normalization refactor docs (2025-12-26)
+- [TASK007] Client image compression for 500 KB Supabase Storage limit (2025-12-28)
 
 ## Abandoned

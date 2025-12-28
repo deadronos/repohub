@@ -1,6 +1,6 @@
 # Progress
 
-**Updated:** 2025-12-26
+**Updated:** 2025-12-28
 
 ## What Works
 
@@ -10,7 +10,7 @@
 - Supabase SSR client wiring (server, browser, middleware) is in place.
 - Route protection logic exists for `/admin` (redirect to `/login` when unauthenticated).
 - Admin dashboard supports create/update/delete flows.
-- Image uploads store to Supabase Storage and render via Next Image.
+- Image uploads store to Supabase Storage and render via Next Image (with client-side optimization to meet the 500 KB bucket limit).
 - Project actions share helpers for form parsing/validation, storage uploads, and revalidation.
 - Projects are ordered by `sort_order` and can be re-ordered in admin (persisted via a Supabase SQL function).
 - Home page project reads are cached with Next `unstable_cache` using a Supabase “static” client.
@@ -23,7 +23,7 @@
 
 - Authorization beyond “authenticated”: no admin role enforcement.
 - Database policies in Supabase must match app expectations (not fully guaranteed by repo SQL).
-- Error UX: server actions mostly `console.error` and return generic errors.
+- Error UX: mostly generic, but image upload failures now return actionable errors instead of silently failing.
 
 ## Known Issues
 
