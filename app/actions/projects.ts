@@ -15,10 +15,15 @@ const revalidateProjects = () => {
   revalidatePath('/admin');
 };
 
-const getUser = async (supabase: SupabaseClient) => {
+const ensureUser = async (supabase: SupabaseClient, shouldRedirect = false) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user && shouldRedirect) {
+    redirect('/login');
+  }
+
   return user;
 };
 
@@ -41,11 +46,7 @@ const getNextSortOrder = async (supabase: SupabaseClient): Promise<number> => {
 
 export async function createProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const user = await getUser(supabase);
-
-  if (!user) {
-    redirect('/login');
-  }
+  await ensureUser(supabase, true);
 
   const parsed = parseProjectFormData(formData);
   const validationErrors = validateProjectInput({
@@ -90,7 +91,7 @@ export async function createProject(formData: FormData): Promise<ActionResult<tr
 
 export async function updateProjectOrder(orderedIds: string[]): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const user = await getUser(supabase);
+  const user = await ensureUser(supabase);
 
   if (!user) {
     return { error: 'Unauthorized' };
@@ -124,7 +125,7 @@ export async function updateProjectOrder(orderedIds: string[]): Promise<ActionRe
 
 export async function updateProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const user = await getUser(supabase);
+  const user = await ensureUser(supabase);
 
   if (!user) {
     return { error: 'Unauthorized' };
@@ -177,7 +178,7 @@ export async function updateProject(formData: FormData): Promise<ActionResult<tr
 
 export async function deleteProjects(ids: string[]): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const user = await getUser(supabase);
+  const user = await ensureUser(supabase);
 
   if (!user) {
     return { error: 'Unauthorized' };
