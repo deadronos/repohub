@@ -13,6 +13,9 @@ import {
   PROJECT_IMAGE_TARGET_BYTES,
 } from '@/utils/projects/image-limits';
 
+const INPUT_CLASS =
+  'p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none';
+
 type ProjectFormProps = {
   project?: Project | null;
   onComplete: () => void;
@@ -205,7 +208,7 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
             defaultValue={project?.title}
             required
             placeholder="e.g. AI Portfolio"
-            className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
+            className={INPUT_CLASS}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -218,7 +221,7 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
             defaultValue={project?.short_description || ''}
             required
             placeholder="Brief overview for the card..."
-            className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
+            className={INPUT_CLASS}
           />
         </div>
       </div>
@@ -231,7 +234,7 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
           defaultValue={project?.description || ''}
           rows={4}
           placeholder="Detailed project explanation..."
-          className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
+          className={INPUT_CLASS}
         />
       </div>
 
@@ -244,7 +247,7 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
             defaultValue={project?.repo_url || ''}
             type="url"
             placeholder="https://github.com/..."
-            className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
+            className={INPUT_CLASS}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -255,7 +258,7 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
             defaultValue={project?.demo_url || ''}
             type="url"
             placeholder="https://..."
-            className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
+            className={INPUT_CLASS}
           />
         </div>
       </div>
@@ -267,7 +270,7 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
           name="tags"
           defaultValue={project?.tags?.join(', ') || ''}
           placeholder="Next.js, TypeScript, AI"
-          className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none"
+          className={INPUT_CLASS}
         />
       </div>
 
