@@ -1,5 +1,7 @@
 export type GitHubRepoMeta = { owner: string; repo: string };
 
+import { safeParseUrl } from '@/utils/url';
+
 type ParsedUrl = {
   hostname: string;
   pathname: string;
@@ -17,12 +19,11 @@ function parseLooseUrl(input: string): ParsedUrl | null {
     return { hostname: 'github.com', pathname: `/${scpLike.groups.path}` };
   }
 
-  try {
-    const url = new URL(trimmed);
-    return { hostname: url.hostname, pathname: url.pathname };
-  } catch {
+  const url = safeParseUrl(trimmed);
+  if (!url) {
     return null;
   }
+  return { hostname: url.hostname, pathname: url.pathname };
 }
 
 export function parseGitHubUrl(url: string): GitHubRepoMeta | null {

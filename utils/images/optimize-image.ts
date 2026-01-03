@@ -130,7 +130,8 @@ async function canvasToBlob(
     const dataUrl = canvas.toDataURL(type, quality);
     const response = await fetch(dataUrl);
     return await response.blob();
-  } catch {
+  } catch (error) {
+    console.error('Failed to convert canvas to blob:', error);
     return null;
   }
 }

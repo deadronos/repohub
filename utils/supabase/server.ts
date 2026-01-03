@@ -17,10 +17,13 @@ export async function createClient() {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options),
             );
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
+          } catch (error) {
+            if (process.env.NODE_ENV === 'development') {
+              console.warn(
+                'Ignored Supabase cookie set attempt from Server Component (this is expected behavior in Server Components):',
+                error,
+              );
+            }
           }
         },
       },
