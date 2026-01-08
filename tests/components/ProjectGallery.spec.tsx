@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ProjectGallery from '@/components/ProjectGallery';
 import type { Project } from '@/types';
+import type { ComponentType, CSSProperties, ReactElement } from 'react';
 
 // Mock GitHubStatsDisplay
 vi.mock('@/components/GitHubStats', () => ({
@@ -17,11 +18,35 @@ vi.mock('framer-motion', async (importOriginal) => {
   };
 });
 
+// Types for mocked components
+type MockCellProps = {
+  columnIndex: number;
+  rowIndex: number;
+  style: CSSProperties;
+  projects: Project[];
+  columns: number;
+  onProjectClick: (id: string) => void;
+  gap: number;
+};
+
+type MockGridProps = {
+  cellComponent: ComponentType<MockCellProps>;
+  columnCount: number;
+  rowCount: number;
+  cellProps: {
+    projects: Project[];
+    columns: number;
+    onProjectClick: (id: string) => void;
+    gap: number;
+  };
+  style: CSSProperties;
+};
+
 // Mock react-window and AutoSizer for v2
 vi.mock('react-window', () => ({
-  Grid: ({ cellComponent: Cell, columnCount, rowCount, cellProps, style }: any) => {
+  Grid: ({ cellComponent: Cell, columnCount, rowCount, cellProps, style }: MockGridProps) => {
     // Render all cells
-    const cells = [];
+    const cells: ReactElement[] = [];
     for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
       for (let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
          const index = rowIndex * columnCount + columnIndex;
@@ -42,8 +67,13 @@ vi.mock('react-window', () => ({
   },
 }));
 
+type AutoSizerRenderProp = (size: { height: number; width: number }) => ReactElement | null;
+type MockAutoSizerProps = {
+  renderProp: AutoSizerRenderProp;
+};
+
 vi.mock('react-virtualized-auto-sizer', () => ({
-  AutoSizer: ({ renderProp }: any) => {
+  AutoSizer: ({ renderProp }: MockAutoSizerProps) => {
       // Execute renderProp with fixed dimensions
       return renderProp({ height: 800, width: 1200 });
   },
