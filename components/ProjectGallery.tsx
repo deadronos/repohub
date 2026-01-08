@@ -37,7 +37,8 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
     const index = rowIndex * columns + columnIndex;
 
     if (index >= projects.length) {
-      return null;
+      // Must return a ReactElement, null is not allowed by react-window types
+      return <div style={style} />;
     }
 
     const project = projects[index];
@@ -61,7 +62,9 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
         <AutoSizer renderProp={({ height, width }) => {
             // AutoSizer passes undefined height/width initially during SSR/first render
             if (height === undefined || width === undefined) {
-                return null;
+                // Return a placeholder or null (but AutoSizer expects Node)
+                // Returning null here is usually fine for React
+                return <div style={{ height: 800, width: '100%' }} />;
             }
 
             let columns = 1;
