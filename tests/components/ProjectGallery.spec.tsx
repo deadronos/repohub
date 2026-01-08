@@ -1,13 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ProjectGallery from '@/components/ProjectGallery';
+import type { Project } from '@/types';
 
 // Mock GitHubStatsDisplay
 vi.mock('@/components/GitHubStats', () => ({
   default: () => <div data-testid="github-stats-mock" />,
 }));
 
-// Mock AnimatePresence to remove exit animations so components unmount immediately in tests
+// Mock framer-motion AnimatePresence
 vi.mock('framer-motion', async (importOriginal) => {
   const actual = await importOriginal<typeof import('framer-motion')>();
   return {
@@ -15,7 +16,39 @@ vi.mock('framer-motion', async (importOriginal) => {
     AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   };
 });
-import type { Project } from '@/types';
+
+// Mock react-window and AutoSizer for v2
+vi.mock('react-window', () => ({
+  Grid: ({ cellComponent: Cell, columnCount, rowCount, cellProps, style }: any) => {
+    // Render all cells
+    const cells = [];
+    for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+      for (let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+         const index = rowIndex * columnCount + columnIndex;
+         if (index < cellProps.projects.length) {
+            cells.push(
+               <Cell
+                 key={`${rowIndex}-${columnIndex}`}
+                 columnIndex={columnIndex}
+                 rowIndex={rowIndex}
+                 style={{ width: 100, height: 100, ...style }}
+                 {...cellProps}
+               />
+            );
+         }
+      }
+    }
+    return <div data-testid="virtual-grid-mock">{cells}</div>;
+  },
+}));
+
+vi.mock('react-virtualized-auto-sizer', () => ({
+  AutoSizer: ({ renderProp }: any) => {
+      // Execute renderProp with fixed dimensions
+      return renderProp({ height: 800, width: 1200 });
+  },
+}));
+
 
 const mockProjects: Project[] = [
   {
@@ -49,14 +82,14 @@ const mockProjects: Project[] = [
 describe('ProjectGallery Component', () => {
   it('renders a list of projects', () => {
     render(<ProjectGallery projects={mockProjects} />);
-    
+
     expect(screen.getByText('Project One')).toBeInTheDocument();
     expect(screen.getByText('Project Two')).toBeInTheDocument();
   });
 
   it('renders tags correctly capitalized', () => {
     render(<ProjectGallery projects={mockProjects} />);
-    
+
     expect(screen.getByText('React')).toBeInTheDocument();
     expect(screen.getByText('Nextjs')).toBeInTheDocument();
     expect(screen.getByText('Typescript')).toBeInTheDocument();
@@ -64,16 +97,11 @@ describe('ProjectGallery Component', () => {
 
   it('opens modal when a project is clicked', () => {
     render(<ProjectGallery projects={mockProjects} />);
-    
-    // Framer motion makes direct click simulation tricky sometimes, but clicking the text usually works for accessibility
+
     fireEvent.click(screen.getByText('Project One'));
 
-    // Check for modal content (longer description)
     expect(screen.getByText('A longer description for project one.')).toBeInTheDocument();
   });
-  
-  // Note: Closing the modal might be harder to test if it relies on AnimatePresence exit animations 
-  // without complex setup, but we can try checking if the content disappears or close button click.
 
   it('cards are accessible with keyboard', () => {
     render(<ProjectGallery projects={mockProjects} />);
@@ -95,7 +123,6 @@ describe('ProjectGallery Component', () => {
   it('modal close button has aria-label', () => {
     render(<ProjectGallery projects={mockProjects} />);
 
-    // Open modal first
     const card = screen.getAllByRole('button')[0];
     fireEvent.click(card);
 
@@ -106,7 +133,6 @@ describe('ProjectGallery Component', () => {
   it('images have correct sizes attribute for performance', () => {
     render(<ProjectGallery projects={mockProjects} />);
 
-    // Find image by alt text. There might be multiple if duplicates exist, but here Project One is unique in the list.
     const img = screen.getByAltText('Project One');
     expect(img).toHaveAttribute('sizes', '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw');
   });
@@ -115,9 +141,7 @@ describe('ProjectGallery Component', () => {
     render(<ProjectGallery projects={mockProjects} />);
     fireEvent.click(screen.getByText('Project One'));
 
-    // Both the grid item and modal item have the same alt text
     const images = screen.getAllByAltText('Project One');
-    // The modal is rendered last
     const modalImg = images[images.length - 1];
 
     expect(modalImg).toHaveAttribute('sizes', '(max-width: 768px) 100vw, 672px');
