@@ -26,16 +26,21 @@ create policy "Users can insert their own projects"
   on projects for insert
   to authenticated
   with check ( true );
-  
+
 create policy "Users can update their own projects"
   on projects for update
   to authenticated
   using ( true );
 
+create policy "Users can delete their own projects"
+  on projects for delete
+  to authenticated
+  using ( true );
+
 -- 5. Storage Policies (Run these AFTER creating a 'projects' bucket in the Storage dashboard)
 -- Make the 'projects' bucket PUBLIC:
-create policy "Public Access" 
-  on storage.objects for select 
+create policy "Public Access"
+  on storage.objects for select
   using ( bucket_id = 'projects' );
 
 -- Allow authenticated users (you) to upload:
