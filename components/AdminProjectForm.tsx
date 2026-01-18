@@ -5,7 +5,7 @@ import type { Project } from '@/types';
 import { createProject, updateProject } from '@/app/actions/projects';
 import { Upload } from 'lucide-react';
 import { getActionError } from '@/utils/actions';
-import { formatBytes } from '@/utils/format-bytes';
+import { formatBytes } from '@/utils/format';
 import { optimizeImageToUnderBytes, ImageOptimizationError } from '@/utils/images/optimize-image';
 import {
   PROJECT_IMAGE_MAX_BYTES,

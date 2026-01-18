@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { sanitizeFilename } from '@/utils/string';
 import { PROJECTS_BUCKET } from '@/utils/projects/constants';
 import { PROJECT_IMAGE_MAX_BYTES } from '@/utils/projects/image-limits';
-import { formatBytes } from '@/utils/format-bytes';
+import { formatBytes } from '@/utils/format';
 import { formatError, type ActionResult } from '@/utils/actions';
 
 const isLikelyPayloadTooLarge = (error: unknown): boolean => {
