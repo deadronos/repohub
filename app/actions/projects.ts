@@ -1,9 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
+import { ensureUser } from '@/utils/supabase/auth';
 import { parseProjectFormData, validateProjectInput } from '@/utils/projects/form';
 import { validateProjectOrder } from '@/utils/projects/order';
 import { uploadProjectImage } from '@/utils/projects/storage';
@@ -13,18 +13,6 @@ import { PROJECTS_TABLE } from '@/utils/projects/constants';
 const revalidateProjects = () => {
   revalidatePath('/');
   revalidatePath('/admin');
-};
-
-const ensureUser = async (supabase: SupabaseClient, shouldRedirect = false) => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user && shouldRedirect) {
-    redirect('/login');
-  }
-
-  return user;
 };
 
 const getNextSortOrder = async (supabase: SupabaseClient): Promise<number> => {
