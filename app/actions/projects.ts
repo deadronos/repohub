@@ -1,36 +1,14 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
-import { ensureUser } from '@/utils/supabase/auth';
+import { ensureUser, requireUserOrUnauthorized } from '@/utils/supabase/auth';
 import { parseProjectFormData, validateProjectInput } from '@/utils/projects/form';
 import { validateProjectOrder } from '@/utils/projects/order';
+import { getNextProjectSortOrder } from '@/utils/projects/sort-order';
 import { uploadProjectImage } from '@/utils/projects/storage';
+import { revalidateProjects } from '@/utils/projects/revalidate';
 import { formatError, type ActionResult } from '@/utils/actions';
 import { PROJECTS_TABLE } from '@/utils/projects/constants';
-
-const revalidateProjects = () => {
-  revalidatePath('/');
-  revalidatePath('/admin');
-};
-
-const getNextSortOrder = async (supabase: SupabaseClient): Promise<number> => {
-  const { data, error } = await supabase
-    .from(PROJECTS_TABLE)
-    .select('sort_order')
-    .order('sort_order', { ascending: false })
-    .limit(1)
-    .returns<{ sort_order: number }[]>();
-
-  if (error) {
-    console.error('Failed to fetch sort order:', error);
-    return 1;
-  }
-
-  const currentMax = data?.[0]?.sort_order ?? 0;
-  return currentMax + 1;
-};
 
 export async function createProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
@@ -54,7 +32,7 @@ export async function createProject(formData: FormData): Promise<ActionResult<tr
 
   const imageUrl = imageUpload.data;
   const tags = parsed.tags.length > 0 ? parsed.tags : null;
-  const sortOrder = await getNextSortOrder(supabase);
+  const sortOrder = await getNextProjectSortOrder(supabase);
 
   const { error } = await supabase.from(PROJECTS_TABLE).insert({
     title: parsed.title,
@@ -79,10 +57,9 @@ export async function createProject(formData: FormData): Promise<ActionResult<tr
 
 export async function updateProjectOrder(orderedIds: string[]): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const user = await ensureUser(supabase);
-
-  if (!user) {
-    return { error: 'Unauthorized' };
+  const userResult = await requireUserOrUnauthorized(supabase);
+  if ('error' in userResult) {
+    return userResult;
   }
 
   const validationError = validateProjectOrder(orderedIds);
@@ -113,10 +90,9 @@ export async function updateProjectOrder(orderedIds: string[]): Promise<ActionRe
 
 export async function updateProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const user = await ensureUser(supabase);
-
-  if (!user) {
-    return { error: 'Unauthorized' };
+  const userResult = await requireUserOrUnauthorized(supabase);
+  if ('error' in userResult) {
+    return userResult;
   }
 
   const parsed = parseProjectFormData(formData);
@@ -166,10 +142,9 @@ export async function updateProject(formData: FormData): Promise<ActionResult<tr
 
 export async function deleteProjects(ids: string[]): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const user = await ensureUser(supabase);
-
-  if (!user) {
-    return { error: 'Unauthorized' };
+  const userResult = await requireUserOrUnauthorized(supabase);
+  if ('error' in userResult) {
+    return userResult;
   }
 
   const { error } = await supabase.from(PROJECTS_TABLE).delete().in('id', ids);

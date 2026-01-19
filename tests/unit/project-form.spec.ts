@@ -1,21 +1,24 @@
 import { describe, it, expect } from 'vitest';
 import {
-  normalizeTags,
+  parseTagsFromCsv,
   parseProjectFormData,
   validateProjectInput,
 } from '@/utils/projects/form';
 
 describe('Project Form Utils', () => {
-  describe('normalizeTags', () => {
+  describe('parseTagsFromCsv', () => {
     it('should return empty array for empty input', () => {
-      expect(normalizeTags()).toEqual([]);
+      expect(parseTagsFromCsv()).toEqual([]);
     });
 
     it('should trim and filter tag values', () => {
-      expect(normalizeTags('Next.js, TypeScript, , AI')).toEqual(['Next.js', 'TypeScript', 'AI']);
+      expect(parseTagsFromCsv('Next.js, TypeScript, , AI')).toEqual([
+        'Next.js',
+        'TypeScript',
+        'AI',
+      ]);
     });
   });
-
 
   describe('validateProjectInput', () => {
     it('should return empty array for valid input', () => {
@@ -39,15 +42,15 @@ describe('Project Form Utils', () => {
     });
 
     it('should fail if repo_url is invalid', () => {
-      expect(
-        validateProjectInput({ title: 'Test', repoUrl: 'javascript:alert(1)' }),
-      ).toContain('Invalid Repository URL');
+      expect(validateProjectInput({ title: 'Test', repoUrl: 'javascript:alert(1)' })).toContain(
+        'Invalid Repository URL',
+      );
     });
 
     it('should fail if demo_url is invalid', () => {
-      expect(
-        validateProjectInput({ title: 'Test', demoUrl: 'javascript:alert(1)' }),
-      ).toContain('Invalid Demo URL');
+      expect(validateProjectInput({ title: 'Test', demoUrl: 'javascript:alert(1)' })).toContain(
+        'Invalid Demo URL',
+      );
     });
 
     it('should pass if optional urls are empty', () => {
