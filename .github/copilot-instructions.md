@@ -11,7 +11,7 @@
 - **Admin route protection**: `middleware.ts` delegates to `utils/supabase/middleware.ts`.
   - `updateSession()` refreshes cookies and redirects `/admin*` → `/login` when no user.
   - Avoid adding logic between `createServerClient()` and `supabase.auth.getUser()` (see warning in `utils/supabase/middleware.ts`).
-- **Mutations**: use Next **Server Actions** in `app/actions.ts` (`'use server'`).
+- **Mutations**: use Next **Server Actions** in `app/actions/*` (`'use server'`).
   - After writes, call `revalidatePath('/')` and `revalidatePath('/admin')` (current behavior).
   - Image uploads go to Storage bucket `projects` and persist the public URL into `projects.image_url`.
 
@@ -32,8 +32,8 @@
 ## Dev workflows
 
 - Run locally: `npm run dev`
-- Validate: `npm run lint` and `npm run build`
-- No test runner is set up in this repo currently.
+- Validate (canonical): `npm run test && npm run lint && npm run typecheck` and `npm run build`
+  - Shortcut: `npm run check` (runs test + lint + typecheck)
 
 ## Repo docs
 
