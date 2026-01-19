@@ -26,6 +26,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 - Added a Supabase “static” client (`utils/supabase/static.ts`) for cached home-page reads.
 - Extracted particle generation/frame logic into `utils/particles.ts` with unit tests.
 - Added client-side image optimization for the 500 KB Supabase Storage bucket limit and surfaced actionable upload errors end-to-end (DES005/TASK007).
+- Refactored duplicate project helpers: CSV tag parsing now delegates to shared tag normalization, project revalidation moved to a helper, auth checks centralized for server actions, and project sort-order logic extracted.
 
 ## Next Steps
 

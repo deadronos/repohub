@@ -1,6 +1,7 @@
 import { isValidUrl } from '@/utils/validation';
 import { getFormString } from '@/utils/form';
 import { normalizeGitHubRepoUrl } from '@/utils/github-url';
+import { normalizeTags as normalizeProjectTags } from '@/utils/projects/tags';
 
 export interface ProjectInput {
   title: string;
@@ -20,12 +21,9 @@ export type ProjectFormData = {
   current_image_url: string;
 };
 
-export function normalizeTags(tagsValue?: string | null): string[] {
+export function parseTagsFromCsv(tagsValue?: string | null): string[] {
   if (!tagsValue) return [];
-  return tagsValue
-    .split(',')
-    .map((tag) => tag.trim())
-    .filter(Boolean);
+  return normalizeProjectTags(tagsValue.split(','));
 }
 
 export function parseProjectFormData(formData: FormData): ProjectFormData {
@@ -40,7 +38,7 @@ export function parseProjectFormData(formData: FormData): ProjectFormData {
     description: getFormString(formData, 'description'),
     repo_url: normalizedRepoUrl ?? repoUrl,
     demo_url: getFormString(formData, 'demo_url'),
-    tags: normalizeTags(getFormString(formData, 'tags')),
+    tags: parseTagsFromCsv(getFormString(formData, 'tags')),
     imageFile: imageEntry instanceof File ? imageEntry : null,
     current_image_url: getFormString(formData, 'current_image_url'),
   };
