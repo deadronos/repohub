@@ -6,6 +6,7 @@ import { truncate } from '@/utils/string';
 import GitHubStatsDisplay from '@/components/GitHubStats';
 import ProjectImage from '@/components/projects/ProjectImage';
 import ProjectTags from '@/components/projects/ProjectTags';
+import { PROJECT_CARD_IMAGE_SIZES } from '@/components/projects/imageSizes';
 
 type ProjectCardProps = {
   project: Project;
@@ -34,7 +35,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
         <ProjectImage
           imageUrl={project.image_url}
           alt={project.title}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes={PROJECT_CARD_IMAGE_SIZES}
           className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 grayscale group-hover:grayscale-0"
         />
         <div className="absolute inset-0 bg-linear-to-t from-[#050510] via-[#050510]/40 to-transparent" />
@@ -60,4 +61,3 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
     </motion.div>
   );
 }
-

@@ -5,6 +5,7 @@ import type { Project } from '@/types';
 import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
 import type { DragEndEvent } from '@dnd-kit/core';
 import type { ReactNode } from 'react';
+import { makeProject } from '@/tests/fixtures/project';
 
 let useSortableArgs: Array<{ id: string; disabled?: boolean }> = [];
 
@@ -73,20 +74,8 @@ vi.mock('@dnd-kit/utilities', () => ({
 }));
 
 const mockProjects: Project[] = [
-  {
-    id: '1',
-    title: 'Project One',
-    short_description: 'First project description.',
-    description: 'Details for project one.',
-    tags: ['react'],
-    image_url: '/test-image.jpg',
-    created_at: '2023-01-01T00:00:00Z',
-    sort_order: 1,
-    demo_url: 'https://demo.com',
-    repo_url: 'https://github.com/repo',
-    is_featured: false,
-  },
-  {
+  makeProject(),
+  makeProject({
     id: '2',
     title: 'Project Two',
     short_description: 'Second project description.',
@@ -97,8 +86,7 @@ const mockProjects: Project[] = [
     sort_order: 2,
     demo_url: null,
     repo_url: null,
-    is_featured: false,
-  },
+  }),
 ];
 
 describe('AdminDashboard drag ordering', () => {
@@ -124,7 +112,7 @@ describe('AdminDashboard drag ordering', () => {
   it('renders fallbacks for missing image and tags', () => {
     const projects: Project[] = [
       ...mockProjects,
-      {
+      makeProject({
         id: '3',
         title: 'Project Three',
         short_description: 'Third',
@@ -135,8 +123,7 @@ describe('AdminDashboard drag ordering', () => {
         sort_order: 3,
         demo_url: null,
         repo_url: null,
-        is_featured: false,
-      },
+      }),
     ];
 
     render(<AdminDashboard initialProjects={projects} />);

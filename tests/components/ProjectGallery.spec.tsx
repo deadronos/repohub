@@ -3,6 +3,8 @@ import { describe, it, expect, vi } from 'vitest';
 import ProjectGallery from '@/components/ProjectGallery';
 import type { Project } from '@/types';
 import type { ComponentType, CSSProperties, ReactElement } from 'react';
+import { PROJECT_CARD_IMAGE_SIZES, PROJECT_MODAL_IMAGE_SIZES } from '@/components/projects/imageSizes';
+import { makeProject } from '@/tests/fixtures/project';
 
 // Mock GitHubStatsDisplay
 vi.mock('@/components/GitHubStats', () => ({
@@ -81,20 +83,12 @@ vi.mock('react-virtualized-auto-sizer', () => ({
 
 
 const mockProjects: Project[] = [
-  {
-    id: '1',
-    title: 'Project One',
+  makeProject({
     short_description: 'A short description for project one.',
     description: 'A longer description for project one.',
     tags: ['react', 'nextjs'],
-    image_url: '/test-image.jpg',
-    created_at: '2023-01-01T00:00:00Z',
-    sort_order: 1,
-    demo_url: 'https://demo.com',
-    repo_url: 'https://github.com/repo',
-    is_featured: false,
-  },
-  {
+  }),
+  makeProject({
     id: '2',
     title: 'Project Two',
     short_description: 'Description two.',
@@ -105,8 +99,7 @@ const mockProjects: Project[] = [
     sort_order: 2,
     demo_url: null,
     repo_url: null,
-    is_featured: false,
-  },
+  }),
 ];
 
 describe('ProjectGallery Component', () => {
@@ -164,7 +157,7 @@ describe('ProjectGallery Component', () => {
     render(<ProjectGallery projects={mockProjects} />);
 
     const img = screen.getByAltText('Project One');
-    expect(img).toHaveAttribute('sizes', '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw');
+    expect(img).toHaveAttribute('sizes', PROJECT_CARD_IMAGE_SIZES);
   });
 
   it('modal image has correct sizes attribute', () => {
@@ -174,7 +167,7 @@ describe('ProjectGallery Component', () => {
     const images = screen.getAllByAltText('Project One');
     const modalImg = images[images.length - 1];
 
-    expect(modalImg).toHaveAttribute('sizes', '(max-width: 768px) 100vw, 672px');
+    expect(modalImg).toHaveAttribute('sizes', PROJECT_MODAL_IMAGE_SIZES);
   });
 
   it('closes modal on Escape key', async () => {

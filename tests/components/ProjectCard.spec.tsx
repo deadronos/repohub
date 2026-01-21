@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ProjectCard from '@/components/ProjectCard';
 import type { Project } from '@/types';
+import { makeProject } from '@/tests/fixtures/project';
 
 vi.mock('framer-motion', () => ({
   motion: {
@@ -32,19 +33,16 @@ vi.mock('next/image', () => ({
 }));
 
 describe('ProjectCard component', () => {
-  const baseProject: Project = {
+  const baseProject: Project = makeProject({
     id: 'p1',
     title: 'My Project',
     short_description: 'Short',
     description: 'Long',
     tags: ['react', 'nextjs', 'vitest', 'extra'],
     image_url: null,
-    created_at: '2023-01-01T00:00:00Z',
-    sort_order: 1,
     demo_url: null,
     repo_url: null,
-    is_featured: false,
-  };
+  });
 
   it('invokes onClick for Enter and Space key', () => {
     const onClick = vi.fn();
