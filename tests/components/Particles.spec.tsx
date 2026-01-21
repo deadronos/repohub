@@ -1,82 +1,25 @@
-import React from 'react';
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Particles from '@/components/particles/Particles';
+import {
+  getLatestFrameCb,
+  getLatestPointsInstance,
+  resetReactThreeMocks,
+} from '@/tests/helpers/reactThreeMocks';
 
-type FrameState = {
-  pointer: { x: number; y: number };
-  clock: { getElapsedTime: () => number };
-};
-
-type PointsInstance = {
-  geometry: {
-    attributes: {
-      position: {
-        array: Float32Array;
-        needsUpdate: boolean;
-      };
-    };
-  };
-  rotation: { x: number; y: number };
-};
-
-let latestFrameCb: ((state: FrameState) => void) | null = null;
-let latestPointsInstance: PointsInstance | null = null;
-
-vi.mock('@react-three/fiber', () => ({
-  useFrame: (cb: (state: FrameState) => void) => {
-    latestFrameCb = cb;
-  },
-}));
+vi.mock('@react-three/fiber', async () => {
+  const { createFiberUseFrameMock } = await import('@/tests/helpers/reactThreeMocks');
+  return createFiberUseFrameMock();
+});
 
 vi.mock('@react-three/drei', async () => {
-  const actualReact = await import('react');
-
-  const Points = actualReact.forwardRef(
-    (
-      {
-        children,
-        positions,
-      }: {
-        children: React.ReactNode;
-        positions: Float32Array;
-      },
-      ref: React.ForwardedRef<PointsInstance>,
-    ) => {
-      latestPointsInstance = {
-        geometry: {
-          attributes: {
-            position: {
-              array: positions,
-              needsUpdate: false,
-            },
-          },
-        },
-        rotation: { x: 0, y: 0 },
-      };
-
-      if (typeof ref === 'function') {
-        ref(latestPointsInstance);
-      } else if (ref) {
-        (ref as React.MutableRefObject<PointsInstance | null>).current = latestPointsInstance;
-      }
-
-      return <div data-testid="points">{children}</div>;
-    },
-  );
-
-  const PointMaterial = () => <div data-testid="point-material" />;
-
-  return {
-    Points,
-    PointMaterial,
-  };
+  const { createDreiPointsMock } = await import('@/tests/helpers/reactThreeMocks');
+  return createDreiPointsMock();
 });
 
 describe('Particles component', () => {
   beforeEach(() => {
-    latestFrameCb = null;
-    latestPointsInstance = null;
+    resetReactThreeMocks();
     vi.restoreAllMocks();
   });
 
@@ -86,6 +29,9 @@ describe('Particles component', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     render(<Particles />);
+
+    const latestFrameCb = getLatestFrameCb();
+    const latestPointsInstance = getLatestPointsInstance();
 
     expect(latestFrameCb).toBeTruthy();
     expect(latestPointsInstance).toBeTruthy();

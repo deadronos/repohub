@@ -4,9 +4,10 @@ import GitHubStatsDisplay from '@/components/GitHubStats';
 import * as githubActions from '@/app/actions/github';
 
 // Mock the server action
-vi.mock('@/app/actions/github', () => ({
-  fetchGitHubStatsAction: vi.fn(),
-}));
+vi.mock('@/app/actions/github', async () => {
+  const { createGitHubActionsMock } = await import('@/tests/helpers/githubStatsMocks');
+  return createGitHubActionsMock();
+});
 
 describe('GitHubStatsDisplay', () => {
   it('renders loading state initially', () => {

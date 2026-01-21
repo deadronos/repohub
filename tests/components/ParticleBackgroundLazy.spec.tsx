@@ -1,43 +1,17 @@
 import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
-const dynamicImportCalls = { count: 0 };
+import ParticleBackgroundLazy from '@/components/ParticleBackgroundLazy';
+import { dynamicImportCalls } from '@/tests/helpers/particleBackgroundLazyMocks';
 
 vi.mock('next/dynamic', async () => {
-  const React = await import('react');
-
-  return {
-    default: (loader: () => Promise<unknown>) => {
-      return function MockDynamicComponent(props: Record<string, unknown>) {
-        const [Component, setComponent] = React.useState<React.ComponentType<Record<string, unknown>> | null>(
-          null,
-        );
-
-        React.useEffect(() => {
-          dynamicImportCalls.count += 1;
-          void (async () => {
-            const mod = await loader();
-            const resolved = (mod as { default?: React.ComponentType<Record<string, unknown>> }).default;
-            setComponent(() => resolved ?? (mod as React.ComponentType<Record<string, unknown>>));
-          })();
-        }, []);
-
-        if (!Component) return null;
-        return React.createElement(Component, props);
-      };
-    },
-  };
+  const { createNextDynamicMock } = await import('@/tests/helpers/particleBackgroundLazyMocks');
+  return createNextDynamicMock();
 });
 
-vi.mock('@/components/ParticleBackground', () => {
-  return {
-    default: function MockParticleBackground() {
-      return <div data-testid="particle-bg" />;
-    },
-  };
+vi.mock('@/components/ParticleBackground', async () => {
+  const { createParticleBackgroundMock } = await import('@/tests/helpers/particleBackgroundLazyMocks');
+  return createParticleBackgroundMock();
 });
-
-import ParticleBackgroundLazy from '@/components/ParticleBackgroundLazy';
 
 describe('ParticleBackgroundLazy', () => {
   const originalRequestIdleCallback = (window as unknown as { requestIdleCallback?: unknown })
