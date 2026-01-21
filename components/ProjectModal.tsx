@@ -6,6 +6,7 @@ import type { Project } from '@/types';
 import GitHubStatsDisplay from '@/components/GitHubStats';
 import ProjectImage from '@/components/projects/ProjectImage';
 import ProjectTags from '@/components/projects/ProjectTags';
+import { PROJECT_MODAL_IMAGE_SIZES } from '@/components/projects/imageSizes';
 
 type ProjectModalProps = {
   project: Project;
@@ -47,7 +48,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           <ProjectImage
             imageUrl={project.image_url}
             alt={project.title}
-            sizes="(max-width: 768px) 100vw, 672px"
+            sizes={PROJECT_MODAL_IMAGE_SIZES}
             className="object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0f] to-transparent opacity-80" />
@@ -94,4 +95,3 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     </div>
   );
 }
-

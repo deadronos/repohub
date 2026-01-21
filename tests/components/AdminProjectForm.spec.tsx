@@ -4,22 +4,23 @@ import AdminProjectForm from '@/components/AdminProjectForm';
 import { createProject, updateProject } from '@/app/actions/projects';
 import { getActionError } from '@/utils/actions';
 import type { Project } from '@/types';
+import { makeProject } from '@/tests/fixtures/project';
 
 // Mock dependencies
-vi.mock('@/app/actions/projects', () => ({
-  createProject: vi.fn(),
-  updateProject: vi.fn(),
-}));
+vi.mock('@/app/actions/projects', async () => {
+  const { createProjectFormActionsMock } = await import('@/tests/helpers/projectActionsMocks');
+  return createProjectFormActionsMock();
+});
 
-// Mock lucide icons
-vi.mock('lucide-react', () => ({
-  Upload: () => <div data-testid="upload-icon" />,
-}));
+vi.mock('lucide-react', async () => {
+  const { createLucideUploadMock } = await import('@/tests/helpers/adminProjectFormMocks');
+  return createLucideUploadMock();
+});
 
-// Mock getActionError
-vi.mock('@/utils/actions', () => ({
-  getActionError: vi.fn(),
-}));
+vi.mock('@/utils/actions', async () => {
+  const { createActionsUtilMock } = await import('@/tests/helpers/adminProjectFormMocks');
+  return createActionsUtilMock();
+});
 
 function fillRequiredFields() {
   const titleInput = screen.getByLabelText(/Project Title/i);
@@ -88,19 +89,16 @@ describe('AdminProjectForm Accessibility', () => {
     getActionErrorMock.mockReturnValue(null);
     const onComplete = vi.fn();
 
-    const project: Project = {
+    const project: Project = makeProject({
       id: 'p1',
       title: 'Existing',
       short_description: 'Existing short',
       description: null,
       tags: ['nextjs'],
       image_url: null,
-      created_at: '2023-01-01T00:00:00Z',
-      sort_order: 1,
       demo_url: null,
       repo_url: null,
-      is_featured: false,
-    };
+    });
 
     render(<AdminProjectForm project={project} onComplete={onComplete} />);
 
@@ -130,19 +128,16 @@ describe('AdminProjectForm Accessibility', () => {
   });
 
   it('renders current image hint and hidden current_image_url when editing with image_url', () => {
-    const project: Project = {
+    const project: Project = makeProject({
       id: 'p2',
       title: 'Existing',
       short_description: 'Existing short',
       description: null,
       tags: [],
       image_url: 'https://example.com/images/test.png',
-      created_at: '2023-01-01T00:00:00Z',
-      sort_order: 1,
       demo_url: null,
       repo_url: null,
-      is_featured: false,
-    };
+    });
 
     render(<AdminProjectForm project={project} onComplete={vi.fn()} />);
 

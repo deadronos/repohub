@@ -1,44 +1,16 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import ParticleBackground from '@/components/ParticleBackground';
 
 vi.mock('@react-three/fiber', async () => {
-  const React = await import('react');
-
-  return {
-    Canvas: ({
-      onCreated,
-      frameloop,
-    }: {
-      onCreated?: (state: { gl: { domElement: HTMLCanvasElement } }) => void;
-      frameloop?: string;
-    }) => {
-      const ref = React.useRef<HTMLCanvasElement>(null);
-
-      React.useEffect(() => {
-        if (!ref.current) return;
-        onCreated?.({ gl: { domElement: ref.current } });
-      }, [onCreated]);
-
-      return <canvas ref={ref} data-testid="r3f-canvas" data-frameloop={frameloop ?? ''} />;
-    },
-    useFrame: () => {},
-  };
+  const { createFiberCanvasMock } = await import('@/tests/helpers/reactThreeMocks');
+  return createFiberCanvasMock();
 });
 
 vi.mock('@react-three/drei', async () => {
-  const React = await import('react');
-
-  return {
-    Points: React.forwardRef(function Points() {
-      return null;
-    }),
-    PointMaterial: function PointMaterial() {
-      return null;
-    },
-  };
+  const { createDreiStubMock } = await import('@/tests/helpers/reactThreeMocks');
+  return createDreiStubMock();
 });
-
-import ParticleBackground from '@/components/ParticleBackground';
 
 describe('ParticleBackground', () => {
   it('handles WebGL context loss by preventing default and pausing frameloop', async () => {

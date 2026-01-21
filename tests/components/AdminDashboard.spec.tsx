@@ -4,89 +4,51 @@ import AdminDashboard from '@/components/AdminDashboard';
 import type { Project } from '@/types';
 import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
 import type { DragEndEvent } from '@dnd-kit/core';
-import type { ReactNode } from 'react';
+import { makeProject } from '@/tests/fixtures/project';
+import {
+  createDndKitCoreMock,
+  createDndKitSortableMock,
+  createDndKitUtilitiesMock,
+  getLatestDndContextProps,
+  getRefreshSpy,
+  getUseSortableArgs,
+  resetAdminDashboardMocks,
+} from '@/tests/helpers/adminDashboardMocks';
 
-let useSortableArgs: Array<{ id: string; disabled?: boolean }> = [];
+const refreshSpy = getRefreshSpy();
 
-let latestDndContextProps: { onDragEnd?: (event: DragEndEvent) => void | Promise<void> } | null =
-  null;
-const refreshSpy = vi.fn();
+vi.mock('next/navigation', async () => {
+  const { getRefreshSpy } = await import('@/tests/helpers/adminDashboardMocks');
+  return {
+    useRouter: () => ({
+      refresh: getRefreshSpy(),
+    }),
+  };
+});
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    refresh: refreshSpy,
-  }),
-}));
+vi.mock('@/app/actions/projects', async () => {
+  const { createAdminDashboardActionsMock } = await import('@/tests/helpers/projectActionsMocks');
+  return createAdminDashboardActionsMock();
+});
 
-vi.mock('@/app/actions/projects', () => ({
-  deleteProjects: vi.fn(),
-  updateProjectOrder: vi.fn(),
-}));
+vi.mock('@dnd-kit/core', async () => {
+  const { createDndKitCoreMock } = await import('@/tests/helpers/adminDashboardMocks');
+  return createDndKitCoreMock();
+});
 
-vi.mock('@dnd-kit/core', () => ({
-  DndContext: ({ children, ...props }: { children: ReactNode }) => {
-    latestDndContextProps = props;
-    return <div data-testid="dnd-context">{children}</div>;
-  },
-  DragOverlay: ({ children }: { children: ReactNode }) => (
-    <div data-testid="drag-overlay">{children}</div>
-  ),
-  KeyboardSensor: function KeyboardSensor() {},
-  PointerSensor: function PointerSensor() {},
-  closestCenter: () => undefined,
-  useSensor: (_sensor: unknown, options: unknown) => ({ _sensor, options }),
-  useSensors: (...sensors: unknown[]) => sensors,
-}));
+vi.mock('@dnd-kit/sortable', async () => {
+  const { createDndKitSortableMock } = await import('@/tests/helpers/adminDashboardMocks');
+  return createDndKitSortableMock();
+});
 
-vi.mock('@dnd-kit/sortable', () => ({
-  SortableContext: ({ children }: { children: ReactNode }) => (
-    <div data-testid="sortable-context">{children}</div>
-  ),
-  arrayMove: <T,>(array: T[], from: number, to: number) => {
-    const copy = array.slice();
-    const [item] = copy.splice(from, 1);
-    copy.splice(to, 0, item);
-    return copy;
-  },
-  rectSortingStrategy: () => undefined,
-  sortableKeyboardCoordinates: () => undefined,
-  useSortable: (args: { id: string; disabled?: boolean }) => {
-    useSortableArgs.push({ id: String(args.id), disabled: args.disabled });
-    return {
-    attributes: {},
-    listeners: {},
-    setNodeRef: () => undefined,
-    setActivatorNodeRef: () => undefined,
-    transform: null,
-    transition: undefined,
-    isDragging: false,
-    };
-  },
-}));
-
-vi.mock('@dnd-kit/utilities', () => ({
-  CSS: {
-    Transform: {
-      toString: () => '',
-    },
-  },
-}));
+vi.mock('@dnd-kit/utilities', async () => {
+  const { createDndKitUtilitiesMock } = await import('@/tests/helpers/adminDashboardMocks');
+  return createDndKitUtilitiesMock();
+});
 
 const mockProjects: Project[] = [
-  {
-    id: '1',
-    title: 'Project One',
-    short_description: 'First project description.',
-    description: 'Details for project one.',
-    tags: ['react'],
-    image_url: '/test-image.jpg',
-    created_at: '2023-01-01T00:00:00Z',
-    sort_order: 1,
-    demo_url: 'https://demo.com',
-    repo_url: 'https://github.com/repo',
-    is_featured: false,
-  },
-  {
+  makeProject(),
+  makeProject({
     id: '2',
     title: 'Project Two',
     short_description: 'Second project description.',
@@ -97,8 +59,7 @@ const mockProjects: Project[] = [
     sort_order: 2,
     demo_url: null,
     repo_url: null,
-    is_featured: false,
-  },
+  }),
 ];
 
 describe('AdminDashboard drag ordering', () => {
@@ -106,9 +67,7 @@ describe('AdminDashboard drag ordering', () => {
   const deleteProjectsMock = vi.mocked(deleteProjects);
 
   beforeEach(() => {
-    latestDndContextProps = null;
-    useSortableArgs = [];
-    refreshSpy.mockReset();
+    resetAdminDashboardMocks();
     updateOrderMock.mockReset();
     deleteProjectsMock.mockReset();
     vi.restoreAllMocks();
@@ -124,7 +83,7 @@ describe('AdminDashboard drag ordering', () => {
   it('renders fallbacks for missing image and tags', () => {
     const projects: Project[] = [
       ...mockProjects,
-      {
+      makeProject({
         id: '3',
         title: 'Project Three',
         short_description: 'Third',
@@ -135,8 +94,7 @@ describe('AdminDashboard drag ordering', () => {
         sort_order: 3,
         demo_url: null,
         repo_url: null,
-        is_featured: false,
-      },
+      }),
     ];
 
     render(<AdminDashboard initialProjects={projects} />);
@@ -173,7 +131,7 @@ describe('AdminDashboard drag ordering', () => {
     const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
 
     await act(async () => {
-      await latestDndContextProps?.onDragEnd?.(event);
+      await getLatestDndContextProps()?.onDragEnd?.(event);
     });
 
     await waitFor(() => {
@@ -199,14 +157,14 @@ describe('AdminDashboard drag ordering', () => {
     const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
 
     act(() => {
-      void latestDndContextProps?.onDragEnd?.(event);
+      void getLatestDndContextProps()?.onDragEnd?.(event);
     });
 
     await waitFor(() => {
       expect(screen.getByText('Saving order...')).toBeInTheDocument();
     });
 
-    expect(useSortableArgs.some((a) => a.disabled === true)).toBe(true);
+    expect(getUseSortableArgs().some((a) => a.disabled === true)).toBe(true);
 
     await act(async () => {
       resolveOrder?.({ data: true });
@@ -222,7 +180,7 @@ describe('AdminDashboard drag ordering', () => {
     const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
 
     await act(async () => {
-      await latestDndContextProps?.onDragEnd?.(event);
+      await getLatestDndContextProps()?.onDragEnd?.(event);
     });
 
     expect(screen.getByText('Order saved')).toBeInTheDocument();
@@ -242,7 +200,7 @@ describe('AdminDashboard drag ordering', () => {
     const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
 
     await act(async () => {
-      await latestDndContextProps?.onDragEnd?.(event);
+      await getLatestDndContextProps()?.onDragEnd?.(event);
     });
 
     await waitFor(() => {
@@ -261,7 +219,7 @@ describe('AdminDashboard drag ordering', () => {
     const event = { active: { id: '1' }, over: { id: '2' } } as DragEndEvent;
 
     await act(async () => {
-      await latestDndContextProps?.onDragEnd?.(event);
+      await getLatestDndContextProps()?.onDragEnd?.(event);
     });
 
     await waitFor(() => {

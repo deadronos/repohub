@@ -2,10 +2,9 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { ensureUser, requireUserOrUnauthorized } from '@/utils/supabase/auth';
-import { parseProjectFormData, validateProjectInput } from '@/utils/projects/form';
+import { prepareProjectMutation } from '@/utils/projects/mutations';
 import { validateProjectOrder } from '@/utils/projects/order';
 import { getNextProjectSortOrder } from '@/utils/projects/sort-order';
-import { uploadProjectImage } from '@/utils/projects/storage';
 import { revalidateProjects } from '@/utils/projects/revalidate';
 import { formatError, type ActionResult } from '@/utils/actions';
 import { PROJECTS_TABLE } from '@/utils/projects/constants';
@@ -14,24 +13,12 @@ export async function createProject(formData: FormData): Promise<ActionResult<tr
   const supabase = await createClient();
   await ensureUser(supabase, true);
 
-  const parsed = parseProjectFormData(formData);
-  const validationErrors = validateProjectInput({
-    title: parsed.title,
-    repoUrl: parsed.repo_url,
-    demoUrl: parsed.demo_url,
-  });
-
-  if (validationErrors.length > 0) {
-    return { error: validationErrors.join(', ') };
+  const prepared = await prepareProjectMutation(supabase, formData);
+  if ('error' in prepared) {
+    return { error: prepared.error };
   }
 
-  const imageUpload = await uploadProjectImage(supabase, parsed.imageFile);
-  if ('error' in imageUpload) {
-    return { error: imageUpload.error };
-  }
-
-  const imageUrl = imageUpload.data;
-  const tags = parsed.tags.length > 0 ? parsed.tags : null;
+  const { parsed, imageUrl, tags } = prepared.data;
   const sortOrder = await getNextProjectSortOrder(supabase);
 
   const { error } = await supabase.from(PROJECTS_TABLE).insert({
@@ -95,28 +82,15 @@ export async function updateProject(formData: FormData): Promise<ActionResult<tr
     return userResult;
   }
 
-  const parsed = parseProjectFormData(formData);
+  const prepared = await prepareProjectMutation(supabase, formData);
+  if ('error' in prepared) {
+    return { error: prepared.error };
+  }
+
+  const { parsed, imageUrl, tags } = prepared.data;
   if (!parsed.id) {
     return { error: 'Missing project id' };
   }
-
-  const validationErrors = validateProjectInput({
-    title: parsed.title,
-    repoUrl: parsed.repo_url,
-    demoUrl: parsed.demo_url,
-  });
-
-  if (validationErrors.length > 0) {
-    return { error: validationErrors.join(', ') };
-  }
-
-  const imageUpload = await uploadProjectImage(supabase, parsed.imageFile);
-  if ('error' in imageUpload) {
-    return { error: imageUpload.error };
-  }
-
-  const imageUrl = imageUpload.data;
-  const tags = parsed.tags.length > 0 ? parsed.tags : null;
 
   const { error } = await supabase
     .from(PROJECTS_TABLE)

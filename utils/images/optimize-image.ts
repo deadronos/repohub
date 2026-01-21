@@ -1,42 +1,16 @@
 'use client';
 
 import { findBestQualityUnderBytes } from '@/utils/images/quality-search';
+import { canvasToBlob, drawToCanvas, pickSupportedMimeType } from '@/utils/images/optimize/canvas';
+import { decodeImage } from '@/utils/images/optimize/decode';
+import { ImageOptimizationError } from '@/utils/images/optimize/errors';
+import { getExtensionFromMimeType, replaceExtension } from '@/utils/images/optimize/filename';
+import { computeDownscaledDimensions } from '@/utils/images/optimize/resize';
+import type { ImageOptimizationOptions, ImageOptimizationResult } from '@/utils/images/optimize/types';
 
-export type ImageOptimizationOptions = {
-  maxBytes: number;
-  targetBytes: number;
-  maxDimension: number;
-  minQuality: number;
-  maxQuality: number;
-  qualitySearchSteps: number;
-  dimensionScaleFactor: number;
-  maxDimensionPasses: number;
-};
-
-export type ImageOptimizationResult = {
-  file: File;
-  wasOptimized: boolean;
-  originalBytes: number;
-  finalBytes: number;
-  mimeType: string;
-  width?: number;
-  height?: number;
-};
-
-export type ImageOptimizationErrorCode =
-  | 'not-image'
-  | 'decode-failed'
-  | 'encode-failed'
-  | 'cannot-compress';
-
-export class ImageOptimizationError extends Error {
-  code: ImageOptimizationErrorCode;
-
-  constructor(code: ImageOptimizationErrorCode, message: string) {
-    super(message);
-    this.code = code;
-  }
-}
+export type { ImageOptimizationOptions, ImageOptimizationResult } from '@/utils/images/optimize/types';
+export type { ImageOptimizationErrorCode } from '@/utils/images/optimize/errors';
+export { ImageOptimizationError } from '@/utils/images/optimize/errors';
 
 const DEFAULT_OPTIONS: ImageOptimizationOptions = {
   maxBytes: 500_000,
@@ -48,157 +22,6 @@ const DEFAULT_OPTIONS: ImageOptimizationOptions = {
   dimensionScaleFactor: 0.9,
   maxDimensionPasses: 6,
 };
-
-type DecodedImage = {
-  source: CanvasImageSource;
-  width: number;
-  height: number;
-  cleanup: () => void;
-};
-
-async function decodeImage(file: File): Promise<DecodedImage> {
-  if (typeof createImageBitmap === 'function') {
-    try {
-      const bitmap = await createImageBitmap(file);
-      return {
-        source: bitmap,
-        width: bitmap.width,
-        height: bitmap.height,
-        cleanup: () => bitmap.close(),
-      };
-    } catch {
-      // fall through to Image() decode
-    }
-  }
-
-  const objectUrl = URL.createObjectURL(file);
-  const image = new Image();
-  image.decoding = 'async';
-  image.src = objectUrl;
-
-  const cleanup = () => URL.revokeObjectURL(objectUrl);
-
-  try {
-    if (typeof image.decode === 'function') {
-      await image.decode();
-    } else {
-      await new Promise<void>((resolve, reject) => {
-        image.onload = () => resolve();
-        image.onerror = () => reject(new Error('Failed to load image'));
-      });
-    }
-  } catch {
-    cleanup();
-    throw new ImageOptimizationError('decode-failed', 'Failed to decode image.');
-  }
-
-  return {
-    source: image,
-    width: image.naturalWidth,
-    height: image.naturalHeight,
-    cleanup,
-  };
-}
-
-function computeDownscaledDimensions(
-  width: number,
-  height: number,
-  maxDimension: number,
-): { width: number; height: number } {
-  const longestSide = Math.max(width, height);
-  if (longestSide <= maxDimension) {
-    return { width, height };
-  }
-
-  const scale = maxDimension / longestSide;
-  return {
-    width: Math.max(1, Math.round(width * scale)),
-    height: Math.max(1, Math.round(height * scale)),
-  };
-}
-
-async function canvasToBlob(
-  canvas: HTMLCanvasElement,
-  type: string,
-  quality: number,
-): Promise<Blob | null> {
-  if (typeof canvas.toBlob === 'function') {
-    return await new Promise((resolve) => canvas.toBlob(resolve, type, quality));
-  }
-
-  try {
-    const dataUrl = canvas.toDataURL(type, quality);
-    const response = await fetch(dataUrl);
-    return await response.blob();
-  } catch (error) {
-    console.error('Failed to convert canvas to blob:', error);
-    return null;
-  }
-}
-
-function replaceExtension(filename: string, extension: string): string {
-  const trimmed = filename.trim();
-  const dotIndex = trimmed.lastIndexOf('.');
-  if (dotIndex <= 0) {
-    return `${trimmed}.${extension}`;
-  }
-  return `${trimmed.slice(0, dotIndex)}.${extension}`;
-}
-
-function getExtensionFromMimeType(mimeType: string): string {
-  if (mimeType === 'image/webp') {
-    return 'webp';
-  }
-  if (mimeType === 'image/jpeg') {
-    return 'jpg';
-  }
-  return 'img';
-}
-
-type DrawOptions = {
-  background?: string;
-};
-
-function drawToCanvas(
-  source: CanvasImageSource,
-  width: number,
-  height: number,
-  options: DrawOptions = {},
-): HTMLCanvasElement {
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-
-  const context = canvas.getContext('2d');
-  if (!context) {
-    throw new ImageOptimizationError('encode-failed', 'Canvas 2D context is unavailable.');
-  }
-
-  if (options.background) {
-    context.fillStyle = options.background;
-    context.fillRect(0, 0, width, height);
-  }
-
-  context.drawImage(source, 0, 0, width, height);
-  return canvas;
-}
-
-async function pickSupportedMimeType(
-  canvas: HTMLCanvasElement,
-  maxQuality: number,
-): Promise<'image/webp' | 'image/jpeg'> {
-  const webpProbe = await canvasToBlob(canvas, 'image/webp', maxQuality);
-  if (webpProbe) {
-    return 'image/webp';
-  }
-
-  const jpegProbe = await canvasToBlob(canvas, 'image/jpeg', maxQuality);
-  if (jpegProbe) {
-    return 'image/jpeg';
-  }
-
-  throw new ImageOptimizationError('encode-failed', 'Browser cannot encode this image.');
-}
 
 export async function optimizeImageToUnderBytes(
   file: File,
@@ -292,4 +115,3 @@ export async function optimizeImageToUnderBytes(
     'Could not reduce the image under the size limit.',
   );
 }
-

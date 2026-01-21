@@ -1,50 +1,35 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ProjectCard from '@/components/ProjectCard';
 import type { Project } from '@/types';
+import { makeProject } from '@/tests/fixtures/project';
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: (allProps: { children: React.ReactNode } & Record<string, unknown>) => {
-      const { children } = allProps;
-      const props = { ...allProps };
-      delete props.layoutId;
-      delete props.whileHover;
-      return <div {...props}>{children}</div>;
-    },
-  },
-}));
+vi.mock('framer-motion', async () => {
+  const { createFramerMotionMock } = await import('@/tests/helpers/projectCardMocks');
+  return createFramerMotionMock();
+});
 
-vi.mock('@/components/GitHubStats', () => ({
-  default: () => <div data-testid="github-stats" />,
-}));
+vi.mock('@/components/GitHubStats', async () => {
+  const { createGitHubStatsMock } = await import('@/tests/helpers/projectCardMocks');
+  return createGitHubStatsMock();
+});
 
-vi.mock('next/image', () => ({
-  default: (allProps: { alt: string; src?: unknown } & Record<string, unknown>) => {
-    const { alt, src } = allProps;
-    const props = { ...allProps };
-    delete props.fill;
-    delete props.sizes;
-    const dataSrc = typeof src === 'string' ? src : '';
-    return <div role="img" aria-label={alt} data-src={dataSrc} {...props} />;
-  },
-}));
+vi.mock('next/image', async () => {
+  const { createNextImageMock } = await import('@/tests/helpers/projectCardMocks');
+  return createNextImageMock();
+});
 
 describe('ProjectCard component', () => {
-  const baseProject: Project = {
+  const baseProject: Project = makeProject({
     id: 'p1',
     title: 'My Project',
     short_description: 'Short',
     description: 'Long',
     tags: ['react', 'nextjs', 'vitest', 'extra'],
     image_url: null,
-    created_at: '2023-01-01T00:00:00Z',
-    sort_order: 1,
     demo_url: null,
     repo_url: null,
-    is_featured: false,
-  };
+  });
 
   it('invokes onClick for Enter and Space key', () => {
     const onClick = vi.fn();
