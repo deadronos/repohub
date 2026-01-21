@@ -7,20 +7,20 @@ import type { Project } from '@/types';
 import { makeProject } from '@/tests/fixtures/project';
 
 // Mock dependencies
-vi.mock('@/app/actions/projects', () => ({
-  createProject: vi.fn(),
-  updateProject: vi.fn(),
-}));
+vi.mock('@/app/actions/projects', async () => {
+  const { createProjectFormActionsMock } = await import('@/tests/helpers/projectActionsMocks');
+  return createProjectFormActionsMock();
+});
 
-// Mock lucide icons
-vi.mock('lucide-react', () => ({
-  Upload: () => <div data-testid="upload-icon" />,
-}));
+vi.mock('lucide-react', async () => {
+  const { createLucideUploadMock } = await import('@/tests/helpers/adminProjectFormMocks');
+  return createLucideUploadMock();
+});
 
-// Mock getActionError
-vi.mock('@/utils/actions', () => ({
-  getActionError: vi.fn(),
-}));
+vi.mock('@/utils/actions', async () => {
+  const { createActionsUtilMock } = await import('@/tests/helpers/adminProjectFormMocks');
+  return createActionsUtilMock();
+});
 
 function fillRequiredFields() {
   const titleInput = screen.getByLabelText(/Project Title/i);

@@ -26,10 +26,10 @@ vi.mock('next/navigation', async () => {
   };
 });
 
-vi.mock('@/app/actions/projects', () => ({
-  deleteProjects: vi.fn(),
-  updateProjectOrder: vi.fn(),
-}));
+vi.mock('@/app/actions/projects', async () => {
+  const { createAdminDashboardActionsMock } = await import('@/tests/helpers/projectActionsMocks');
+  return createAdminDashboardActionsMock();
+});
 
 vi.mock('@dnd-kit/core', async () => {
   const { createDndKitCoreMock } = await import('@/tests/helpers/adminDashboardMocks');
