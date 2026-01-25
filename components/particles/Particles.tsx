@@ -21,22 +21,21 @@ export default function Particles(props: ParticlesProps) {
     if (!ref.current) return;
 
     // Guard against partial state (can happen during context loss / restore)
-    const { pointer = { x: 0, y: 0 }, clock } = state || {};
-    if (!clock || typeof clock.getElapsedTime !== 'function') return;
+    const { pointer = { x: 0, y: 0 }, elapsed } = state || {};
+    if (elapsed === undefined || elapsed === null) return;
 
     try {
       const positionAttr = ref.current.geometry.attributes.position as unknown as {
         array: Float32Array;
         setXYZ?: (idx: number, x: number, y: number, z: number) => void;
       };
-      const time = clock.getElapsedTime();
 
       const { rotationX, rotationY } = applyParticleFrame(
         positionAttr,
         initialPositions,
         pointer.x ?? 0,
         pointer.y ?? 0,
-        time,
+        elapsed,
         PARTICLE_COUNT,
       );
 

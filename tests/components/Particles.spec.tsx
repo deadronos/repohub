@@ -42,7 +42,7 @@ describe('Particles component', () => {
 
     latestFrameCb({
       pointer: { x: 1, y: 2 },
-      clock: { getElapsedTime: () => 0 },
+      elapsed: 0,
     });
 
     const positionAttr = latestPointsInstance.geometry.attributes.position;
@@ -56,7 +56,7 @@ describe('Particles component', () => {
     expect(latestPointsInstance.rotation.y).toBeCloseTo(0.1, 6);
   });
 
-  it('does not throw when state.clock is missing', () => {
+  it('does not throw when state.elapsed is missing', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.5);
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
@@ -69,7 +69,7 @@ describe('Particles component', () => {
     if (!latestFrameCb) throw new Error('Expected frame callback to be set by mocks');
 
     expect(() =>
-      // call with missing clock and missing pointer to simulate partial state
+      // call with missing elapsed and missing pointer to simulate partial state
       latestFrameCb({} as any),
     ).not.toThrow();
 

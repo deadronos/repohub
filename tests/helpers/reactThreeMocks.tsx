@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export type FrameState = {
   pointer: { x: number; y: number };
-  clock: { getElapsedTime: () => number };
+  elapsed: number; // Replaces clock.getElapsedTime() in newer r3f versions
 };
 
 export type PointsInstance = {
