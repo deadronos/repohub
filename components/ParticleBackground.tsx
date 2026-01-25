@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber/legacy';
 import Particles from '@/components/particles/Particles';
 
 export default function ParticleBackground() {

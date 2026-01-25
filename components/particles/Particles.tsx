@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useRef, type ComponentProps } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber/legacy';
 import { Points, PointMaterial } from '@react-three/drei';
 import type * as THREE from 'three';
 import { applyParticleFrame, generateParticles } from '@/utils/particles';

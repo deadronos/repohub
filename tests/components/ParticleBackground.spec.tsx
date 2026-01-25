@@ -2,7 +2,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ParticleBackground from '@/components/ParticleBackground';
 
-vi.mock('@react-three/fiber', async () => {
+vi.mock('@react-three/fiber/legacy', async () => {
   const { createFiberCanvasMock } = await import('@/tests/helpers/reactThreeMocks');
   return createFiberCanvasMock();
 });
