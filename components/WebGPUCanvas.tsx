@@ -38,10 +38,22 @@ export default function WebGPUCanvas({
     failed: false,
   });
 
-  // Dynamically import WebGPURenderer on mount (client-side only)
+  // Legacy WebGL renderer (imported from three/legacy when needed)
+  const [LegacyRenderer, setLegacyRenderer] = useState<any | null>(null);
+
+  // Dynamically import WebGPURenderer on mount (client-side only).
+  // If it fails (e.g., in test envs or older browsers), try to import the
+  // legacy WebGL renderer from `three/legacy` so that react-three-fiber can
+  // use the supported legacy renderer without triggering deprecation warnings.
   useEffect(() => {
     import('three/webgpu')
       .then((module) => {
+        // Treat a missing exported WebGPURenderer as a failure so we can fall back
+        // deterministically without relying on a thrown import error.
+        if (!module?.WebGPURenderer) {
+          throw new Error('no WebGPURenderer available');
+        }
+
         setWebGPUState({
           loading: false,
           Renderer: module.WebGPURenderer,
@@ -50,12 +62,27 @@ export default function WebGPUCanvas({
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
-        console.error('Failed to import WebGPURenderer, falling back to standard renderer:', error);
+        console.error('Failed to import WebGPURenderer, falling back to legacy WebGL renderer:', error);
         setWebGPUState({
           loading: false,
           Renderer: null,
           failed: true,
         });
+
+        // Attempt to import an explicit WebGLRenderer implementation from three's
+        // source so we can provide it as a clear legacy renderer implementation.
+        // This avoids r3f's deprecation warning while keeping a deterministic
+        // fallback for environments where WebGPU isn't available.
+        // See: https://docs.pmnd.rs/react-three-fiber/api/renderer
+        import('three/src/renderers/WebGLRenderer.js')
+          .then((mod) => {
+            setLegacyRenderer(mod.WebGLRenderer || null);
+          })
+          .catch(() => {
+            // If even the explicit source import fails, leave LegacyRenderer null and
+            // allow react-three-fiber to fall back to its default behavior.
+            setLegacyRenderer(null);
+          });
       });
   }, []);
 
@@ -63,28 +90,64 @@ export default function WebGPUCanvas({
   const glConfig = useMemo(() => {
     const { Renderer } = webGPUState;
     
-    if (!Renderer) {
-      return glProp;
-    }
+    // If a WebGPURenderer is available, use it (it internally falls back to WebGL2 if needed)
+    if (Renderer) {
+      // If glProp is already a function or renderer instance, prioritize it
+      if (typeof glProp === 'function' || (glProp && typeof glProp === 'object' && 'render' in glProp)) {
+        return glProp;
+      }
 
-    // If glProp is already a function or renderer instance, prioritize it
-    if (typeof glProp === 'function' || (glProp && typeof glProp === 'object' && 'render' in glProp)) {
-      return glProp;
-    }
+      // Create a function that returns WebGPURenderer instance
+      // The function signature must match (defaultProps: DefaultGLProps) => Renderer
+      return async (defaultProps: DefaultGLProps) => {
+        const rendererOptions = {
+          canvas: defaultProps.canvas,
+          antialias: true,
+          alpha: true,
+          ...(typeof glProp === 'object' ? glProp : {}),
+        };
 
-    // Create a function that returns WebGPURenderer instance
-    // The function signature must match (defaultProps: DefaultGLProps) => Renderer
-    return (defaultProps: DefaultGLProps) => {
-      const rendererOptions = {
-        canvas: defaultProps.canvas,
-        antialias: true,
-        alpha: true,
-        ...(typeof glProp === 'object' ? glProp : {}),
+        // Create renderer instance (constructor or factory)
+        let rendererInstance: any;
+        try {
+          rendererInstance = new Renderer(rendererOptions);
+        } catch (e) {
+          // If Renderer is a factory function that returns an instance
+          rendererInstance = Renderer(rendererOptions);
+        }
+
+        // Some renderers (like WebGPURenderer) require initialization before use
+        if (rendererInstance && typeof rendererInstance.init === 'function') {
+          // init() may be async
+          await rendererInstance.init();
+        }
+
+        return rendererInstance;
       };
+    }
 
-      return new Renderer(rendererOptions);
-    };
-  }, [webGPUState, glProp]);
+    // No WebGPURenderer: if we explicitly loaded a legacy renderer, use it
+    if (LegacyRenderer) {
+      return (defaultProps: DefaultGLProps) => {
+        const rendererOptions = {
+          canvas: defaultProps.canvas,
+          antialias: true,
+          alpha: true,
+          ...(typeof glProp === 'object' ? glProp : {}),
+        };
+
+        // Support both constructor and factory export shapes
+        try {
+          return new LegacyRenderer(rendererOptions);
+        } catch (e) {
+          return LegacyRenderer(rendererOptions);
+        }
+      };
+    }
+
+    // Otherwise, fall back to whatever was passed in (or let r3f create the default)
+    return glProp;
+  }, [webGPUState, glProp, LegacyRenderer]);
 
   // Enhanced onCreated callback that detects actual renderer backend
   const handleCreated = (state: Parameters<NonNullable<typeof onCreated>>[0]) => {
