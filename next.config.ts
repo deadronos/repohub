@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  turbopack: {},
   images: {
     remotePatterns: [
       {
@@ -9,6 +10,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // WebGPU renderer is now selected at runtime based on browser support
+  // No webpack alias needed - WebGPURenderer from 'three/webgpu' handles
+  // fallback to WebGL internally when WebGPU is not available
   async headers() {
     return [
       {

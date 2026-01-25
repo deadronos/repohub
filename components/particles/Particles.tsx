@@ -20,22 +20,37 @@ export default function Particles(props: ParticlesProps) {
   useFrame((state) => {
     if (!ref.current) return;
 
-    const { pointer, clock } = state;
-    const particlePositions = ref.current.geometry.attributes.position.array as Float32Array;
-    const time = clock.getElapsedTime();
+    // Guard against partial state (can happen during context loss / restore)
+    const { pointer = { x: 0, y: 0 }, elapsed } = state || {};
+    if (elapsed === undefined || elapsed === null) return;
 
-    const { rotationX, rotationY } = applyParticleFrame(
-      particlePositions,
-      initialPositions,
-      pointer.x,
-      pointer.y,
-      time,
-      PARTICLE_COUNT,
-    );
+    try {
+      const positionAttr = ref.current.geometry.attributes.position as unknown as {
+        array: Float32Array;
+        setXYZ?: (idx: number, x: number, y: number, z: number) => void;
+      };
 
-    ref.current.geometry.attributes.position.needsUpdate = true;
-    ref.current.rotation.x = rotationX;
-    ref.current.rotation.y = rotationY;
+      const { rotationX, rotationY } = applyParticleFrame(
+        positionAttr,
+        initialPositions,
+        pointer.x ?? 0,
+        pointer.y ?? 0,
+        elapsed,
+        PARTICLE_COUNT,
+      );
+
+      // BufferAttribute implementations (including WebGPU) should honor setXYZ; ensure renderer sees updates
+      if (typeof positionAttr === 'object' && 'needsUpdate' in (ref.current.geometry.attributes.position as any)) {
+        (ref.current.geometry.attributes.position as any).needsUpdate = true;
+      }
+
+      ref.current.rotation.x = rotationX;
+      ref.current.rotation.y = rotationY;
+    } catch (err) {
+      // Prevent uncaught errors from breaking the render loop
+      // eslint-disable-next-line no-console
+      console.error('Particles frame error:', err);
+    }
   });
 
   return (
