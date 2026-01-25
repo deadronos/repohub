@@ -7,6 +7,7 @@ A **Cyber-Minimalist** portfolio and project gallery built with the latest web t
 ## ✨ Features
 
 - **Cyber-Minimalist Design**: Dark mode, neon glows, and glassmorphism UI.
+- **WebGPU-Powered 3D Particle Effects**: Advanced particle system using WebGPU with automatic WebGL fallback for maximum browser compatibility.
 - **Bento Grid Layout**: Responsive, masonry-style grid for project cards.
 - **Zero-Layout Shift Transitions**: Clicking a card expands it into a details modal using `framer-motion` layout animations.
 - **Secure Admin Dashboard**:
@@ -17,6 +18,7 @@ A **Cyber-Minimalist** portfolio and project gallery built with the latest web t
   - **Framework**: Next.js 16 (App Router)
   - **Backend**: Supabase (PostgreSQL + Auth + Storage)
   - **Styling**: Tailwind CSS v4
+  - **3D Graphics**: React Three Fiber with WebGPU renderer
   - **Icons**: Lucide React
 
 ## 🛠️ Setup Guide
@@ -93,3 +95,19 @@ npm run dev
 
 - **Home**: `http://localhost:3000`
 - **Admin**: `http://localhost:3000/admin` (Redirects to login if not authenticated)
+
+## 📚 Documentation
+
+- **[WebGPU Migration Guide](docs/WEBGPU_MIGRATION.md)**: Details on the WebGPU renderer implementation, browser compatibility, and fallback behavior.
+
+## 🧪 Testing
+
+```bash
+npm run test          # Run all tests
+npm run test:coverage # Generate coverage report
+npm run typecheck     # TypeScript type checking
+```
+
+## 🌐 Browser Compatibility
+
+The particle background uses WebGPU when available (Chrome 113+, Safari 18+) and automatically falls back to WebGL2 for broader compatibility. All major modern browsers are supported.

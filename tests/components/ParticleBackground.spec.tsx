@@ -1,18 +1,53 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ParticleBackground from '@/components/ParticleBackground';
 
+// Mock WebGPUCanvas to directly use Canvas mock in tests (no async loading)
+vi.mock('@/components/WebGPUCanvas', () => {
+  return {
+    __esModule: true,
+    default: ({ children, onCreated, ...props }: any) => {
+      const React = require('react');
+      const ref = React.useRef(null);
+
+      React.useEffect(() => {
+        if (!ref.current) return;
+        // Simulate Canvas onCreated callback
+        onCreated?.({ gl: { domElement: ref.current } });
+      }, [onCreated]);
+
+      return React.createElement(
+        React.Fragment,
+        null,
+        React.createElement('canvas', {
+          ref,
+          'data-testid': 'r3f-canvas',
+          'data-frameloop': props.frameloop ?? '',
+        }),
+        children
+      );
+    },
+  };
+});
+
 vi.mock('@react-three/fiber', async () => {
-  const { createFiberCanvasMock } = await import('@/tests/helpers/reactThreeMocks');
-  return createFiberCanvasMock();
+  const { createFiberUseFrameMock } = await import('@/tests/helpers/reactThreeMocks');
+  return createFiberUseFrameMock();
 });
 
 vi.mock('@react-three/drei', async () => {
-  const { createDreiStubMock } = await import('@/tests/helpers/reactThreeMocks');
-  return createDreiStubMock();
+  const { createDreiPointsMock } = await import('@/tests/helpers/reactThreeMocks');
+  return createDreiPointsMock();
 });
 
+import { getLatestPointsInstance, resetReactThreeMocks } from '@/tests/helpers/reactThreeMocks';
+
 describe('ParticleBackground', () => {
+  beforeEach(() => {
+    resetReactThreeMocks();
+    vi.restoreAllMocks();
+  });
+
   it('handles WebGL context loss by preventing default and pausing frameloop', async () => {
     render(<ParticleBackground />);
 
@@ -52,5 +87,40 @@ describe('ParticleBackground', () => {
     });
 
     expect(screen.getByTestId('r3f-canvas')).toHaveAttribute('data-frameloop', 'always');
+  });
+
+  it('remounts Particles on context restore', async () => {
+    render(<ParticleBackground />);
+
+    const canvas = await screen.findByTestId('r3f-canvas');
+
+    // Wait for initial Points instance to be created and capture it
+    await waitFor(() => {
+      expect(getLatestPointsInstance()).toBeTruthy();
+    });
+
+    const initialPoints = getLatestPointsInstance();
+
+    // simulate context lost
+    const lostEvent = new Event('webglcontextlost', { cancelable: true });
+    canvas.dispatchEvent(lostEvent);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'lost');
+    });
+
+    // simulate context restored
+    act(() => {
+      canvas.dispatchEvent(new Event('webglcontextrestored'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'ok');
+      expect(screen.getByTestId('r3f-canvas')).toHaveAttribute('data-frameloop', 'always');
+    });
+
+    const restoredPoints = getLatestPointsInstance();
+    expect(restoredPoints).toBeTruthy();
+    expect(restoredPoints).not.toBe(initialPoints);
   });
 });
