@@ -7,7 +7,7 @@ import {
   resetReactThreeMocks,
 } from '@/tests/helpers/reactThreeMocks';
 
-vi.mock('@react-three/fiber/legacy', async () => {
+vi.mock('@react-three/fiber', async () => {
   const { createFiberUseFrameMock } = await import('@/tests/helpers/reactThreeMocks');
   return createFiberUseFrameMock();
 });

@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  turbopack: {},
   images: {
     remotePatterns: [
       {
@@ -8,6 +9,14 @@ const nextConfig: NextConfig = {
         hostname: '*.supabase.co',
       },
     ],
+  },
+  // Alias 'three' to the WebGPU build for client bundles so node materials
+  // (MeshBasicNodeMaterial, Node, etc.) are available to r3f legacy bundle.
+  webpack: (config, { isServer }) => {
+    if (!isServer && config.resolve && config.resolve.alias) {
+      config.resolve.alias['three'] = 'three/webgpu';
+    }
+    return config;
   },
   async headers() {
     return [
