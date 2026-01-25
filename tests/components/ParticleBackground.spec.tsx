@@ -8,7 +8,7 @@ vi.mock('@/components/WebGPUCanvas', () => {
     __esModule: true,
     default: ({ children, onCreated, ...props }: any) => {
       const React = require('react');
-      const ref = React.useRef<HTMLCanvasElement>(null);
+      const ref = React.useRef(null);
 
       React.useEffect(() => {
         if (!ref.current) return;
