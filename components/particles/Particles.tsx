@@ -25,11 +25,14 @@ export default function Particles(props: ParticlesProps) {
     if (!clock || typeof clock.getElapsedTime !== 'function') return;
 
     try {
-      const particlePositions = ref.current.geometry.attributes.position.array as Float32Array;
+      const positionAttr = ref.current.geometry.attributes.position as unknown as {
+        array: Float32Array;
+        setXYZ?: (idx: number, x: number, y: number, z: number) => void;
+      };
       const time = clock.getElapsedTime();
 
       const { rotationX, rotationY } = applyParticleFrame(
-        particlePositions,
+        positionAttr,
         initialPositions,
         pointer.x ?? 0,
         pointer.y ?? 0,
@@ -37,7 +40,11 @@ export default function Particles(props: ParticlesProps) {
         PARTICLE_COUNT,
       );
 
-      ref.current.geometry.attributes.position.needsUpdate = true;
+      // BufferAttribute implementations (including WebGPU) should honor setXYZ; ensure renderer sees updates
+      if (typeof positionAttr === 'object' && 'needsUpdate' in (ref.current.geometry.attributes.position as any)) {
+        (ref.current.geometry.attributes.position as any).needsUpdate = true;
+      }
+
       ref.current.rotation.x = rotationX;
       ref.current.rotation.y = rotationY;
     } catch (err) {
