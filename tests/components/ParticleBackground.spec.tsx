@@ -1,10 +1,38 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ParticleBackground from '@/components/ParticleBackground';
 
+// Mock WebGPUCanvas to directly use Canvas mock in tests (no async loading)
+vi.mock('@/components/WebGPUCanvas', () => {
+  return {
+    __esModule: true,
+    default: ({ children, onCreated, ...props }: any) => {
+      const React = require('react');
+      const ref = React.useRef(null);
+
+      React.useEffect(() => {
+        if (!ref.current) return;
+        // Simulate Canvas onCreated callback
+        onCreated?.({ gl: { domElement: ref.current } });
+      }, [onCreated]);
+
+      return React.createElement(
+        React.Fragment,
+        null,
+        React.createElement('canvas', {
+          ref,
+          'data-testid': 'r3f-canvas',
+          'data-frameloop': props.frameloop ?? '',
+        }),
+        children
+      );
+    },
+  };
+});
+
 vi.mock('@react-three/fiber', async () => {
-  const { createFiberCanvasMock } = await import('@/tests/helpers/reactThreeMocks');
-  return createFiberCanvasMock();
+  const { createFiberUseFrameMock } = await import('@/tests/helpers/reactThreeMocks');
+  return createFiberUseFrameMock();
 });
 
 vi.mock('@react-three/drei', async () => {

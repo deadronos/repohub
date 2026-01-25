@@ -10,14 +10,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Alias 'three' to the WebGPU build for client bundles so node materials
-  // (MeshBasicNodeMaterial, Node, etc.) are available to r3f legacy bundle.
-  webpack: (config, { isServer }) => {
-    if (!isServer && config.resolve && config.resolve.alias) {
-      config.resolve.alias['three'] = 'three/webgpu';
-    }
-    return config;
-  },
+  // WebGPU renderer is now selected at runtime based on browser support
+  // No webpack alias needed - WebGPURenderer from 'three/webgpu' handles
+  // fallback to WebGL internally when WebGPU is not available
   async headers() {
     return [
       {
