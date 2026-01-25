@@ -8,11 +8,18 @@ vi.mock('@react-three/fiber', async () => {
 });
 
 vi.mock('@react-three/drei', async () => {
-  const { createDreiStubMock } = await import('@/tests/helpers/reactThreeMocks');
-  return createDreiStubMock();
+  const { createDreiPointsMock } = await import('@/tests/helpers/reactThreeMocks');
+  return createDreiPointsMock();
 });
 
+import { getLatestPointsInstance, resetReactThreeMocks } from '@/tests/helpers/reactThreeMocks';
+
 describe('ParticleBackground', () => {
+  beforeEach(() => {
+    resetReactThreeMocks();
+    vi.restoreAllMocks();
+  });
+
   it('handles WebGL context loss by preventing default and pausing frameloop', async () => {
     render(<ParticleBackground />);
 
@@ -52,5 +59,40 @@ describe('ParticleBackground', () => {
     });
 
     expect(screen.getByTestId('r3f-canvas')).toHaveAttribute('data-frameloop', 'always');
+  });
+
+  it('remounts Particles on context restore', async () => {
+    render(<ParticleBackground />);
+
+    const canvas = await screen.findByTestId('r3f-canvas');
+
+    // Wait for initial Points instance to be created and capture it
+    await waitFor(() => {
+      expect(getLatestPointsInstance()).toBeTruthy();
+    });
+
+    const initialPoints = getLatestPointsInstance();
+
+    // simulate context lost
+    const lostEvent = new Event('webglcontextlost', { cancelable: true });
+    canvas.dispatchEvent(lostEvent);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'lost');
+    });
+
+    // simulate context restored
+    act(() => {
+      canvas.dispatchEvent(new Event('webglcontextrestored'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'ok');
+      expect(screen.getByTestId('r3f-canvas')).toHaveAttribute('data-frameloop', 'always');
+    });
+
+    const restoredPoints = getLatestPointsInstance();
+    expect(restoredPoints).toBeTruthy();
+    expect(restoredPoints).not.toBe(initialPoints);
   });
 });

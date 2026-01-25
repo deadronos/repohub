@@ -48,9 +48,11 @@ export async function createFiberCanvasMock() {
     Canvas: ({
       onCreated,
       frameloop,
+      children,
     }: {
       onCreated?: (state: { gl: { domElement: HTMLCanvasElement } }) => void;
       frameloop?: string;
+      children?: React.ReactNode;
     }) => {
       const ref = React.useRef<HTMLCanvasElement>(null);
 
@@ -59,8 +61,13 @@ export async function createFiberCanvasMock() {
         onCreated?.({ gl: { domElement: ref.current } });
       }, [onCreated]);
 
-      return <canvas ref={ref} data-testid="r3f-canvas" data-frameloop={frameloop ?? ''} />;
-    },
+      return (
+        <>
+          <canvas ref={ref} data-testid="r3f-canvas" data-frameloop={frameloop ?? ''} />
+          {children}
+        </>
+      );
+    }, 
     useFrame: () => {},
   };
 }
