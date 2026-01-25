@@ -1,18 +1,12 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import ParticleBackgroundLazy from '@/components/ParticleBackgroundLazy';
 import { Analytics } from '@vercel/analytics/next';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+// Note: Google Fonts via `next/font/google` are not used in production builds here
+// because Turbopack may attempt an HTTP/2 fetch that fails in some environments.
+// We provide CSS fallbacks in `globals.css` instead.
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
   title: 'Project Hub | Digital Portfolio',
@@ -26,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className="antialiased">
         <ParticleBackgroundLazy />
         <Analytics />
         {children}
