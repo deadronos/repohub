@@ -18,8 +18,11 @@ type WebGPUCanvasProps = ComponentProps<typeof Canvas> & {
  * - Falls back to standard Canvas if WebGPU import fails (e.g., in test environments)
  * 
  * Note: WebGPURenderer is designed to handle the fallback internally, so we don't
- * need to manually switch between WebGLRenderer and WebGPURenderer.
- */
+ * need to manually switch between WebGLRenderer and WebGPURenderer.//
+// Important: WebGPURenderer requires initialization via `await renderer.init()`
+// before calling render. The `gl` factory below will await `init()` when present
+// (and supports async init functions) to avoid premature `.render()` calls which
+// would throw: ".render() called before the backend is initialized." */
 export default function WebGPUCanvas({
   onRendererCreated,
   onCreated,
