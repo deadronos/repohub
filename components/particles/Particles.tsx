@@ -25,13 +25,23 @@ export default function Particles(props: ParticlesProps) {
     if (elapsed === undefined || elapsed === null) return;
 
     try {
-      const positionAttr = ref.current.geometry.attributes.position as unknown as {
-        array: Float32Array;
-        setXYZ?: (idx: number, x: number, y: number, z: number) => void;
+      const positionAttr = ref.current.geometry.getAttribute('position');
+      if (!positionAttr) return;
+
+      // In three.js, position attributes are typically Float32Array-backed, but the
+      // type is `TypedArray`. Guard so our math operates on a float array.
+      if (!(positionAttr.array instanceof Float32Array)) return;
+
+      const attrLike = {
+        array: positionAttr.array,
+        setXYZ:
+          typeof (positionAttr as unknown as { setXYZ?: unknown }).setXYZ === 'function'
+            ? (positionAttr as unknown as { setXYZ: (i: number, x: number, y: number, z: number) => void }).setXYZ.bind(positionAttr)
+            : undefined,
       };
 
       const { rotationX, rotationY } = applyParticleFrame(
-        positionAttr,
+        attrLike,
         initialPositions,
         pointer.x ?? 0,
         pointer.y ?? 0,
@@ -39,16 +49,13 @@ export default function Particles(props: ParticlesProps) {
         PARTICLE_COUNT,
       );
 
-      // BufferAttribute implementations (including WebGPU) should honor setXYZ; ensure renderer sees updates
-      if (typeof positionAttr === 'object' && 'needsUpdate' in (ref.current.geometry.attributes.position as any)) {
-        (ref.current.geometry.attributes.position as any).needsUpdate = true;
-      }
+      // Ensure the renderer sees attribute updates
+      positionAttr.needsUpdate = true;
 
       ref.current.rotation.x = rotationX;
       ref.current.rotation.y = rotationY;
     } catch (err) {
       // Prevent uncaught errors from breaking the render loop
-      // eslint-disable-next-line no-console
       console.error('Particles frame error:', err);
     }
   });

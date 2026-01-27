@@ -42,6 +42,24 @@ export default defineConfig([
     },
   },
 
+  // Tests often use dynamic mocks and intentionally loose types.
+  // Keep core correctness rules, but relax the most verbose type-safety rules.
+  {
+    files: [
+      'tests/**/*.{ts,tsx,js,jsx}',
+      '**/*.spec.{ts,tsx,js,jsx}',
+    ],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+
   // Avoid type-aware linting on JS/config files.
   {
     files: ['**/*.{js,cjs,mjs}', '**/*.config.*', 'eslint.config.*'],

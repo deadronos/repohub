@@ -13,6 +13,7 @@ export type PointsInstance = {
         needsUpdate: boolean;
       };
     };
+    getAttribute?: (name: string) => { array: Float32Array; needsUpdate: boolean } | null;
   };
   rotation: { x: number; y: number };
 };
@@ -75,38 +76,51 @@ export async function createFiberCanvasMock() {
 export async function createDreiPointsMock() {
   const React = await import('react');
 
-  const Points = React.forwardRef(
-    (
-      {
-        children,
-        positions,
-      }: {
-        children: ReactNode;
-        positions: Float32Array;
-      },
-      ref: React.ForwardedRef<PointsInstance>,
-    ) => {
-      latestPointsInstance = {
+  const Points = React.forwardRef(function Points(
+    {
+      children,
+      positions,
+    }: {
+      children: ReactNode;
+      positions: Float32Array;
+    },
+    ref: React.ForwardedRef<PointsInstance>,
+  ) {
+    // Avoid render-time side effects on module-level variables.
+    // Store the latest instance in an effect so rules-of-hooks stay happy.
+    const instance = React.useMemo<PointsInstance>(() => {
+      const positionAttr = {
+        array: positions,
+        needsUpdate: false,
+      };
+
+      return {
         geometry: {
           attributes: {
-            position: {
-              array: positions,
-              needsUpdate: false,
-            },
+            position: positionAttr,
+          },
+          getAttribute: (name: string) => {
+            if (name !== 'position') return null;
+            return positionAttr;
           },
         },
         rotation: { x: 0, y: 0 },
       };
+    }, [positions]);
 
+    React.useEffect(() => {
+      latestPointsInstance = instance;
       if (typeof ref === 'function') {
-        ref(latestPointsInstance);
+        ref(instance);
       } else if (ref) {
-        (ref as React.MutableRefObject<PointsInstance | null>).current = latestPointsInstance;
+        (ref as React.MutableRefObject<PointsInstance | null>).current = instance;
       }
+    }, [instance, ref]);
 
-      return <div data-testid="points">{children}</div>;
-    },
-  );
+    return <div data-testid="points">{children}</div>;
+  });
+
+  Points.displayName = 'Points';
 
   const PointMaterial = () => <div data-testid="point-material" />;
 

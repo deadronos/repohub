@@ -6,9 +6,6 @@ import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { makeProject } from '@/tests/fixtures/project';
 import {
-  createDndKitCoreMock,
-  createDndKitSortableMock,
-  createDndKitUtilitiesMock,
   getLatestDndContextProps,
   getRefreshSpy,
   getUseSortableArgs,
