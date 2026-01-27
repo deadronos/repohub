@@ -6,6 +6,7 @@ import {
   getLatestPointsInstance,
   resetReactThreeMocks,
 } from '@/tests/helpers/reactThreeMocks';
+import type { FrameState } from '@/tests/helpers/reactThreeMocks';
 
 vi.mock('@react-three/fiber', async () => {
   const { createFiberUseFrameMock } = await import('@/tests/helpers/reactThreeMocks');
@@ -70,7 +71,7 @@ describe('Particles component', () => {
 
     expect(() =>
       // call with missing elapsed and missing pointer to simulate partial state
-      latestFrameCb({} as any),
+      latestFrameCb({} as unknown as FrameState),
     ).not.toThrow();
 
     expect(consoleSpy).not.toHaveBeenCalled();

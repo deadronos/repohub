@@ -53,7 +53,12 @@ vi.mock('@react-three/fiber', async () => {
       }
     }, [onCreated, gl, dataRendererType]);
 
-    return <canvas ref={ref} data-testid="r3f-canvas" />;
+    return (
+      <>
+        <canvas ref={ref} data-testid="r3f-canvas" />
+        {children}
+      </>
+    );
   }
 
   return {

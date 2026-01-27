@@ -54,7 +54,7 @@ vi.mock('@react-three/fiber', async () => {
           } else {
             handleResult(gl);
           }
-        } catch (err) {
+        } catch {
           handleResult(null);
         }
       };
@@ -66,7 +66,12 @@ vi.mock('@react-three/fiber', async () => {
       return () => clearTimeout(id);
     }, [onCreated, gl, dataRendererType]);
 
-    return <canvas ref={ref} data-testid="r3f-canvas" />;
+    return (
+      <>
+        <canvas ref={ref} data-testid="r3f-canvas" />
+        {children}
+      </>
+    );
   }
 
   return {
@@ -92,7 +97,7 @@ describe('WebGPUCanvas', () => {
 
     render(<WebGPUCanvas onRendererCreated={onRendererCreated} />);
 
-    const canvas = await screen.findByTestId('r3f-canvas');
+    await screen.findByTestId('r3f-canvas');
 
     // The component should notify that it selected the 'webgl' renderer
     // (since WebGPU export was missing and we provide an explicit legacy fallback)

@@ -20,16 +20,27 @@ export function generateParticles(count: number) {
   return [positions, initialPositions] as const;
 }
 
+type PositionAttributeLike = {
+  array: Float32Array;
+  setXYZ?: (idx: number, x: number, y: number, z: number) => void;
+};
+
+function isPositionAttributeLike(value: unknown): value is PositionAttributeLike {
+  if (!value || typeof value !== 'object') return false;
+  const rec = value as Record<string, unknown>;
+  return rec.array instanceof Float32Array;
+}
+
 export function applyParticleFrame(
-  particlePositions: Float32Array | { array: Float32Array; setXYZ?: (idx: number, x: number, y: number, z: number) => void; count?: number },
+  particlePositions: Float32Array | PositionAttributeLike,
   initialPositions: Float32Array,
   pointerX: number,
   pointerY: number,
   time: number,
   particleCount: number,
 ) {
-  const isAttr = typeof (particlePositions as any).array !== 'undefined';
-  const arr = isAttr ? (particlePositions as any).array as Float32Array : particlePositions as Float32Array;
+  const isAttr = isPositionAttributeLike(particlePositions);
+  const arr = isAttr ? particlePositions.array : particlePositions;
   const safeCount = Math.min(
     Math.max(0, Math.floor(particleCount)),
     Math.floor(arr.length / 3),
@@ -53,8 +64,8 @@ export function applyParticleFrame(
     const newX = x + pointerX * 0.05;
     const newY = y;
 
-    if (isAttr && typeof (particlePositions as any).setXYZ === 'function') {
-      (particlePositions as any).setXYZ(i, newX, newY, arr[i3 + 2] ?? 0);
+    if (isAttr && typeof particlePositions.setXYZ === 'function') {
+      particlePositions.setXYZ(i, newX, newY, arr[i3 + 2] ?? 0);
     } else {
       arr[i3] = newX;
       arr[i3 + 1] = newY;

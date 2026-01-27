@@ -97,7 +97,6 @@ describe('utils/github', () => {
       expect(global.fetch).toHaveBeenCalledWith(
         'https://api.github.com/repos/owner/repo',
         expect.objectContaining({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           headers: expect.objectContaining({
             Authorization: 'Bearer fake-token',
           }),

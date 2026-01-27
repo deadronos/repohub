@@ -7,6 +7,26 @@ type WebGPUCanvasProps = ComponentProps<typeof Canvas> & {
   onRendererCreated?: (rendererType: 'webgpu' | 'webgl') => void;
 };
 
+type RendererInstance = {
+  render: (...args: unknown[]) => unknown;
+} & Record<string, unknown>;
+
+type RendererCtor = new (options: Record<string, unknown>) => RendererInstance;
+type RendererFactory = (options: Record<string, unknown>) => RendererInstance;
+type RendererExport = RendererCtor | RendererFactory;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isRendererExport(value: unknown): value is RendererExport {
+  return typeof value === 'function';
+}
+
+function hasInit(value: unknown): value is { init: () => void | Promise<void> } {
+  return isRecord(value) && typeof value.init === 'function';
+}
+
 /**
  * Enhanced Canvas component that uses WebGPURenderer with automatic WebGL fallback.
  * 
@@ -33,7 +53,7 @@ export default function WebGPUCanvas({
   const hasNotified = useRef(false);
   const [webGPUState, setWebGPUState] = useState<{
     loading: boolean;
-    Renderer: any | null;
+    Renderer: unknown;
     failed: boolean;
   }>({
     loading: true,
@@ -42,7 +62,7 @@ export default function WebGPUCanvas({
   });
 
   // Legacy WebGL renderer (imported from three/legacy when needed)
-  const [LegacyRenderer, setLegacyRenderer] = useState<any | null>(null);
+  const [LegacyRenderer, setLegacyRenderer] = useState<unknown>(null);
 
   // Dynamically import WebGPURenderer on mount (client-side only).
   // If it fails (e.g., in test envs or older browsers), try to import the
@@ -64,7 +84,6 @@ export default function WebGPUCanvas({
         });
       })
       .catch((error) => {
-        // eslint-disable-next-line no-console
         console.error('Failed to import WebGPURenderer, falling back to legacy WebGL renderer:', error);
         setWebGPUState({
           loading: false,
@@ -90,7 +109,7 @@ export default function WebGPUCanvas({
   }, []);
 
   // Create gl configuration for Canvas
-  const glConfig = useMemo(() => {
+  const glConfig = useMemo<WebGPUCanvasProps['gl']>(() => {
     const { Renderer } = webGPUState;
     
     // If a WebGPURenderer is available, use it (it internally falls back to WebGL2 if needed)
@@ -100,28 +119,36 @@ export default function WebGPUCanvas({
         return glProp;
       }
 
+      if (!isRendererExport(Renderer)) {
+        return glProp;
+      }
+
+      const RendererFn = Renderer;
+
       // Create a function that returns WebGPURenderer instance
       // The function signature must match (defaultProps: DefaultGLProps) => Renderer
       return async (defaultProps: DefaultGLProps) => {
-        const rendererOptions = {
+        const glOverrides: Record<string, unknown> =
+          isRecord(glProp) && typeof glProp !== 'function' ? (glProp as Record<string, unknown>) : {};
+
+        const rendererOptions: Record<string, unknown> = {
           canvas: defaultProps.canvas,
           antialias: true,
           alpha: true,
-          ...(typeof glProp === 'object' ? glProp : {}),
+          ...glOverrides,
         };
 
         // Create renderer instance (constructor or factory)
-        let rendererInstance: any;
+        let rendererInstance: RendererInstance;
         try {
-          rendererInstance = new Renderer(rendererOptions);
-        } catch (e) {
+          rendererInstance = new (RendererFn as RendererCtor)(rendererOptions);
+        } catch {
           // If Renderer is a factory function that returns an instance
-          rendererInstance = Renderer(rendererOptions);
+          rendererInstance = (RendererFn as RendererFactory)(rendererOptions);
         }
 
         // Some renderers (like WebGPURenderer) require initialization before use
-        if (rendererInstance && typeof rendererInstance.init === 'function') {
-          // init() may be async
+        if (hasInit(rendererInstance)) {
           await rendererInstance.init();
         }
 
@@ -131,19 +158,28 @@ export default function WebGPUCanvas({
 
     // No WebGPURenderer: if we explicitly loaded a legacy renderer, use it
     if (LegacyRenderer) {
+      if (!isRendererExport(LegacyRenderer)) {
+        return glProp;
+      }
+
+      const LegacyRendererFn = LegacyRenderer;
+
       return (defaultProps: DefaultGLProps) => {
-        const rendererOptions = {
+        const glOverrides: Record<string, unknown> =
+          isRecord(glProp) && typeof glProp !== 'function' ? (glProp as Record<string, unknown>) : {};
+
+        const rendererOptions: Record<string, unknown> = {
           canvas: defaultProps.canvas,
           antialias: true,
           alpha: true,
-          ...(typeof glProp === 'object' ? glProp : {}),
+          ...glOverrides,
         };
 
         // Support both constructor and factory export shapes
         try {
-          return new LegacyRenderer(rendererOptions);
-        } catch (e) {
-          return LegacyRenderer(rendererOptions);
+          return new (LegacyRendererFn as RendererCtor)(rendererOptions);
+        } catch {
+          return (LegacyRendererFn as RendererFactory)(rendererOptions);
         }
       };
     }
@@ -155,15 +191,15 @@ export default function WebGPUCanvas({
   // Enhanced onCreated callback that detects actual renderer backend
   const handleCreated = (state: Parameters<NonNullable<typeof onCreated>>[0]) => {
     // Detect which backend the WebGPURenderer is using
-    const gl = state.gl as any;
-    
+    const gl = state.gl as unknown;
+
     // WebGPURenderer has an isWebGPURenderer property
-    const isWebGPU = gl.isWebGPURenderer === true;
-    
+    const isWebGPU = isRecord(gl) && gl.isWebGPURenderer === true;
+
     // Try to determine if it fell back to WebGL
     // WebGPURenderer falls back to WebGL2 backend if WebGPU is not available
-    const backend = gl.backend;
-    const isUsingWebGL = backend?.isWebGLBackend === true;
+    const backend = isRecord(gl) ? gl.backend : undefined;
+    const isUsingWebGL = isRecord(backend) && backend.isWebGLBackend === true;
     
     const actualType = isWebGPU && !isUsingWebGL ? 'webgpu' : 'webgl';
     
