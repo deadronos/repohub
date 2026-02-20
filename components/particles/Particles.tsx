@@ -12,17 +12,15 @@ const PARTICLE_COUNT = 5000;
 
 export default function Particles(props: ParticlesProps) {
   const ref = useRef<THREE.Points>(null);
-  const [positions, initialPositions] = useMemo(
-    () => generateParticles(PARTICLE_COUNT),
-    [],
-  );
+  const [positions, initialPositions] = useMemo(() => generateParticles(PARTICLE_COUNT), []);
 
   useFrame((state) => {
     if (!ref.current) return;
 
     // Guard against partial state (can happen during context loss / restore)
-    const { pointer = { x: 0, y: 0 }, elapsed } = state || {};
-    if (elapsed === undefined || elapsed === null) return;
+    const pointer = state.pointer || { x: 0, y: 0 };
+    const elapsed = state.clock?.elapsedTime;
+    if (elapsed === undefined) return;
 
     try {
       const positionAttr = ref.current.geometry.getAttribute('position');
@@ -36,7 +34,11 @@ export default function Particles(props: ParticlesProps) {
         array: positionAttr.array,
         setXYZ:
           typeof (positionAttr as unknown as { setXYZ?: unknown }).setXYZ === 'function'
-            ? (positionAttr as unknown as { setXYZ: (i: number, x: number, y: number, z: number) => void }).setXYZ.bind(positionAttr)
+            ? (
+                positionAttr as unknown as {
+                  setXYZ: (i: number, x: number, y: number, z: number) => void;
+                }
+              ).setXYZ.bind(positionAttr)
             : undefined,
       };
 

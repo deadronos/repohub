@@ -43,7 +43,7 @@ describe('Particles component', () => {
 
     latestFrameCb({
       pointer: { x: 1, y: 2 },
-      elapsed: 0,
+      clock: { elapsedTime: 0 },
     });
 
     const positionAttr = latestPointsInstance.geometry.attributes.position;
