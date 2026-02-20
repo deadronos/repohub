@@ -8,7 +8,7 @@ import prettier from 'eslint-config-prettier/flat';
 
 export default defineConfig([
   {
-    ignores: ['.next/**', 'out/**', 'build/**', 'coverage/**', 'next-env.d.ts'],
+    ignores: ['.next/**', 'out/**', 'build/**', 'coverage/**', 'next-env.d.ts', '.github/**'],
   },
 
   ...nextCoreWebVitals,
@@ -45,10 +45,7 @@ export default defineConfig([
   // Tests often use dynamic mocks and intentionally loose types.
   // Keep core correctness rules, but relax the most verbose type-safety rules.
   {
-    files: [
-      'tests/**/*.{ts,tsx,js,jsx}',
-      '**/*.spec.{ts,tsx,js,jsx}',
-    ],
+    files: ['tests/**/*.{ts,tsx,js,jsx}', '**/*.spec.{ts,tsx,js,jsx}'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
