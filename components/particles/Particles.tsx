@@ -20,6 +20,7 @@ export default function Particles(props: ParticlesProps) {
     // Guard against partial state (can happen during context loss / restore)
     const pointer = state.pointer || { x: 0, y: 0 };
     const elapsed = state.clock?.elapsedTime;
+    if (elapsed === undefined) return;
 
     try {
       const positionAttr = ref.current.geometry.getAttribute('position');

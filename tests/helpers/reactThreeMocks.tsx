@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export type FrameState = {
   pointer: { x: number; y: number };
-  elapsed: number; // Replaces clock.getElapsedTime() in newer r3f versions
+  clock?: { elapsedTime: number };
 };
 
 export type PointsInstance = {
@@ -68,7 +68,7 @@ export async function createFiberCanvasMock() {
           {children}
         </>
       );
-    }, 
+    },
     useFrame: () => {},
   };
 }

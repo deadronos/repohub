@@ -1,11 +1,16 @@
 'use client';
 
 import { useEffect, useState, useRef, useMemo, type ComponentProps } from 'react';
-import { Canvas, type DefaultGLProps } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 
 type WebGPUCanvasProps = ComponentProps<typeof Canvas> & {
   onRendererCreated?: (rendererType: 'webgpu' | 'webgl') => void;
 };
+
+interface GLProps {
+  canvas?: HTMLCanvasElement | OffscreenCanvas;
+  [key: string]: unknown;
+}
 
 type RendererInstance = {
   render: (...args: unknown[]) => unknown;
@@ -84,7 +89,10 @@ export default function WebGPUCanvas({
         });
       })
       .catch((error) => {
-        console.error('Failed to import WebGPURenderer, falling back to legacy WebGL renderer:', error);
+        console.error(
+          'Failed to import WebGPURenderer, falling back to legacy WebGL renderer:',
+          error,
+        );
         setWebGPUState({
           loading: false,
           Renderer: null,
@@ -109,13 +117,16 @@ export default function WebGPUCanvas({
   }, []);
 
   // Create gl configuration for Canvas
-  const glConfig = useMemo<WebGPUCanvasProps['gl']>(() => {
+  const glConfig = useMemo(() => {
     const { Renderer } = webGPUState;
-    
+
     // If a WebGPURenderer is available, use it (it internally falls back to WebGL2 if needed)
     if (Renderer) {
       // If glProp is already a function or renderer instance, prioritize it
-      if (typeof glProp === 'function' || (glProp && typeof glProp === 'object' && 'render' in glProp)) {
+      if (
+        typeof glProp === 'function' ||
+        (glProp && typeof glProp === 'object' && 'render' in glProp)
+      ) {
         return glProp;
       }
 
@@ -127,9 +138,11 @@ export default function WebGPUCanvas({
 
       // Create a function that returns WebGPURenderer instance
       // The function signature must match (defaultProps: DefaultGLProps) => Renderer
-      return async (defaultProps: DefaultGLProps) => {
+      return async (defaultProps: GLProps) => {
         const glOverrides: Record<string, unknown> =
-          isRecord(glProp) && typeof glProp !== 'function' ? (glProp as Record<string, unknown>) : {};
+          isRecord(glProp) && typeof glProp !== 'function'
+            ? (glProp as Record<string, unknown>)
+            : {};
 
         const rendererOptions: Record<string, unknown> = {
           canvas: defaultProps.canvas,
@@ -164,9 +177,11 @@ export default function WebGPUCanvas({
 
       const LegacyRendererFn = LegacyRenderer;
 
-      return (defaultProps: DefaultGLProps) => {
+      return (defaultProps: GLProps) => {
         const glOverrides: Record<string, unknown> =
-          isRecord(glProp) && typeof glProp !== 'function' ? (glProp as Record<string, unknown>) : {};
+          isRecord(glProp) && typeof glProp !== 'function'
+            ? (glProp as Record<string, unknown>)
+            : {};
 
         const rendererOptions: Record<string, unknown> = {
           canvas: defaultProps.canvas,
@@ -200,11 +215,11 @@ export default function WebGPUCanvas({
     // WebGPURenderer falls back to WebGL2 backend if WebGPU is not available
     const backend = isRecord(gl) ? gl.backend : undefined;
     const isUsingWebGL = isRecord(backend) && backend.isWebGLBackend === true;
-    
+
     const actualType = isWebGPU && !isUsingWebGL ? 'webgpu' : 'webgl';
-    
+
     setRendererType(actualType);
-    
+
     // Notify parent only once
     if (!hasNotified.current && onRendererCreated) {
       onRendererCreated(actualType);
@@ -227,7 +242,8 @@ export default function WebGPUCanvas({
   return (
     <Canvas
       {...props}
-      gl={glConfig}
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      gl={glConfig as any}
       onCreated={handleCreated}
       data-renderer-type={rendererType ?? 'pending'}
     />
