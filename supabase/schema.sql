@@ -21,41 +21,56 @@ create policy "Public projects are viewable by everyone"
   on projects for select
   using ( true );
 
--- 4. Create Policy: Only Authenticated Users (You) can INSERT/UPDATE/DELETE
-create policy "Users can insert their own projects"
+-- 4. Define the admin allowlist used by RLS.
+-- Replace the email literals below so they match ADMIN_EMAILS in .env.local.
+create or replace function public.is_admin_email()
+returns boolean
+language sql
+stable
+as $$
+  select lower(coalesce(auth.jwt() ->> 'email', '')) = any (
+    array[
+      'admin@example.com'
+    ]
+  );
+$$;
+
+-- 5. Create Policies: Only allowlisted admin emails can mutate projects
+create policy "Admins can insert projects"
   on projects for insert
   to authenticated
-  with check ( true );
+  with check ( public.is_admin_email() );
 
-create policy "Users can update their own projects"
+create policy "Admins can update projects"
   on projects for update
   to authenticated
-  using ( true );
+  using ( public.is_admin_email() )
+  with check ( public.is_admin_email() );
 
-create policy "Users can delete their own projects"
+create policy "Admins can delete projects"
   on projects for delete
   to authenticated
-  using ( true );
+  using ( public.is_admin_email() );
 
--- 5. Storage Policies (Run these AFTER creating a 'projects' bucket in the Storage dashboard)
+-- 6. Storage Policies (Run these AFTER creating a 'projects' bucket in the Storage dashboard)
 -- Make the 'projects' bucket PUBLIC:
 create policy "Public Access"
   on storage.objects for select
   using ( bucket_id = 'projects' );
 
--- Allow authenticated users (you) to upload:
-create policy "Authenticated Upload" 
+-- Allow allowlisted admin emails to upload project images:
+create policy "Admin Upload"
   on storage.objects for insert 
   to authenticated 
-  with check ( bucket_id = 'projects' );
+  with check ( bucket_id = 'projects' and public.is_admin_email() );
 
--- Allow authenticated users (you) to delete uploaded project images:
-create policy "Authenticated Delete"
+-- Allow allowlisted admin emails to delete uploaded project images:
+create policy "Admin Delete"
   on storage.objects for delete
   to authenticated
-  using ( bucket_id = 'projects' );
+  using ( bucket_id = 'projects' and public.is_admin_email() );
 
--- 6. Project ordering helper (batch update)
+-- 7. Project ordering helper (batch update)
 create or replace function update_project_order(ordered_ids uuid[])
 returns integer
 language sql

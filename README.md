@@ -11,7 +11,7 @@ A **Cyber-Minimalist** portfolio and project gallery built with the latest web t
 - **Bento Grid Layout**: Responsive, masonry-style grid for project cards.
 - **Zero-Layout Shift Transitions**: Clicking a card expands it into a details modal using `framer-motion` layout animations.
 - **Secure Admin Dashboard**:
-  - Protected route `/admin` (Middleware + Supabase Auth).
+  - Protected route `/admin` (Middleware + explicit admin allowlist).
   - **CRUD Operations**: Create, Read, Update, and Delete projects.
   - **Image Upload**: Drag & drop upload directly to public Supabase Storage.
 - **Tech Stack**:
@@ -43,11 +43,14 @@ Create a `.env.local` file in the root:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your_project_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_publishable_key
+ADMIN_EMAILS=admin@example.com
 ```
+
+`ADMIN_EMAILS` is a comma-separated allowlist of admin email addresses. Any authenticated user whose email is not in this list will be blocked from `/admin` and from project mutations.
 
 ### 4. Supabase Configuration
 
-Run the following SQL in your Supabase **SQL Editor** to set up the database and permissions:
+Run the following SQL in your Supabase **SQL Editor** to set up the database and permissions. Replace `admin@example.com` with the same email addresses you configured in `ADMIN_EMAILS`.
 
 ```sql
 -- 1. Create Projects Table
@@ -67,16 +70,29 @@ create table projects (
 -- 2. Enable Security
 alter table projects enable row level security;
 
--- 3. App Access Policies
-create policy "Public view" on projects for select using (true);
-create policy "Auth update" on projects for insert to authenticated with check (true);
-create policy "Auth insert" on projects for update to authenticated using (true);
-create policy "Auth delete" on projects for delete to authenticated using (true);
+-- 3. Admin allowlist helper
+create or replace function public.is_admin_email()
+returns boolean
+language sql
+stable
+as $$
+  select lower(coalesce(auth.jwt() ->> 'email', '')) = any (
+    array[
+      'admin@example.com'
+    ]
+  );
+$$;
 
--- 4. Storage Policies (Ensure you create a public bucket named 'projects')
+-- 4. App Access Policies
+create policy "Public view" on projects for select using (true);
+create policy "Admin insert" on projects for insert to authenticated with check (public.is_admin_email());
+create policy "Admin update" on projects for update to authenticated using (public.is_admin_email()) with check (public.is_admin_email());
+create policy "Admin delete" on projects for delete to authenticated using (public.is_admin_email());
+
+-- 5. Storage Policies (Ensure you create a public bucket named 'projects')
 create policy "Public Access" on storage.objects for select using ( bucket_id = 'projects' );
-create policy "Authenticated Upload" on storage.objects for insert to authenticated with check ( bucket_id = 'projects' );
-create policy "Authenticated Delete" on storage.objects for delete to authenticated using ( bucket_id = 'projects' );
+create policy "Admin Upload" on storage.objects for insert to authenticated with check ( bucket_id = 'projects' and public.is_admin_email() );
+create policy "Admin Delete" on storage.objects for delete to authenticated using ( bucket_id = 'projects' and public.is_admin_email() );
 ```
 
 > **Important**: Go to Supabase Storage -> Create a new bucket named `projects` and make sure **"Public Bucket"** is enabled.
@@ -87,6 +103,8 @@ Since there is no public sign-up page:
 
 1. Go to Supabase Dashboard -> **Authentication** -> **Users**.
 2. Click **Add User** and create your admin credentials.
+3. Add that exact email address to `ADMIN_EMAILS`.
+4. Keep the email list inside your Supabase SQL policies in sync with `ADMIN_EMAILS` so direct database and storage writes stay locked down.
 
 ## 🏃‍♂️ Running Locally
 
@@ -95,7 +113,7 @@ npm run dev
 ```
 
 - **Home**: `http://localhost:3000`
-- **Admin**: `http://localhost:3000/admin` (Redirects to login if not authenticated)
+- **Admin**: `http://localhost:3000/admin` (Redirects to login unless the signed-in user email is allowlisted)
 
 ## 📚 Documentation
 
