@@ -19,6 +19,7 @@
 - Formatting is centralized (`utils/format.ts`) and reused in GitHub stats UI.
 - Unit tests cover key UI and utility paths; `npm run test` and `npm run test:coverage` are green on this branch.
 - Login failures now surface visible feedback on `/login` via an inline alert instead of appearing as a silent refresh.
+- README setup instructions now point to `supabase/schema.sql` as the canonical Supabase setup file and explicitly mention the ordering RPC required by the admin dashboard.
 
 ## What’s Missing / Incomplete
 
@@ -28,7 +29,6 @@
 
 ## Known Issues
 
-- `supabase/schema.sql` lacks a `DELETE` policy for `projects`, but the app calls delete.
 - No explicit admin role check: any authenticated user can mutate if RLS allows it.
 
 ## Suggested Next Improvements (Not Implemented)

@@ -15,6 +15,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 
 ## Recent Changes
 
+- Updated setup documentation so `README.md` points to `supabase/schema.sql` as the canonical Supabase schema source and explicitly calls out `sort_order` plus `update_project_order(uuid[])` for admin drag-and-drop ordering.
 - Split server actions into auth and project modules, with shared project helpers for form parsing, validation, uploads, and revalidation.
 - Centralized project list fetching in a `listProjects()` helper and updated pages to use it.
 - Extracted the admin project form and particle system into focused components; updated unit tests for new helpers.

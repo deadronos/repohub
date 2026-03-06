@@ -19,6 +19,7 @@ Before creating a PR or handing work off:
 - **Add tests:** add unit tests for new logic under `tests/` (Vitest). Tests should be deterministic.
 - **Run checks:** confirm `npm run check` passes (or run `npm run test`, `npm run lint`, `npm run typecheck` individually).
 - **Build:** confirm `npm run build` passes.
+- **Review setup docs when schema changes:** if you touch Supabase tables, policies, or RPCs, treat `supabase/schema.sql` as canonical and verify `README.md` still points to or accurately describes it.
 
 - **Avoid build-time network dependencies:** Do not rely on fetching external resources (for example, Google Fonts via `next/font/google`) during `next build` since bundlers (Turbopack/Next) may attempt HTTP/2 fetches at build-time which can fail in CI or certain environments. Prefer bundling fonts locally (use `next/font/local` or place font files in `public/`) or provide safe CSS fallbacks so builds are deterministic and offline-capable.
 
