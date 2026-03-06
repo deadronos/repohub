@@ -3,14 +3,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const {
   createClientMock,
   ensureUserMock,
-  requireUserOrUnauthorizedMock,
+  requireAdminOrUnauthorizedMock,
   prepareProjectMutationMock,
   revalidateProjectsMock,
   deleteProjectImagesMock,
 } = vi.hoisted(() => ({
   createClientMock: vi.fn(),
   ensureUserMock: vi.fn(),
-  requireUserOrUnauthorizedMock: vi.fn(),
+  requireAdminOrUnauthorizedMock: vi.fn(),
   prepareProjectMutationMock: vi.fn(),
   revalidateProjectsMock: vi.fn(),
   deleteProjectImagesMock: vi.fn(),
@@ -22,7 +22,7 @@ vi.mock('@/utils/supabase/server', () => ({
 
 vi.mock('@/utils/supabase/auth', () => ({
   ensureUser: ensureUserMock,
-  requireUserOrUnauthorized: requireUserOrUnauthorizedMock,
+  requireAdminOrUnauthorized: requireAdminOrUnauthorizedMock,
 }));
 
 vi.mock('@/utils/projects/mutations', () => ({
@@ -44,7 +44,7 @@ vi.mock('@/utils/projects/storage', async () => {
   };
 });
 
-import { deleteProjects, updateProject } from '@/app/actions/projects';
+import { createProject, deleteProjects, updateProject } from '@/app/actions/projects';
 
 function createSupabaseDouble() {
   const eqMock = vi.fn();
@@ -77,8 +77,19 @@ describe('project action storage cleanup', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     ensureUserMock.mockResolvedValue({ id: 'user-1' });
-    requireUserOrUnauthorizedMock.mockResolvedValue({ data: { id: 'user-1' } });
+    requireAdminOrUnauthorizedMock.mockResolvedValue({ data: { id: 'user-1' } });
     deleteProjectImagesMock.mockResolvedValue({ deletedPaths: [], warning: null });
+  });
+
+  it('returns Unauthorized when a non-admin user attempts to create a project', async () => {
+    const { supabase } = createSupabaseDouble();
+    createClientMock.mockResolvedValue(supabase);
+    requireAdminOrUnauthorizedMock.mockResolvedValue({ error: 'Unauthorized' });
+
+    const result = await createProject(new FormData());
+
+    expect(prepareProjectMutationMock).not.toHaveBeenCalled();
+    expect(result).toEqual({ error: 'Unauthorized' });
   });
 
   it('removes the previous image after a successful project image replacement', async () => {

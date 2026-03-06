@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { ADMIN_ACCESS_DENIED_MESSAGE, isAdminUser } from '@/utils/supabase/admin';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -37,10 +38,10 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (request.nextUrl.pathname.startsWith('/admin') && !user) {
-    // no user, potentially respond by redirecting the user to the login page
+  if (request.nextUrl.pathname.startsWith('/admin') && !isAdminUser(user)) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
+    url.searchParams.set('message', ADMIN_ACCESS_DENIED_MESSAGE);
     return NextResponse.redirect(url);
   }
 

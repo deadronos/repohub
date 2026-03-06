@@ -1,7 +1,7 @@
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
-import { ensureUser, requireUserOrUnauthorized } from '@/utils/supabase/auth';
+import { requireAdminOrUnauthorized } from '@/utils/supabase/auth';
 import { prepareProjectMutation } from '@/utils/projects/mutations';
 import { validateProjectOrder } from '@/utils/projects/order';
 import { getNextProjectSortOrder } from '@/utils/projects/sort-order';
@@ -13,7 +13,10 @@ import type { Project } from '@/types';
 
 export async function createProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  await ensureUser(supabase, true);
+  const userResult = await requireAdminOrUnauthorized(supabase);
+  if ('error' in userResult) {
+    return userResult;
+  }
 
   const prepared = await prepareProjectMutation(supabase, formData);
   if ('error' in prepared) {
@@ -51,7 +54,7 @@ export async function createProject(formData: FormData): Promise<ActionResult<tr
 
 export async function updateProjectOrder(orderedIds: string[]): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const userResult = await requireUserOrUnauthorized(supabase);
+  const userResult = await requireAdminOrUnauthorized(supabase);
   if ('error' in userResult) {
     return userResult;
   }
@@ -84,7 +87,7 @@ export async function updateProjectOrder(orderedIds: string[]): Promise<ActionRe
 
 export async function updateProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const userResult = await requireUserOrUnauthorized(supabase);
+  const userResult = await requireAdminOrUnauthorized(supabase);
   if ('error' in userResult) {
     return userResult;
   }
@@ -138,7 +141,7 @@ export async function updateProject(formData: FormData): Promise<ActionResult<tr
 
 export async function deleteProjects(ids: string[]): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const userResult = await requireUserOrUnauthorized(supabase);
+  const userResult = await requireAdminOrUnauthorized(supabase);
   if ('error' in userResult) {
     return userResult;
   }
