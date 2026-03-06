@@ -9,6 +9,9 @@ Before making changes, read and follow these sources of truth in this order.
   - Route protection / middleware expectations
   - Server Actions and caching conventions
   - Storage upload conventions
+- `supabase/schema.sql`
+  - Canonical Supabase schema, RLS policies, storage policies, and ordering RPCs
+  - If setup docs mention SQL, they must match this file
 
 ## 2) Repo guardrails
 

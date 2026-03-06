@@ -50,52 +50,22 @@ ADMIN_EMAILS=admin@example.com
 
 ### 4. Supabase Configuration
 
-Run the following SQL in your Supabase **SQL Editor** to set up the database and permissions. Replace `admin@example.com` with the same email addresses you configured in `ADMIN_EMAILS`.
+`supabase/schema.sql` is the canonical schema source for this project. Use that file in Supabase instead of relying on a copied SQL snippet in this README.
 
-```sql
--- 1. Create Projects Table
-create table projects (
-  id uuid default gen_random_uuid() primary key,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  title text not null,
-  description text,
-  short_description text,
-  image_url text,
-  repo_url text,
-  demo_url text,
-  tags text[],
-  is_featured boolean default false
-);
+Setup steps:
 
--- 2. Enable Security
-alter table projects enable row level security;
+1. In Supabase Storage, create a new bucket named `projects` and enable **Public Bucket**.
+2. Open [`supabase/schema.sql`](supabase/schema.sql) and replace `admin@example.com` with the same email addresses you configured in `ADMIN_EMAILS`.
+3. Run the full contents of [`supabase/schema.sql`](supabase/schema.sql) in the Supabase **SQL Editor**.
 
--- 3. Admin allowlist helper
-create or replace function public.is_admin_email()
-returns boolean
-language sql
-stable
-as $$
-  select lower(coalesce(auth.jwt() ->> 'email', '')) = any (
-    array[
-      'admin@example.com'
-    ]
-  );
-$$;
+That schema creates all required runtime pieces, including:
 
--- 4. App Access Policies
-create policy "Public view" on projects for select using (true);
-create policy "Admin insert" on projects for insert to authenticated with check (public.is_admin_email());
-create policy "Admin update" on projects for update to authenticated using (public.is_admin_email()) with check (public.is_admin_email());
-create policy "Admin delete" on projects for delete to authenticated using (public.is_admin_email());
+- The `projects` table with the `sort_order` column used by the admin UI.
+- RLS policies for public reads and allowlisted admin mutations.
+- Storage policies for the `projects` bucket.
+- The `update_project_order(uuid[])` RPC used by drag-and-drop ordering in `/admin`.
 
--- 5. Storage Policies (Ensure you create a public bucket named 'projects')
-create policy "Public Access" on storage.objects for select using ( bucket_id = 'projects' );
-create policy "Admin Upload" on storage.objects for insert to authenticated with check ( bucket_id = 'projects' and public.is_admin_email() );
-create policy "Admin Delete" on storage.objects for delete to authenticated using ( bucket_id = 'projects' and public.is_admin_email() );
-```
-
-> **Important**: Go to Supabase Storage -> Create a new bucket named `projects` and make sure **"Public Bucket"** is enabled.
+If you change the database setup later, update [`supabase/schema.sql`](supabase/schema.sql) first and keep the README aligned with it.
 
 ### 5. Create Admin User
 
@@ -104,7 +74,7 @@ Since there is no public sign-up page:
 1. Go to Supabase Dashboard -> **Authentication** -> **Users**.
 2. Click **Add User** and create your admin credentials.
 3. Add that exact email address to `ADMIN_EMAILS`.
-4. Keep the email list inside your Supabase SQL policies in sync with `ADMIN_EMAILS` so direct database and storage writes stay locked down.
+4. Keep the email literals in [`supabase/schema.sql`](supabase/schema.sql) in sync with `ADMIN_EMAILS` so direct database and storage writes stay locked down.
 
 ## 🏃‍♂️ Running Locally
 
