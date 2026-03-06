@@ -1,6 +1,6 @@
 # Progress
 
-**Updated:** 2025-12-28
+**Updated:** 2026-03-06
 
 ## What Works
 
@@ -18,6 +18,7 @@
 - Shared UI primitives reduce duplication (`ProjectImage`, `ProjectTags`) and shared hooks reduce subtle client bugs (`useEscapeKey`, `useIsMountedRef`).
 - Formatting is centralized (`utils/format.ts`) and reused in GitHub stats UI.
 - Unit tests cover key UI and utility paths; `npm run test` and `npm run test:coverage` are green on this branch.
+- Login failures now surface visible feedback on `/login` via an inline alert instead of appearing as a silent refresh.
 
 ## What’s Missing / Incomplete
 

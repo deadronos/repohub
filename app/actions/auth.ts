@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { LOGIN_FEEDBACK_MESSAGE } from '@/utils/auth-feedback';
 import { buildLoginRedirectPath, isAdminUser } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
 import { getFormString } from '@/utils/form';
@@ -18,7 +19,7 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    return redirect('/login?message=Could not authenticate user');
+    return redirect(buildLoginRedirectPath(LOGIN_FEEDBACK_MESSAGE));
   }
 
   if (!isAdminUser(data.user)) {
