@@ -76,6 +76,7 @@ create policy "Auth delete" on projects for delete to authenticated using (true)
 -- 4. Storage Policies (Ensure you create a public bucket named 'projects')
 create policy "Public Access" on storage.objects for select using ( bucket_id = 'projects' );
 create policy "Authenticated Upload" on storage.objects for insert to authenticated with check ( bucket_id = 'projects' );
+create policy "Authenticated Delete" on storage.objects for delete to authenticated using ( bucket_id = 'projects' );
 ```
 
 > **Important**: Go to Supabase Storage -> Create a new bucket named `projects` and make sure **"Public Bucket"** is enabled.

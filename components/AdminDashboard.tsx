@@ -23,7 +23,7 @@ import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, AlertCircle } from 'lucide-react';
-import { getActionError } from '@/utils/actions';
+import { getActionError, getActionWarning } from '@/utils/actions';
 import AdminProjectCard from '@/components/admin/AdminProjectCard';
 import SortableProjectCard from '@/components/admin/SortableProjectCard';
 import ProjectFormModal from '@/components/admin/ProjectFormModal';
@@ -32,13 +32,17 @@ interface AdminDashboardProps {
   initialProjects: Project[];
 }
 
+type FeedbackState =
+  | { tone: 'error'; message: string }
+  | { tone: 'warning'; message: string };
+
 export default function AdminDashboard({ initialProjects }: AdminDashboardProps) {
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
@@ -76,30 +80,33 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
     const originalProjects = [...projects];
     setProjects(projects.filter((p) => !selectedIds.has(p.id)));
     setSelectedIds(new Set());
-    setError(null);
+    setFeedback(null);
 
     const result = await deleteProjects(ids);
     const actionError = getActionError(result);
+    const actionWarning = getActionWarning(result);
 
     if (actionError) {
-       // Revert
-       setProjects(originalProjects);
-       setError(actionError);
+      setProjects(originalProjects);
+      setFeedback({ tone: 'error', message: actionError });
     } else {
-       router.refresh();
+      if (actionWarning) {
+        setFeedback({ tone: 'warning', message: actionWarning });
+      }
+      router.refresh();
     }
   };
 
   const openEdit = (project: Project) => {
     setEditingProject(project);
     setIsFormOpen(true);
-    setError(null);
+    setFeedback(null);
   };
 
   const closeForm = () => {
     setEditingProject(null);
     setIsFormOpen(false);
-    setError(null);
+    setFeedback(null);
   };
 
   const sensors = useSensors(
@@ -113,7 +120,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(String(event.active.id));
-    setError(null);
+    setFeedback(null);
   };
 
   const handleDragCancel = () => {
@@ -156,12 +163,12 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
       setOrderStatus('idle');
 
       if (actionError === 'Project order contains unknown ids') {
-        setError('Order was out of date. Refreshed list.');
+        setFeedback({ tone: 'error', message: 'Order was out of date. Refreshed list.' });
         router.refresh();
         return;
       }
 
-      setError(actionError);
+      setFeedback({ tone: 'error', message: actionError });
       return;
     }
 
@@ -186,10 +193,16 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
       </div>
 
       {/* Global Error Message */}
-      {error && (
-        <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-xl mb-6 flex items-center gap-3 animate-pulse">
-           <AlertCircle size={20} />
-           {error}
+      {feedback && (
+        <div
+          className={`p-4 rounded-xl mb-6 flex items-center gap-3 ${
+            feedback.tone === 'error'
+              ? 'bg-red-900/20 border border-red-500/50 text-red-200 animate-pulse'
+              : 'bg-amber-900/20 border border-amber-500/50 text-amber-200'
+          }`}
+        >
+          <AlertCircle size={20} />
+          {feedback.message}
         </div>
       )}
 
@@ -199,7 +212,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
           onClick={() => {
             setEditingProject(null);
             setIsFormOpen(true);
-            setError(null);
+            setFeedback(null);
           }}
           className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]"
         >
@@ -253,8 +266,11 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         isOpen={isFormOpen}
         project={editingProject}
         onClose={closeForm}
-        onComplete={() => {
+        onComplete={(warning) => {
           closeForm();
+          if (warning) {
+            setFeedback({ tone: 'warning', message: warning });
+          }
           router.refresh();
         }}
       />

@@ -272,6 +272,33 @@ describe('AdminDashboard drag ordering', () => {
     expect(refreshSpy).toHaveBeenCalled();
   });
 
+  it('keeps the deletion and shows a warning when storage cleanup is incomplete', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    deleteProjectsMock.mockResolvedValue({
+      data: true,
+      warning: 'Projects deleted, but failed to remove some images from storage.',
+    });
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    const firstCheckbox = checkboxes[0];
+    if (!firstCheckbox) {
+      throw new Error('Expected at least one checkbox');
+    }
+    fireEvent.click(firstCheckbox);
+
+    fireEvent.click(screen.getByRole('button', { name: /Delete Selected \(1\)/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Project One')).not.toBeInTheDocument();
+    });
+
+    expect(refreshSpy).toHaveBeenCalled();
+    expect(
+      screen.getByText('Projects deleted, but failed to remove some images from storage.'),
+    ).toBeInTheDocument();
+  });
+
   it('reverts optimistic delete and shows error when delete fails (bad case)', async () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     deleteProjectsMock.mockResolvedValue({ error: 'Failed to delete' });

@@ -1,4 +1,4 @@
-export type ActionResult<T> = { data: T } | { error: string };
+export type ActionResult<T> = { data: T; warning?: string } | { error: string };
 
 export function getActionError(result: unknown): string | null {
   if (!result || typeof result !== 'object') {
@@ -11,6 +11,19 @@ export function getActionError(result: unknown): string | null {
 
   const errorValue = (result as { error?: unknown }).error;
   return typeof errorValue === 'string' ? errorValue : null;
+}
+
+export function getActionWarning(result: unknown): string | null {
+  if (!result || typeof result !== 'object') {
+    return null;
+  }
+
+  if (!('warning' in result)) {
+    return null;
+  }
+
+  const warningValue = (result as { warning?: unknown }).warning;
+  return typeof warningValue === 'string' ? warningValue : null;
 }
 
 export const formatError = (error: unknown, fallback = 'Failed'): string => {

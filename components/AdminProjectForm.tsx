@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import type { Project } from '@/types';
 import { createProject, updateProject } from '@/app/actions/projects';
-import { getActionError } from '@/utils/actions';
+import { getActionError, getActionWarning } from '@/utils/actions';
 import ProjectImageUploadField from '@/components/admin/ProjectImageUploadField';
 import { useProjectImageField } from '@/components/admin/useProjectImageField';
 
@@ -12,7 +12,7 @@ const INPUT_CLASS =
 
 type ProjectFormProps = {
   project?: Project | null;
-  onComplete: () => void;
+  onComplete: (warning?: string | null) => void;
 };
 
 export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
@@ -50,13 +50,14 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
 
     const result = project ? await updateProject(submission) : await createProject(submission);
     const actionError = getActionError(result);
+    const actionWarning = getActionWarning(result);
 
     setLoading(false);
 
     if (actionError) {
       setFormError(actionError);
     } else {
-      onComplete();
+      onComplete(actionWarning);
     }
   }
 

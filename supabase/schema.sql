@@ -49,6 +49,12 @@ create policy "Authenticated Upload"
   to authenticated 
   with check ( bucket_id = 'projects' );
 
+-- Allow authenticated users (you) to delete uploaded project images:
+create policy "Authenticated Delete"
+  on storage.objects for delete
+  to authenticated
+  using ( bucket_id = 'projects' );
+
 -- 6. Project ordering helper (batch update)
 create or replace function update_project_order(ordered_ids uuid[])
 returns integer
