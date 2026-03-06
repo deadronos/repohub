@@ -1,11 +1,30 @@
 import { login } from '@/app/actions/auth';
+import { normalizeLoginFeedback } from '@/utils/auth-feedback';
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{
+    message?: string | string[];
+  }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const loginFeedback = normalizeLoginFeedback(resolvedSearchParams?.message);
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-8">
       <div className="w-full max-w-md p-8 rounded-2xl glass-panel bg-zinc-900/50 border border-zinc-800">
         <h1 className="text-2xl font-bold text-white mb-6 text-center">System Access</h1>
         <form className="flex flex-col gap-4">
+          {loginFeedback ? (
+            <p
+              role="alert"
+              aria-live="polite"
+              className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100"
+            >
+              {loginFeedback}
+            </p>
+          ) : null}
           <input
             className="p-3 bg-black/50 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 transition-colors"
             name="email"

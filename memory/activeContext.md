@@ -1,6 +1,6 @@
 # Active Context
 
-**Updated:** 2025-12-28
+**Updated:** 2026-03-06
 
 ## Current Focus
 
@@ -27,6 +27,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 - Extracted particle generation/frame logic into `utils/particles.ts` with unit tests.
 - Added client-side image optimization for the 500 KB Supabase Storage bucket limit and surfaced actionable upload errors end-to-end (DES005/TASK007).
 - Refactored duplicate project helpers: CSV tag parsing now delegates to shared tag normalization, project revalidation moved to a helper, auth checks centralized for server actions, and project sort-order logic extracted.
+- Login failures on `/login` now render an inline accessible alert sourced from the `message` query param; legacy auth messages are normalized to a friendlier credential-check prompt and covered by a component test.
 
 ## Next Steps
 
