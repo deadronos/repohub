@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import AdminProjectForm from '@/components/AdminProjectForm';
 import { createProject, updateProject } from '@/app/actions/projects';
-import { getActionError } from '@/utils/actions';
+import { getActionError, getActionWarning } from '@/utils/actions';
 import type { Project } from '@/types';
 import { makeProject } from '@/tests/fixtures/project';
 
@@ -34,11 +34,14 @@ describe('AdminProjectForm Accessibility', () => {
   const createProjectMock = vi.mocked(createProject);
   const updateProjectMock = vi.mocked(updateProject);
   const getActionErrorMock = vi.mocked(getActionError);
+  const getActionWarningMock = vi.mocked(getActionWarning);
 
   beforeEach(() => {
     createProjectMock.mockReset();
     updateProjectMock.mockReset();
     getActionErrorMock.mockReset();
+    getActionWarningMock.mockReset();
+    getActionWarningMock.mockReturnValue(null);
   });
 
   it('has accessible labels for all inputs', () => {
@@ -81,7 +84,7 @@ describe('AdminProjectForm Accessibility', () => {
       expect(createProjectMock).toHaveBeenCalledTimes(1);
     });
     expect(updateProjectMock).not.toHaveBeenCalled();
-    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledWith(null);
   });
 
   it('submits updateProject when editing and calls onComplete on success', async () => {
@@ -108,7 +111,7 @@ describe('AdminProjectForm Accessibility', () => {
       expect(updateProjectMock).toHaveBeenCalledTimes(1);
     });
     expect(createProjectMock).not.toHaveBeenCalled();
-    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledWith(null);
   });
 
   it('shows an error message and does not call onComplete when action fails (bad case)', async () => {
@@ -125,6 +128,30 @@ describe('AdminProjectForm Accessibility', () => {
       expect(screen.getByText('Nope')).toBeInTheDocument();
     });
     expect(onComplete).not.toHaveBeenCalled();
+  });
+
+  it('passes success warnings to onComplete so the caller can surface them', async () => {
+    updateProjectMock.mockResolvedValue({
+      data: true,
+      warning: 'Project updated, but failed to remove the previous image from storage.',
+    });
+    getActionErrorMock.mockReturnValue(null);
+    getActionWarningMock.mockReturnValue(
+      'Project updated, but failed to remove the previous image from storage.',
+    );
+    const onComplete = vi.fn();
+
+    render(<AdminProjectForm project={makeProject()} onComplete={onComplete} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    await waitFor(() => {
+      expect(updateProjectMock).toHaveBeenCalledTimes(1);
+    });
+
+    expect(onComplete).toHaveBeenCalledWith(
+      'Project updated, but failed to remove the previous image from storage.',
+    );
   });
 
   it('renders current image hint and hidden current_image_url when editing with image_url', () => {

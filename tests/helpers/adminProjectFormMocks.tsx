@@ -9,5 +9,6 @@ export function createLucideUploadMock() {
 export function createActionsUtilMock() {
   return {
     getActionError: vi.fn(),
+    getActionWarning: vi.fn(),
   };
 }

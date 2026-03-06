@@ -8,7 +8,7 @@ type ProjectFormModalProps = {
   isOpen: boolean;
   project: Project | null;
   onClose: () => void;
-  onComplete: () => void;
+  onComplete: (warning?: string | null) => void;
 };
 
 export default function ProjectFormModal({

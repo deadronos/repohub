@@ -1,8 +1,29 @@
 import { formatBytes } from '@/utils/format';
 import { sanitizeFilename } from '@/utils/string';
+import { safeParseUrl } from '@/utils/url';
+import { PROJECTS_BUCKET } from '@/utils/projects/constants';
 
 export function buildProjectImageFilename(file: File): string {
   return `${Date.now()}-${sanitizeFilename(file.name)}`;
+}
+
+export function getProjectImageStoragePath(imageUrl: string): string | null {
+  const parsed = safeParseUrl(imageUrl.trim());
+  if (!parsed) {
+    return null;
+  }
+
+  const publicBucketPrefix = `/storage/v1/object/public/${PROJECTS_BUCKET}/`;
+  const pathname = parsed.pathname;
+  const bucketPath = pathname.startsWith(publicBucketPrefix)
+    ? pathname.slice(publicBucketPrefix.length)
+    : null;
+
+  if (!bucketPath) {
+    return null;
+  }
+
+  return decodeURIComponent(bucketPath);
 }
 
 export function formatMaxImageSizeError(size: number, maxBytes: number): string {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getActionError, formatError } from '@/utils/actions';
+import { getActionError, getActionWarning, formatError } from '@/utils/actions';
 
 describe('Action Utils', () => {
   describe('getActionError', () => {
@@ -40,6 +40,25 @@ describe('Action Utils', () => {
       expect(formatError(null)).toBe('Failed');
       expect(formatError({})).toBe('Failed');
       expect(formatError({ message: '' })).toBe('Failed');
+    });
+  });
+
+  describe('getActionWarning', () => {
+    it('should return null for non-object values', () => {
+      expect(getActionWarning(null)).toBeNull();
+      expect(getActionWarning(undefined)).toBeNull();
+      expect(getActionWarning('warning')).toBeNull();
+    });
+
+    it('should return null when warning is missing or not a string', () => {
+      expect(getActionWarning({})).toBeNull();
+      expect(getActionWarning({ warning: 123 })).toBeNull();
+    });
+
+    it('should return warning string when present', () => {
+      expect(getActionWarning({ data: true, warning: 'Cleanup incomplete' })).toBe(
+        'Cleanup incomplete',
+      );
     });
   });
 });

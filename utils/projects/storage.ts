@@ -6,6 +6,7 @@ import {
   buildProjectImageFilename,
   formatMaxImageSizeError,
   formatUploadTooLargeError,
+  getProjectImageStoragePath,
   isLikelyPayloadTooLarge,
 } from '@/utils/projects/storage-helpers';
 
@@ -50,4 +51,42 @@ export async function uploadProjectImage(
   }
 
   return { data: publicUrl };
+}
+
+export async function deleteProjectImages(
+  supabase: SupabaseClient,
+  imageUrls: Array<string | null | undefined>,
+): Promise<{ deletedPaths: string[]; warning: string | null }> {
+  const paths = [
+    ...new Set(
+      imageUrls
+        .map((imageUrl) => {
+          if (!imageUrl) {
+            return null;
+          }
+
+          return getProjectImageStoragePath(imageUrl);
+        })
+        .filter((path): path is string => Boolean(path)),
+    ),
+  ];
+
+  if (paths.length === 0) {
+    return { deletedPaths: [], warning: null };
+  }
+
+  const { error } = await supabase.storage.from(PROJECTS_BUCKET).remove(paths);
+
+  if (error) {
+    console.error('Storage cleanup error:', error);
+    return {
+      deletedPaths: [],
+      warning:
+        paths.length === 1
+          ? 'Failed to remove 1 image from storage.'
+          : `Failed to remove ${paths.length} images from storage.`,
+    };
+  }
+
+  return { deletedPaths: paths, warning: null };
 }
