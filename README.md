@@ -25,7 +25,7 @@ A **Cyber-Minimalist** portfolio and project gallery built with the latest web t
 
 ### 1. Prerequisites
 
-- Node.js 18+
+- Node.js 20.9+ (required by Next.js 16)
 - A [Supabase](https://supabase.com) account
 
 ### 2. Installation
