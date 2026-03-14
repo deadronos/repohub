@@ -1,6 +1,6 @@
 # Active Context
 
-**Updated:** 2026-03-06
+**Updated:** 2026-03-14
 
 ## Current Focus
 
@@ -15,6 +15,10 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 
 ## Recent Changes
 
+- Replaced the pinned Next.js canary (`16.2.0-canary.7`) and matching `eslint-config-next` package with the stable `16.1.1` release, and refreshed `package-lock.json`.
+- Verified the repo still passes `npm run test`, `npm run lint`, and `npm run typecheck` after the stable pin change.
+- Verified `npm run build` succeeds under Next.js `16.1.1` when the required Supabase env vars are present; without them, prerendering `/` fails early because the static Supabase client is created during build.
+- Corrected repo docs to reflect the effective Next.js 16 runtime floor of Node.js `20.9+`; CI already uses Node `20.x`.
 - Updated setup documentation so `README.md` points to `supabase/schema.sql` as the canonical Supabase schema source and explicitly calls out `sort_order` plus `update_project_order(uuid[])` for admin drag-and-drop ordering.
 - Split server actions into auth and project modules, with shared project helpers for form parsing, validation, uploads, and revalidation.
 - Centralized project list fetching in a `listProjects()` helper and updated pages to use it.
@@ -32,6 +36,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 
 ## Next Steps
 
+- Keep local and CI environments on Node.js `20.9+` or newer when validating Next.js 16 changes.
 - Create/maintain `DES001` with architecture + data flows.
 - Create/maintain `TASK001` with documentation backfill work tracked.
 - Maintain `memory/files/repo-map.md` (verified as existing).

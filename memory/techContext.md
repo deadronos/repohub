@@ -11,7 +11,7 @@
 
 ## Runtime / Tooling
 
-- Node.js 18+ (recommended)
+- Node.js 20.9+ (required by Next.js 16)
 - TypeScript 5
 - ESLint 9 + `eslint-config-next`
 
