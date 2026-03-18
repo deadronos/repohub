@@ -6,18 +6,23 @@ import { unstable_cache } from 'next/cache';
 import { PROJECTS_CACHE_TAG, PROJECTS_TABLE } from '@/utils/projects/constants';
 
 async function fetchProjectsOrdered(supabase: SupabaseClient): Promise<Project[]> {
-  const { data, error } = await supabase
-    .from(PROJECTS_TABLE)
-    .select('*')
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from(PROJECTS_TABLE)
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
 
-  if (error) {
+    if (error) {
+      console.error('Failed to fetch projects:', error);
+      return [];
+    }
+
+    return (data as Project[]) ?? [];
+  } catch (error) {
     console.error('Failed to fetch projects:', error);
     return [];
   }
-
-  return (data as Project[]) ?? [];
 }
 
 export async function listProjects(): Promise<Project[]> {
@@ -28,6 +33,11 @@ export async function listProjects(): Promise<Project[]> {
 export const getCachedProjects = unstable_cache(
   async () => {
     const supabase = createStaticClient();
+
+    if (!supabase) {
+      return [];
+    }
+
     return fetchProjectsOrdered(supabase);
   },
   [PROJECTS_CACHE_TAG],

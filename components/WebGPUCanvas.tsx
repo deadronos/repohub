@@ -19,6 +19,7 @@ type RendererInstance = {
 type RendererCtor = new (options: Record<string, unknown>) => RendererInstance;
 type RendererFactory = (options: Record<string, unknown>) => RendererInstance;
 type RendererExport = RendererCtor | RendererFactory;
+type CanvasGlProp = ComponentProps<typeof Canvas>['gl'];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -242,8 +243,7 @@ export default function WebGPUCanvas({
   return (
     <Canvas
       {...props}
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      gl={glConfig as any}
+      gl={glConfig as CanvasGlProp}
       onCreated={handleCreated}
       data-renderer-type={rendererType ?? 'pending'}
     />
