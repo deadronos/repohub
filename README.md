@@ -41,7 +41,7 @@ npm install
 Create a `.env.local` file in the root:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_publishable_key
 ADMIN_EMAILS=admin@example.com
 ```
