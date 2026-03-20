@@ -29,7 +29,7 @@ This approach had several issues:
 
 The new implementation uses a proper runtime approach:
 
-1. **WebGPUCanvas Component** (`components/WebGPUCanvas.tsx`)
+1. **WebGPUCanvas Component** (`components/WebGPUCanvas`)
    - Dynamically imports `WebGPURenderer` from `three/webgpu` at runtime
    - Falls back to standard Canvas if import fails (test environments, etc.)
    - Passes WebGPURenderer to react-three-fiber via the `gl` prop
@@ -61,7 +61,7 @@ The new implementation uses a proper runtime approach:
 1. **`next.config.ts`**
    - Removed webpack alias for `three` → `three/webgpu`
 
-2. **`components/WebGPUCanvas.tsx`** (new)
+2. **`components/WebGPUCanvas`** (new)
    - Custom Canvas wrapper with WebGPU support
    - Dynamic import of WebGPURenderer
    - Renderer type detection
