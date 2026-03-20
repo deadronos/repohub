@@ -1,15 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock react cache since vitest might not be using the React 19 environment correctly
-vi.mock('react', () => ({
-  cache: vi.fn((fn) => {
-    let cached: any;
-    return (...args: any[]) => {
-      if (!cached) cached = fn(...args);
-      return cached;
-    };
-  }),
-}));
+vi.mock('react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react')>();
+  return {
+    ...actual,
+    cache: vi.fn((fn) => {
+      let cached: any;
+      return (...args: any[]) => {
+        if (!cached) cached = fn(...args);
+        return cached;
+      };
+    }),
+  };
+});
 
 import { createClient } from '@/utils/supabase/server';
 
