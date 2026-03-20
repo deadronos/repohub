@@ -57,19 +57,17 @@ export async function deleteProjectImages(
   supabase: SupabaseClient,
   imageUrls: Array<string | null | undefined>,
 ): Promise<{ deletedPaths: string[]; warning: string | null }> {
-  const paths = [
-    ...new Set(
-      imageUrls
-        .map((imageUrl) => {
-          if (!imageUrl) {
-            return null;
-          }
+  const pathSet = new Set<string>();
+  for (const imageUrl of imageUrls) {
+    if (imageUrl) {
+      const path = getProjectImageStoragePath(imageUrl);
+      if (path) {
+        pathSet.add(path);
+      }
+    }
+  }
 
-          return getProjectImageStoragePath(imageUrl);
-        })
-        .filter((path): path is string => Boolean(path)),
-    ),
-  ];
+  const paths = Array.from(pathSet);
 
   if (paths.length === 0) {
     return { deletedPaths: [], warning: null };
