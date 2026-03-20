@@ -7,14 +7,17 @@ function normalizeEmail(email: string | null | undefined) {
 }
 
 export function getAdminEmails(envValue = process.env.ADMIN_EMAILS) {
-  return Array.from(
-    new Set(
-      (envValue ?? '')
-        .split(',')
-        .map((email) => normalizeEmail(email))
-        .filter((email) => email.length > 0),
-    ),
-  );
+  const emails = (envValue ?? '').split(',');
+  const uniqueEmails = new Set<string>();
+
+  for (let i = 0; i < emails.length; i++) {
+    const normalized = normalizeEmail(emails[i]);
+    if (normalized.length > 0) {
+      uniqueEmails.add(normalized);
+    }
+  }
+
+  return Array.from(uniqueEmails);
 }
 
 export function isAdminUser(
