@@ -11,9 +11,12 @@ export function useSelectedProject(projects: Project[]) {
     [projects, selectedId],
   );
 
-  return {
-    selectedId,
-    selectedProject,
-    setSelectedId,
-  };
+  return useMemo(
+    () => ({
+      selectedId,
+      selectedProject,
+      setSelectedId,
+    }),
+    [selectedId, selectedProject, setSelectedId],
+  );
 }
