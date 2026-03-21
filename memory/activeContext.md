@@ -15,6 +15,9 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 
 ## Recent Changes
 
+- Refreshed the homepage hero into a split-layout intro with live portfolio stats and clearer CTAs.
+- Added a CSS-based atmospheric backdrop with subtle parallax motion and a grid glow layer.
+- Introduced a gallery intro section on the homepage and updated the hero component test to match the new content.
 - Replaced the pinned Next.js canary (`16.2.0-canary.7`) and matching `eslint-config-next` package with the stable `16.1.1` release, and refreshed `package-lock.json`.
 - Verified the repo still passes `npm run test`, `npm run lint`, and `npm run typecheck` after the stable pin change.
 - Verified `npm run build` succeeds under Next.js `16.1.1` when the required Supabase env vars are present; without them, prerendering `/` fails early because the static Supabase client is created during build.

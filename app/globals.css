@@ -14,6 +14,11 @@
   --neon-pink: #ff0055;
 }
 
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -39,8 +44,8 @@ body {
 /* Glassmorphism Utilities */
 .glass-panel {
   background: var(--card-bg);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
 }
@@ -51,4 +56,97 @@ body {
 
 .box-glow {
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.24);
+  color: #f8fafc;
+}
+
+@keyframes homepage-grid-pan {
+  from {
+    background-position: 0 0, 0 0;
+  }
+
+  to {
+    background-position: 132px 0, 0 132px;
+  }
+}
+
+.homepage-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+  --cursor-x: 0;
+  --cursor-y: 0;
+  --scroll-y: 0;
+}
+
+.homepage-atmosphere__wash {
+  position: absolute;
+  inset: -8%;
+  opacity: 0.8;
+  transform: translate3d(calc(var(--cursor-x) * 0.08px), calc(var(--cursor-y) * 0.08px), 0)
+    translateY(calc(var(--scroll-y) * -0.035px));
+  background:
+    radial-gradient(circle at 14% 18%, rgba(34, 211, 238, 0.18), transparent 28%),
+    radial-gradient(circle at 82% 22%, rgba(99, 102, 241, 0.16), transparent 26%),
+    radial-gradient(circle at 50% 86%, rgba(168, 85, 247, 0.08), transparent 34%);
+}
+
+.homepage-atmosphere__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.25;
+  mix-blend-mode: screen;
+  transform: translate3d(calc(var(--cursor-x) * -0.03px), calc(var(--cursor-y) * -0.03px), 0);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 132px 132px;
+  -webkit-mask-image: radial-gradient(circle at center, black, transparent 82%);
+  mask-image: radial-gradient(circle at center, black, transparent 82%);
+}
+
+.homepage-atmosphere__orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(140px);
+}
+
+.homepage-atmosphere__orb--cyan {
+  left: -12%;
+  top: 7%;
+  width: 30rem;
+  height: 30rem;
+  background: rgba(34, 211, 238, 0.1);
+  transform: translate3d(calc(var(--cursor-x) * 0.18px), calc(var(--scroll-y) * 0.04px), 0);
+}
+
+.homepage-atmosphere__orb--indigo {
+  right: -10%;
+  top: 16%;
+  width: 34rem;
+  height: 34rem;
+  background: rgba(99, 102, 241, 0.1);
+  filter: blur(160px);
+  transform: translate3d(calc(var(--cursor-x) * -0.16px), calc(var(--scroll-y) * 0.06px), 0);
+}
+
+.homepage-atmosphere__orb--fuchsia {
+  left: 18%;
+  bottom: -18%;
+  width: 26rem;
+  height: 26rem;
+  background: rgba(217, 70, 239, 0.08);
+  filter: blur(150px);
+  transform: translate3d(calc(var(--cursor-y) * 0.12px), calc(var(--scroll-y) * -0.03px), 0);
+}
+
+.homepage-atmosphere__fade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(5, 5, 16, 0.2) 55%, rgba(5, 5, 16, 0.72) 100%);
 }
