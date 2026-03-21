@@ -2,20 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import {
-  DndContext,
-  DragOverlay,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors,
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
 import {
-  SortableContext,
   arrayMove,
-  rectSortingStrategy,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import type { Project } from '@/types';
@@ -24,9 +19,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, AlertCircle } from 'lucide-react';
 import { getActionError, getActionWarning } from '@/utils/actions';
-import AdminProjectCard from '@/components/admin/AdminProjectCard';
-import SortableProjectCard from '@/components/admin/SortableProjectCard';
 import ProjectFormModal from '@/components/admin/ProjectFormModal';
+import AdminSortableGrid from '@/components/admin/AdminSortableGrid';
 
 interface AdminDashboardProps {
   initialProjects: Project[];
@@ -235,32 +229,18 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
       </div>
 
       {/* Grid of Projects */}
-      <DndContext
+      <AdminSortableGrid
+        projects={projects}
+        selectedIds={selectedIds}
+        orderStatus={orderStatus}
         sensors={sensors}
-        collisionDetection={closestCenter}
+        activeProject={activeProject}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
-      >
-        <SortableContext items={projects.map((project) => project.id)} strategy={rectSortingStrategy}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <SortableProjectCard
-                key={project.id}
-                project={project}
-                isSelected={selectedIds.has(project.id)}
-                onToggleSelect={() => toggleSelection(project.id)}
-                onEdit={() => openEdit(project)}
-                disabled={orderStatus === 'saving'}
-              />
-            ))}
-          </div>
-        </SortableContext>
-
-        <DragOverlay>
-          {activeProject ? <AdminProjectCard project={activeProject} isOverlay /> : null}
-        </DragOverlay>
-      </DndContext>
+        onToggleSelect={toggleSelection}
+        onEdit={openEdit}
+      />
 
       <ProjectFormModal
         isOpen={isFormOpen}
