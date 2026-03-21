@@ -2,31 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import {
-  DndContext,
-  DragOverlay,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors,
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  arrayMove,
-  rectSortingStrategy,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import type { Project } from '@/types';
 import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { getActionError, getActionWarning } from '@/utils/actions';
-import AdminProjectCard from '@/components/admin/AdminProjectCard';
-import SortableProjectCard from '@/components/admin/SortableProjectCard';
 import ProjectFormModal from '@/components/admin/ProjectFormModal';
+import AdminToolbar from '@/components/admin/AdminToolbar';
+import AdminProjectGrid from '@/components/admin/AdminProjectGrid';
 
 interface AdminDashboardProps {
   initialProjects: Project[];
@@ -206,61 +198,29 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         </div>
       )}
 
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-4 mb-8">
-        <button
-          onClick={() => {
-            setEditingProject(null);
-            setIsFormOpen(true);
-            setFeedback(null);
-          }}
-          className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]"
-        >
-          <Plus size={18} /> Add New Project
-        </button>
+      <AdminToolbar
+        onAddNew={() => {
+          setEditingProject(null);
+          setIsFormOpen(true);
+          setFeedback(null);
+        }}
+        onDeleteSelected={handleDelete}
+        selectedCount={selectedIds.size}
+        orderStatus={orderStatus}
+      />
 
-        {selectedIds.size > 0 && (
-          <button
-            onClick={handleDelete}
-            className="bg-red-600/20 hover:bg-red-600/40 text-red-500 hover:text-red-200 border border-red-900/50 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all"
-          >
-            <Trash2 size={18} /> Delete Selected ({selectedIds.size})
-          </button>
-        )}
-
-        {orderStatus === 'saving' && (
-          <span className="text-sm text-cyan-300">Saving order...</span>
-        )}
-        {orderStatus === 'saved' && <span className="text-sm text-emerald-300">Order saved</span>}
-      </div>
-
-      {/* Grid of Projects */}
-      <DndContext
+      <AdminProjectGrid
+        projects={projects}
+        selectedIds={selectedIds}
+        orderStatus={orderStatus}
         sensors={sensors}
-        collisionDetection={closestCenter}
+        activeProject={activeProject}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
-      >
-        <SortableContext items={projects.map((project) => project.id)} strategy={rectSortingStrategy}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <SortableProjectCard
-                key={project.id}
-                project={project}
-                isSelected={selectedIds.has(project.id)}
-                onToggleSelect={() => toggleSelection(project.id)}
-                onEdit={() => openEdit(project)}
-                disabled={orderStatus === 'saving'}
-              />
-            ))}
-          </div>
-        </SortableContext>
-
-        <DragOverlay>
-          {activeProject ? <AdminProjectCard project={activeProject} isOverlay /> : null}
-        </DragOverlay>
-      </DndContext>
+        onToggleSelection={toggleSelection}
+        onEdit={openEdit}
+      />
 
       <ProjectFormModal
         isOpen={isFormOpen}
