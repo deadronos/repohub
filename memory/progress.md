@@ -4,6 +4,8 @@
 
 ## What Works
 
+- The homepage now has a more intentional visual direction: split-layout hero, richer CTA hierarchy, live stats, and a subtle parallax atmosphere.
+- The refreshed homepage passed `npm run test`, `npm run lint`, `npm run typecheck`, and `npm run build`, and was visually checked in a local browser at `http://localhost:3000`.
 - The app is now pinned to stable Next.js `16.1.1` and `eslint-config-next` `16.1.1` instead of the `16.2.0-canary.7` line.
 - Local validation passes on this branch: `npm run test`, `npm run lint` (with one existing warning in `components/WebGPUCanvas.tsx`), and `npm run typecheck`.
 - `npm run build` succeeds under Next.js `16.1.1` when `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` are set; missing env vars still fail prerendering for `/`.
