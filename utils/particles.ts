@@ -20,7 +20,7 @@ export function generateParticles(count: number) {
   return [positions, initialPositions] as const;
 }
 
-type PositionAttributeLike = {
+export type PositionAttributeLike = {
   array: Float32Array;
   setXYZ?: (idx: number, x: number, y: number, z: number) => void;
 };
@@ -29,6 +29,28 @@ function isPositionAttributeLike(value: unknown): value is PositionAttributeLike
   if (!value || typeof value !== 'object') return false;
   const rec = value as Record<string, unknown>;
   return rec.array instanceof Float32Array;
+}
+
+/**
+ * Creates a PositionAttributeLike object from a Three.js buffer attribute.
+ * This encapsulates type checking and method binding to reduce nesting in components.
+ */
+export function createPositionAttributeLike(attr: unknown): PositionAttributeLike | null {
+  if (!attr || typeof attr !== 'object') return null;
+
+  const positionAttr = attr as {
+    array: unknown;
+    setXYZ?: (i: number, x: number, y: number, z: number) => void;
+  };
+
+  if (!(positionAttr.array instanceof Float32Array)) {
+    return null;
+  }
+
+  return {
+    array: positionAttr.array,
+    setXYZ: typeof positionAttr.setXYZ === 'function' ? positionAttr.setXYZ.bind(attr) : undefined,
+  };
 }
 
 export function applyParticleFrame(
