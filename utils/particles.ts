@@ -20,7 +20,7 @@ export function generateParticles(count: number) {
   return [positions, initialPositions] as const;
 }
 
-type PositionAttributeLike = {
+export type PositionAttributeLike = {
   array: Float32Array;
   setXYZ?: (idx: number, x: number, y: number, z: number) => void;
 };
@@ -29,6 +29,28 @@ function isPositionAttributeLike(value: unknown): value is PositionAttributeLike
   if (!value || typeof value !== 'object') return false;
   const rec = value as Record<string, unknown>;
   return rec.array instanceof Float32Array;
+}
+
+/**
+ * Safely wraps a three.js BufferAttribute into a PositionAttributeLike.
+ * This helper reduces nesting and handles the complex casting/binding
+ * required to work with different versions of three.js and WebGPU.
+ */
+export function wrapPositionAttribute(attr: unknown): PositionAttributeLike | null {
+  if (!isPositionAttributeLike(attr)) {
+    return null;
+  }
+
+  // Bind setXYZ if it exists to preserve 'this' context when called
+  const setXYZ =
+    typeof attr.setXYZ === 'function'
+      ? (attr.setXYZ as (i: number, x: number, y: number, z: number) => void).bind(attr)
+      : undefined;
+
+  return {
+    array: attr.array,
+    setXYZ,
+  };
 }
 
 export function applyParticleFrame(
