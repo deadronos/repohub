@@ -22,14 +22,18 @@ create policy "Public projects are viewable by everyone"
   using ( true );
 
 -- 4. Define the admin allowlist used by RLS.
--- Replace the email literals below so they match ADMIN_EMAILS in .env.local.
+-- Replace the placeholder emails below so they match ADMIN_EMAILS in .env.local.
+-- We keep the list inline here because RLS policies cannot read the app's runtime
+-- environment variables directly.
 create or replace function public.is_admin_email()
 returns boolean
 language sql
 stable
 as $$
   select lower(coalesce(auth.jwt() ->> 'email', '')) = any (
-    string_to_array(current_setting('app.settings.admin_emails', true), ',')
+    array[
+      'admin@example.com'
+    ]::text[]
   );
 $$;
 

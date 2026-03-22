@@ -63,7 +63,7 @@ describe('ProjectCard component', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
-  it('renders up to 3 tags and hides GitHubStats when repo_url is missing', () => {
+  it('renders up to 3 tags', () => {
     const onClick = vi.fn();
     render(<ProjectCard project={baseProject} onClick={onClick} />);
 
@@ -71,11 +71,9 @@ describe('ProjectCard component', () => {
     expect(screen.getByText('Nextjs')).toBeInTheDocument();
     expect(screen.getByText('Vitest')).toBeInTheDocument();
     expect(screen.queryByText('Extra')).not.toBeInTheDocument();
-
-    expect(screen.queryByTestId('github-stats')).not.toBeInTheDocument();
   });
 
-  it('renders GitHubStats when repo_url exists and image when image_url exists', () => {
+  it('keeps cards lightweight even when repo_url exists and still renders the image', () => {
     const onClick = vi.fn();
     const project: Project = {
       ...baseProject,
@@ -85,21 +83,8 @@ describe('ProjectCard component', () => {
 
     render(<ProjectCard project={project} onClick={onClick} />);
 
-    expect(screen.getByTestId('github-stats')).toBeInTheDocument();
+    expect(screen.queryByTestId('github-stats')).not.toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'My Project' })).toBeInTheDocument();
-  });
-
-  it('does not trigger card onClick when clicking GitHubStats (edge case)', () => {
-    const onClick = vi.fn();
-    const project: Project = {
-      ...baseProject,
-      repo_url: 'https://github.com/me/repo',
-    };
-
-    render(<ProjectCard project={project} onClick={onClick} />);
-    fireEvent.click(screen.getByTestId('github-stats'));
-
-    expect(onClick).not.toHaveBeenCalled();
   });
 
   it('filters empty/whitespace tags (bad input)', () => {

@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import type { Project } from '@/types';
 import { truncate } from '@/utils/string';
-import GitHubStatsDisplay from '@/components/GitHubStats';
 import ProjectImage from '@/components/projects/ProjectImage';
 import ProjectTags from '@/components/projects/ProjectTags';
 import { PROJECT_CARD_IMAGE_SIZES } from '@/components/projects/imageSizes';
@@ -50,11 +49,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
           {truncate(project.short_description || '', 100)}
         </p>
 
-        {project.repo_url && (
-          <div onClick={(e) => e.stopPropagation()}>
-            <GitHubStatsDisplay repoUrl={project.repo_url} />
-          </div>
-        )}
+        {/* Keep the gallery cards lightweight; repo stats are loaded on demand in the modal. */}
 
         <ProjectTags tags={project.tags} variant="card" limit={3} />
       </div>

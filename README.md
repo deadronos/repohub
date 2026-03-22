@@ -55,7 +55,7 @@ ADMIN_EMAILS=admin@example.com
 Setup steps:
 
 1. In Supabase Storage, create a new bucket named `projects` and enable **Public Bucket**.
-2. Open [`supabase/schema.sql`](supabase/schema.sql) and replace `admin@example.com` with the same email addresses you configured in `ADMIN_EMAILS`.
+2. Open [`supabase/schema.sql`](supabase/schema.sql) and replace the placeholder email literals inside `public.is_admin_email()` with the same email addresses you configured in `ADMIN_EMAILS`.
 3. Run the full contents of [`supabase/schema.sql`](supabase/schema.sql) in the Supabase **SQL Editor**.
 
 That schema creates all required runtime pieces, including:
