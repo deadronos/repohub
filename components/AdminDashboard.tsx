@@ -9,17 +9,15 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import {
-  arrayMove,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import type { Project } from '@/types';
 import { deleteProjects, setProjectsFeatured, updateProjectOrder } from '@/app/actions/projects';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, AlertCircle, Star, StarOff } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { getActionError, getActionWarning } from '@/utils/actions';
 import ProjectFormModal from '@/components/admin/ProjectFormModal';
+import AdminToolbar from '@/components/admin/AdminToolbar';
 import AdminSortableGrid from '@/components/admin/AdminSortableGrid';
 
 interface AdminDashboardProps {
@@ -234,54 +232,19 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         </div>
       )}
 
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-4 mb-8">
-        <button
-          onClick={() => {
-            setEditingProject(null);
-            setIsFormOpen(true);
-            setFeedback(null);
-          }}
-          className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]"
-        >
-          <Plus size={18} /> Add New Project
-        </button>
-
-        {selectedIds.size > 0 && (
-          <>
-            <button
-              onClick={() => void handleSetFeatured(true)}
-              disabled={featureStatus === 'saving'}
-              className="bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
-            >
-              <Star size={18} /> Feature Selected ({selectedIds.size})
-            </button>
-
-            <button
-              onClick={() => void handleSetFeatured(false)}
-              disabled={featureStatus === 'saving'}
-              className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
-            >
-              <StarOff size={18} /> Unfeature Selected ({selectedIds.size})
-            </button>
-
-            <button
-              onClick={handleDelete}
-              className="bg-red-600/20 hover:bg-red-600/40 text-red-500 hover:text-red-200 border border-red-900/50 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all"
-            >
-              <Trash2 size={18} /> Delete Selected ({selectedIds.size})
-            </button>
-          </>
-        )}
-
-        {featureStatus === 'saving' && (
-          <span className="text-sm text-amber-300">Updating featured projects...</span>
-        )}
-        {orderStatus === 'saving' && (
-          <span className="text-sm text-cyan-300">Saving order...</span>
-        )}
-        {orderStatus === 'saved' && <span className="text-sm text-emerald-300">Order saved</span>}
-      </div>
+      <AdminToolbar
+        onAddNew={() => {
+          setEditingProject(null);
+          setIsFormOpen(true);
+          setFeedback(null);
+        }}
+        onFeatureSelected={() => void handleSetFeatured(true)}
+        onUnfeatureSelected={() => void handleSetFeatured(false)}
+        onDeleteSelected={handleDelete}
+        selectedCount={selectedIds.size}
+        orderStatus={orderStatus}
+        featureStatus={featureStatus}
+      />
 
       {/* Grid of Projects */}
       <AdminSortableGrid
