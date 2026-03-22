@@ -31,28 +31,6 @@ function isPositionAttributeLike(value: unknown): value is PositionAttributeLike
   return rec.array instanceof Float32Array;
 }
 
-/**
- * Creates a PositionAttributeLike object from a Three.js buffer attribute.
- * This encapsulates type checking and method binding to reduce nesting in components.
- */
-export function createPositionAttributeLike(attr: unknown): PositionAttributeLike | null {
-  if (!attr || typeof attr !== 'object') return null;
-
-  const positionAttr = attr as {
-    array: unknown;
-    setXYZ?: (i: number, x: number, y: number, z: number) => void;
-  };
-
-  if (!(positionAttr.array instanceof Float32Array)) {
-    return null;
-  }
-
-  return {
-    array: positionAttr.array,
-    setXYZ: typeof positionAttr.setXYZ === 'function' ? positionAttr.setXYZ.bind(attr) : undefined,
-  };
-}
-
 export function applyParticleFrame(
   particlePositions: Float32Array | PositionAttributeLike,
   initialPositions: Float32Array,

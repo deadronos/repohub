@@ -29,9 +29,7 @@ language sql
 stable
 as $$
   select lower(coalesce(auth.jwt() ->> 'email', '')) = any (
-    array[
-      'admin@example.com'
-    ]
+    string_to_array(current_setting('app.settings.admin_emails', true), ',')
   );
 $$;
 

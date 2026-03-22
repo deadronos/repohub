@@ -1,9 +1,12 @@
 # Progress
 
-**Updated:** 2026-03-14
+**Updated:** 2026-03-22
 
 ## What Works
 
+- Admin dashboard selection now supports bulk `Feature Selected` and `Unfeature Selected` actions backed by the existing `projects.is_featured` field.
+- Admin project cards now surface a featured badge so editors can quickly see which projects are highlighted on the public homepage.
+- The admin featured-toggle work passed `npm run test`, `npm run lint`, `npm run typecheck`, and `npm run build`; local runtime verification confirmed `/admin` still redirects unauthenticated users to `/login`.
 - The homepage now has a more intentional visual direction: split-layout hero, richer CTA hierarchy, live stats, and a subtle parallax atmosphere.
 - The refreshed homepage passed `npm run test`, `npm run lint`, `npm run typecheck`, and `npm run build`, and was visually checked in a local browser at `http://localhost:3000`.
 - The app is now pinned to stable Next.js `16.1.1` and `eslint-config-next` `16.1.1` instead of the `16.2.0-canary.7` line.

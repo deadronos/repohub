@@ -4,7 +4,7 @@ import { useMemo, useRef, type ComponentProps } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import type * as THREE from 'three';
-import { applyParticleFrame, generateParticles, createPositionAttributeLike } from '@/utils/particles';
+import { applyParticleFrame, generateParticles } from '@/utils/particles';
 
 type ParticlesProps = ComponentProps<typeof Points>;
 
@@ -26,8 +26,21 @@ export default function Particles(props: ParticlesProps) {
       const positionAttr = ref.current.geometry.getAttribute('position');
       if (!positionAttr) return;
 
-      const attrLike = createPositionAttributeLike(positionAttr);
-      if (!attrLike) return;
+      // In three.js, position attributes are typically Float32Array-backed, but the
+      // type is `TypedArray`. Guard so our math operates on a float array.
+      if (!(positionAttr.array instanceof Float32Array)) return;
+
+      const attrLike = {
+        array: positionAttr.array,
+        setXYZ:
+          typeof (positionAttr as unknown as { setXYZ?: unknown }).setXYZ === 'function'
+            ? (
+                positionAttr as unknown as {
+                  setXYZ: (i: number, x: number, y: number, z: number) => void;
+                }
+              ).setXYZ.bind(positionAttr)
+            : undefined,
+      };
 
       const { rotationX, rotationY } = applyParticleFrame(
         attrLike,

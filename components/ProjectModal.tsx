@@ -1,11 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ExternalLink, Github, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { Project } from '@/types';
 import GitHubStatsDisplay from '@/components/GitHubStats';
 import ProjectImage from '@/components/projects/ProjectImage';
 import ProjectTags from '@/components/projects/ProjectTags';
+import ProjectActions from '@/components/projects/ProjectActions';
 import { PROJECT_MODAL_IMAGE_SIZES } from '@/components/projects/imageSizes';
 
 type ProjectModalProps = {
@@ -67,29 +68,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             {project.description || project.short_description}
           </p>
 
-          <div className="flex gap-4 flex-col sm:flex-row">
-            {project.demo_url && (
-              <a
-                href={project.demo_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(0,240,255,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.5)]"
-              >
-                <ExternalLink size={18} /> Play / Demo
-              </a>
-            )}
-
-            {project.repo_url && (
-              <a
-                href={project.repo_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-zinc-700"
-              >
-                <Github size={18} /> View Code
-              </a>
-            )}
-          </div>
+          <ProjectActions demoUrl={project.demo_url} repoUrl={project.repo_url} />
         </div>
       </motion.div>
     </div>
