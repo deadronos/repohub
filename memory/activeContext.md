@@ -1,6 +1,6 @@
 # Active Context
 
-**Updated:** 2026-03-14
+**Updated:** 2026-03-22
 
 ## Current Focus
 
@@ -15,6 +15,10 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 
 ## Recent Changes
 
+- Added bulk featured-project controls to the admin dashboard so selected projects can be marked featured or unfeatured without leaving the grid view.
+- Added a dedicated `setProjectsFeatured()` server action that updates `projects.is_featured` and revalidates the public home page plus admin dashboard.
+- Added a visible featured badge to admin project cards so featured state is obvious during curation.
+- Verified the featured-toggle work with `npm run test && npm run lint && npm run typecheck`, `npm run build`, and a local runtime check of the `/admin` auth redirect flow.
 - Refreshed the homepage hero into a split-layout intro with live portfolio stats and clearer CTAs.
 - Added a CSS-based atmospheric backdrop with subtle parallax motion and a grid glow layer.
 - Introduced a gallery intro section on the homepage and updated the hero component test to match the new content.
