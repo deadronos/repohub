@@ -1,32 +1,26 @@
 # Agent docs (index)
 
-This folder provides progressively-disclosed guidance for agents and humans working in this repository.
+This folder provides progressively disclosed guidance for agents and contributors working in RepoHub.
 
-## Start here
+Status: reviewed and aligned with the current codebase on 2026-03-22.
 
-- **Sources of truth:** `sources-of-truth.md`
-- **Repo-specific conventions (Supabase + Next.js):** `repo-conventions.md`
-- **Workflow + how to use `/memory`:** `workflow-and-memory.md`
-- **Local dev & validation commands:** `local-dev-and-quality-gates.md`
+## Read in this order
 
-## Known doc conflicts
+1. `sources-of-truth.md` — what is canonical when docs and code disagree.
+1. `repo-conventions.md` — current Next.js, Supabase, caching, admin, and UI patterns.
+1. `workflow-and-memory.md` — how this repo uses `memory/` and how that differs from Copilot memory.
+1. `local-dev-and-quality-gates.md` — local setup, validation commands, and handoff expectations.
 
-Some instructions conflict across docs. Track and resolve these before doing broader cleanup:
+## Supporting files
 
-- `open-questions.md`
+- `open-questions.md` — only for active documentation drift or unresolved follow-ups.
+- `findings-and-learnings.md` — durable lessons from fixes, refactors, and docs/code alignment work.
+- `deletion-candidates.md` — cleanup backlog for agent docs. Non-normative.
 
-## Suggested `docs/` structure
+## Scope of this folder
 
-This repo already uses `docs/` for documentation. Suggested structure going forward:
+These files are a convenience layer for progressive disclosure.
 
-- `docs/agents/` — instructions for agents and contributors (this folder)
-  - `README.md` — index
-  - `sources-of-truth.md` — canonical references
-  - `repo-conventions.md` — Next.js/Supabase patterns to follow
-  - `workflow-and-memory.md` — spec-driven loop + Memory Bank usage
-  - `local-dev-and-quality-gates.md` — commands, validation checklist
-  - `open-questions.md` — contradictions to resolve
-  - `deletion-candidates.md` — items to remove or rewrite
-- `docs/architecture/` — architecture notes and diagrams
-- `docs/runbooks/` — operational runbooks (Supabase, deployments, etc.)
-- `docs/decisions/` — ADRs / decision records
+If anything here disagrees with the live code, trust the sources listed in `sources-of-truth.md` and update this folder to match.
+
+Major repo changes should usually leave a doc trace here too: update the relevant guide, add a durable lesson to `findings-and-learnings.md`, or record unresolved drift in `open-questions.md`.

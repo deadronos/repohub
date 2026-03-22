@@ -1,27 +1,50 @@
 # Local dev and quality gates
 
-## Local workflows
+## Local setup
 
-- Run: `npm run dev`
-- Validate (canonical):
-  - `npm run test`
-  - `npm run lint`
-  - `npm run typecheck`
-  - `npm run build`
+- Package manager: `npm`
+- Required Node version: `>=20.9.0`
+- Start local dev: `npm run dev`
 
-Shortcut: `npm run check` (runs test + lint + typecheck).
+## Environment setup
 
-## Handoff & quality checklist
+Start from `env.example` and create a local env file such as `.env.local`.
 
-Before creating a PR or handing work off:
+Required variables:
 
-- **Prefer strict typing:** ensure `tsconfig.json` has `"strict": true` and prefer explicit types over `any`.
-- **Add tests:** add unit tests for new logic under `tests/` (Vitest). Tests should be deterministic.
-- **Run checks:** confirm `npm run check` passes (or run `npm run test`, `npm run lint`, `npm run typecheck` individually).
-- **Build:** confirm `npm run build` passes.
-- **Review setup docs when schema changes:** if you touch Supabase tables, policies, or RPCs, treat `supabase/schema.sql` as canonical and verify `README.md` still points to or accurately describes it.
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
 
-- **Avoid build-time network dependencies:** Do not rely on fetching external resources (for example, Google Fonts via `next/font/google`) during `next build` since bundlers (Turbopack/Next) may attempt HTTP/2 fetches at build-time which can fail in CI or certain environments. Prefer bundling fonts locally (use `next/font/local` or place font files in `public/`) or provide safe CSS fallbacks so builds are deterministic and offline-capable.
+Common project variables:
 
-- **Document changes:** update `/memory/` (e.g., `memory/activeContext.md` or a task file) with behavior changes and validation steps.
-- **Explain type choices:** if you intentionally use `any` or loosen strictness, justify it and add a follow-up task to tighten types later.
+- `ADMIN_EMAILS`
+- `GITHUB_TOKEN` for GitHub API requests when you want higher rate limits
+
+If you change admin emails, keep `ADMIN_EMAILS` and the inline allowlist in `supabase/schema.sql` synchronized.
+
+## Canonical validation
+
+Run these before handoff when your change affects runtime behavior:
+
+- `npm run test`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+
+Shortcut:
+
+- `npm run check` runs test + lint + typecheck
+
+## Handoff checklist
+
+- Add or update deterministic tests under `tests/` for changed behavior.
+- Confirm `npm run check` passes, or record why a subset was run.
+- Confirm `npm run build` passes for changes that can affect runtime or bundling.
+- If you touched Supabase tables, policies, or RPCs, treat `supabase/schema.sql` as canonical and keep setup docs aligned.
+- If you changed behavior or architecture, update the relevant notes in `memory/`.
+
+## Build reliability notes
+
+- Avoid build-time network dependencies such as `next/font/google`.
+- Prefer local fonts or CSS fallbacks so `next build` stays deterministic in CI and local environments.
+- Keep external fetches off critical rendering paths when possible; this project intentionally keeps the project grid lightweight and defers some work until the modal opens.

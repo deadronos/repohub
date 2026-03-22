@@ -1,44 +1,27 @@
-# Open questions (doc conflicts / contradictions)
+# Open questions
 
-This file tracks contradictions found while refactoring `AGENTS.md` for progressive disclosure.
+As of 2026-03-22, there are no known active contradictions inside `docs/agents/`.
 
-## Status
+## How to use this file
 
-Resolved on 2026-01-19:
+Only add entries here when there is an unresolved mismatch between:
 
-- Testing: Vitest is set up and should be used.
-- Canonical validation: `npm run test && npm run lint && npm run typecheck` (or `npm run check`) plus `npm run build`.
-- Server Actions: folder-based layout `app/actions/*` is canonical.
+- the live codebase
+- `.github/copilot-instructions.md`
+- `AGENTS.md`
+- `docs/agents/*.md`
+- `README.md`
 
-## 1) Testing: "no test runner" vs Vitest scripts
+For each new issue, record:
 
-### Conflict (testing)
+- the files that disagree
+- the concrete conflicting statements
+- the current best source of truth
+- the follow-up needed to resolve the drift
 
-- `.github/copilot-instructions.md` says: "No test runner is set up in this repo currently."
-- `package.json` contains Vitest scripts (`npm run test`, `npm run test:coverage`) and the repo has `tests/`.
+## Recently resolved drift
 
-### Decision (testing)
-
-✅ Update `.github/copilot-instructions.md` to reflect reality (Vitest exists and should be used).
-
-## 2) Validation commands: lint+build vs check+build
-
-### Conflict (validation commands)
-
-- `.github/copilot-instructions.md` says: Validate with `npm run lint` and `npm run build`.
-- `AGENTS.md` (and `package.json`) supports a stronger gate: `npm run check` (test + lint + typecheck) and `npm run build`.
-
-### Decision (validation commands)
-
-✅ Canonical validation = `npm run test && npm run lint && npm run typecheck` (or `npm run check`) + `npm run build`.
-
-## 3) Server Actions location: `app/actions.ts` vs `app/actions/*`
-
-### Conflict (Server Actions location)
-
-- `.github/copilot-instructions.md` references Server Actions in `app/actions.ts`.
-- The workspace uses an `app/actions/` folder (e.g., `app/actions/auth.ts`, `app/actions/projects.ts`).
-
-### Decision (Server Actions location)
-
-✅ Update docs to point to the folder-based layout (`app/actions/*`).
+- Vitest is the project test runner.
+- Canonical validation is `npm run test && npm run lint && npm run typecheck` (or `npm run check`) plus `npm run build`.
+- Server Actions live in `app/actions/*`.
+- The admin allowlist in the app and the inline allowlist in `supabase/schema.sql` must be kept in sync.
