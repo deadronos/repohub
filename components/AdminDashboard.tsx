@@ -14,10 +14,10 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import type { Project } from '@/types';
-import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
+import { deleteProjects, setProjectsFeatured, updateProjectOrder } from '@/app/actions/projects';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, AlertCircle, Star, StarOff } from 'lucide-react';
 import { getActionError, getActionWarning } from '@/utils/actions';
 import ProjectFormModal from '@/components/admin/ProjectFormModal';
 import AdminSortableGrid from '@/components/admin/AdminSortableGrid';
@@ -39,6 +39,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [featureStatus, setFeatureStatus] = useState<'idle' | 'saving'>('idle');
 
   // Sync state with server data when it changes (e.g. after router.refresh())
   useEffect(() => {
@@ -89,6 +90,39 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
       }
       router.refresh();
     }
+  };
+
+  const handleSetFeatured = async (isFeatured: boolean) => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) {
+      return;
+    }
+
+    const originalProjects = [...projects];
+    const originalSelectedIds = new Set(selectedIds);
+
+    setProjects(
+      projects.map((project) =>
+        selectedIds.has(project.id) ? { ...project, is_featured: isFeatured } : project,
+      ),
+    );
+    setSelectedIds(new Set());
+    setFeedback(null);
+    setFeatureStatus('saving');
+
+    const result = await setProjectsFeatured(ids, isFeatured);
+    const actionError = getActionError(result);
+
+    if (actionError) {
+      setProjects(originalProjects);
+      setSelectedIds(originalSelectedIds);
+      setFeedback({ tone: 'error', message: actionError });
+      setFeatureStatus('idle');
+      return;
+    }
+
+    setFeatureStatus('idle');
+    router.refresh();
   };
 
   const openEdit = (project: Project) => {
@@ -214,14 +248,35 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         </button>
 
         {selectedIds.size > 0 && (
-          <button
-            onClick={handleDelete}
-            className="bg-red-600/20 hover:bg-red-600/40 text-red-500 hover:text-red-200 border border-red-900/50 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all"
-          >
-            <Trash2 size={18} /> Delete Selected ({selectedIds.size})
-          </button>
+          <>
+            <button
+              onClick={() => void handleSetFeatured(true)}
+              disabled={featureStatus === 'saving'}
+              className="bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
+            >
+              <Star size={18} /> Feature Selected ({selectedIds.size})
+            </button>
+
+            <button
+              onClick={() => void handleSetFeatured(false)}
+              disabled={featureStatus === 'saving'}
+              className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
+            >
+              <StarOff size={18} /> Unfeature Selected ({selectedIds.size})
+            </button>
+
+            <button
+              onClick={handleDelete}
+              className="bg-red-600/20 hover:bg-red-600/40 text-red-500 hover:text-red-200 border border-red-900/50 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all"
+            >
+              <Trash2 size={18} /> Delete Selected ({selectedIds.size})
+            </button>
+          </>
         )}
 
+        {featureStatus === 'saving' && (
+          <span className="text-sm text-amber-300">Updating featured projects...</span>
+        )}
         {orderStatus === 'saving' && (
           <span className="text-sm text-cyan-300">Saving order...</span>
         )}

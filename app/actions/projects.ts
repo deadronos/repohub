@@ -85,6 +85,34 @@ export async function updateProjectOrder(orderedIds: string[]): Promise<ActionRe
   return { data: true };
 }
 
+export async function setProjectsFeatured(
+  ids: string[],
+  isFeatured: boolean,
+): Promise<ActionResult<true>> {
+  const supabase = await createClient();
+  const userResult = await requireAdminOrUnauthorized(supabase);
+  if ('error' in userResult) {
+    return userResult;
+  }
+
+  if (ids.length === 0) {
+    return { error: 'Select at least one project' };
+  }
+
+  const { error } = await supabase
+    .from(PROJECTS_TABLE)
+    .update({ is_featured: isFeatured })
+    .in('id', ids);
+
+  if (error) {
+    console.error('Database error:', error);
+    return { error: formatError(error) };
+  }
+
+  revalidateProjects();
+  return { data: true };
+}
+
 export async function updateProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
   const userResult = await requireAdminOrUnauthorized(supabase);
