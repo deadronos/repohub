@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Edit2 } from 'lucide-react';
+import { Edit2, Star } from 'lucide-react';
 import type { Project } from '@/types';
 import ProjectImage from '@/components/projects/ProjectImage';
 import ProjectTags from '@/components/projects/ProjectTags';
@@ -52,6 +52,13 @@ export default function AdminProjectCard({
           >
             <Edit2 size={16} />
           </button>
+
+          {project.is_featured && (
+            <div className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-black/70 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-300">
+              <Star size={12} className="fill-current" />
+              Featured
+            </div>
+          )}
         </>
       )}
 

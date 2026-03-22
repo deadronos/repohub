@@ -11,14 +11,14 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import type { Project } from '@/types';
-import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
+import { deleteProjects, setProjectsFeatured, updateProjectOrder } from '@/app/actions/projects';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
 import { getActionError, getActionWarning } from '@/utils/actions';
 import ProjectFormModal from '@/components/admin/ProjectFormModal';
 import AdminToolbar from '@/components/admin/AdminToolbar';
-import AdminProjectGrid from '@/components/admin/AdminProjectGrid';
+import AdminSortableGrid from '@/components/admin/AdminSortableGrid';
 
 interface AdminDashboardProps {
   initialProjects: Project[];
@@ -37,6 +37,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
   const [feedback, setFeedback] = useState<FeedbackState | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [featureStatus, setFeatureStatus] = useState<'idle' | 'saving'>('idle');
 
   // Sync state with server data when it changes (e.g. after router.refresh())
   useEffect(() => {
@@ -87,6 +88,39 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
       }
       router.refresh();
     }
+  };
+
+  const handleSetFeatured = async (isFeatured: boolean) => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) {
+      return;
+    }
+
+    const originalProjects = [...projects];
+    const originalSelectedIds = new Set(selectedIds);
+
+    setProjects(
+      projects.map((project) =>
+        selectedIds.has(project.id) ? { ...project, is_featured: isFeatured } : project,
+      ),
+    );
+    setSelectedIds(new Set());
+    setFeedback(null);
+    setFeatureStatus('saving');
+
+    const result = await setProjectsFeatured(ids, isFeatured);
+    const actionError = getActionError(result);
+
+    if (actionError) {
+      setProjects(originalProjects);
+      setSelectedIds(originalSelectedIds);
+      setFeedback({ tone: 'error', message: actionError });
+      setFeatureStatus('idle');
+      return;
+    }
+
+    setFeatureStatus('idle');
+    router.refresh();
   };
 
   const openEdit = (project: Project) => {
@@ -204,12 +238,16 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
           setIsFormOpen(true);
           setFeedback(null);
         }}
+        onFeatureSelected={() => void handleSetFeatured(true)}
+        onUnfeatureSelected={() => void handleSetFeatured(false)}
         onDeleteSelected={handleDelete}
         selectedCount={selectedIds.size}
         orderStatus={orderStatus}
+        featureStatus={featureStatus}
       />
 
-      <AdminProjectGrid
+      {/* Grid of Projects */}
+      <AdminSortableGrid
         projects={projects}
         selectedIds={selectedIds}
         orderStatus={orderStatus}
@@ -218,7 +256,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
-        onToggleSelection={toggleSelection}
+        onToggleSelect={toggleSelection}
         onEdit={openEdit}
       />
 

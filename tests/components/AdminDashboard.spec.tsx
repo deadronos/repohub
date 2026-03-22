@@ -2,7 +2,7 @@ import { render, screen, waitFor, act, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import AdminDashboard from '@/components/AdminDashboard';
 import type { Project } from '@/types';
-import { deleteProjects, updateProjectOrder } from '@/app/actions/projects';
+import { deleteProjects, setProjectsFeatured, updateProjectOrder } from '@/app/actions/projects';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { makeProject } from '@/tests/fixtures/project';
 import {
@@ -62,11 +62,13 @@ const mockProjects: Project[] = [
 describe('AdminDashboard drag ordering', () => {
   const updateOrderMock = vi.mocked(updateProjectOrder);
   const deleteProjectsMock = vi.mocked(deleteProjects);
+  const setProjectsFeaturedMock = vi.mocked(setProjectsFeatured);
 
   beforeEach(() => {
     resetAdminDashboardMocks();
     updateOrderMock.mockReset();
     deleteProjectsMock.mockReset();
+    setProjectsFeaturedMock.mockReset();
     vi.restoreAllMocks();
   });
 
@@ -100,6 +102,17 @@ describe('AdminDashboard drag ordering', () => {
     expect(screen.getAllByText('No Image').length).toBeGreaterThanOrEqual(2);
     // Project Three has null tags
     expect(screen.getByText('No tags')).toBeInTheDocument();
+  });
+
+  it('shows a featured badge on featured projects', () => {
+    const projects: Project[] = [
+      makeProject({ is_featured: true }),
+      makeProject({ id: '2', title: 'Project Two', is_featured: false }),
+    ];
+
+    render(<AdminDashboard initialProjects={projects} />);
+
+    expect(screen.getByText('Featured')).toBeInTheDocument();
   });
 
   it('opens and closes the create modal', () => {
@@ -270,6 +283,47 @@ describe('AdminDashboard drag ordering', () => {
     });
 
     expect(refreshSpy).toHaveBeenCalled();
+  });
+
+  it('features the selected projects and refreshes on success', async () => {
+    setProjectsFeaturedMock.mockResolvedValue({ data: true });
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    const firstCheckbox = checkboxes[0];
+    if (!firstCheckbox) {
+      throw new Error('Expected at least one checkbox');
+    }
+
+    fireEvent.click(firstCheckbox);
+    fireEvent.click(screen.getByRole('button', { name: /^Feature Selected \(1\)$/i }));
+
+    await waitFor(() => {
+      expect(setProjectsFeaturedMock).toHaveBeenCalledWith(['1'], true);
+    });
+
+    expect(refreshSpy).toHaveBeenCalled();
+    expect(screen.getByText('Featured')).toBeInTheDocument();
+  });
+
+  it('reverts featured changes and restores selection when update fails', async () => {
+    setProjectsFeaturedMock.mockResolvedValue({ error: 'Failed to update featured status' });
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    const firstCheckbox = checkboxes[0];
+    if (!firstCheckbox) {
+      throw new Error('Expected at least one checkbox');
+    }
+
+    fireEvent.click(firstCheckbox);
+    fireEvent.click(screen.getByRole('button', { name: /^Feature Selected \(1\)$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to update featured status')).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('button', { name: /^Feature Selected \(1\)$/i })).toBeInTheDocument();
   });
 
   it('keeps the deletion and shows a warning when storage cleanup is incomplete', async () => {

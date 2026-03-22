@@ -20,7 +20,7 @@ export function generateParticles(count: number) {
   return [positions, initialPositions] as const;
 }
 
-type PositionAttributeLike = {
+export type PositionAttributeLike = {
   array: Float32Array;
   setXYZ?: (idx: number, x: number, y: number, z: number) => void;
 };
