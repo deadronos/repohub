@@ -10,6 +10,7 @@ export function createProjectFormActionsMock() {
 export function createAdminDashboardActionsMock() {
   return {
     deleteProjects: vi.fn(),
+    setProjectsFeatured: vi.fn(),
     updateProjectOrder: vi.fn(),
   };
 }
