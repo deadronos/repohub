@@ -6,8 +6,17 @@ function normalizeEmail(email: string | null | undefined) {
   return email?.trim().toLowerCase() ?? '';
 }
 
+let cachedEnvValue: string | undefined = undefined;
+let cachedEmails: string[] = [];
+
 export function getAdminEmails(envValue = process.env.ADMIN_EMAILS) {
-  const emails = (envValue ?? '').split(',');
+  const effectiveEnvValue = envValue ?? '';
+
+  if (cachedEnvValue === effectiveEnvValue && cachedEmails.length > 0) {
+    return cachedEmails;
+  }
+
+  const emails = effectiveEnvValue.split(',');
   const uniqueEmails = new Set<string>();
 
   for (let i = 0; i < emails.length; i++) {
@@ -17,7 +26,10 @@ export function getAdminEmails(envValue = process.env.ADMIN_EMAILS) {
     }
   }
 
-  return Array.from(uniqueEmails);
+  cachedEnvValue = effectiveEnvValue;
+  cachedEmails = Array.from(uniqueEmails);
+
+  return cachedEmails;
 }
 
 export function isAdminUser(
