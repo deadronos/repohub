@@ -110,3 +110,11 @@ describe('WebGPUCanvas', () => {
     // test robust across runtime scheduling differences.
   });
 });
+
+describe('WebGPUCanvas - Minimal rendering', () => {
+  it('renders successfully with minimal props', async () => {
+    const { container } = render(<WebGPUCanvas />);
+    await screen.findByTestId('r3f-canvas');
+    expect(container).toBeInTheDocument();
+  });
+});
