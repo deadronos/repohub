@@ -44,6 +44,9 @@ describe('ParticleBackgroundLazy', () => {
     expect(screen.queryByTestId('particle-bg')).not.toBeInTheDocument();
     expect(dynamicImportCalls.count).toBe(0);
     expect(capturedCallback).not.toBeNull();
+    expect(window.requestIdleCallback).toHaveBeenCalledWith(expect.any(Function), {
+      timeout: 1500,
+    });
 
     act(() => {
       capturedCallback?.({ didTimeout: false, timeRemaining: () => 50 });
@@ -55,6 +58,7 @@ describe('ParticleBackgroundLazy', () => {
 
   it('falls back to setTimeout when requestIdleCallback is unavailable', async () => {
     vi.useFakeTimers();
+    const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
 
     (window as unknown as { requestIdleCallback?: unknown }).requestIdleCallback = undefined;
     (window as unknown as { cancelIdleCallback?: unknown }).cancelIdleCallback = undefined;
@@ -62,6 +66,7 @@ describe('ParticleBackgroundLazy', () => {
     render(<ParticleBackgroundLazy />);
     expect(screen.queryByTestId('particle-bg')).not.toBeInTheDocument();
     expect(dynamicImportCalls.count).toBe(0);
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 200);
 
     // Ensure the mount effect schedules the fallback timer before advancing time.
     await act(async () => {});
@@ -102,5 +107,25 @@ describe('ParticleBackgroundLazy', () => {
 
     expect(clearTimeoutSpy).toHaveBeenCalled();
     clearTimeoutSpy.mockRestore();
+  });
+
+  it('does not render background if idle callback fires after unmount', async () => {
+    let capturedCallback: IdleRequestCallback | null = null;
+    (window as unknown as { requestIdleCallback: unknown }).requestIdleCallback = vi.fn(
+      (callback: IdleRequestCallback) => {
+        capturedCallback = callback;
+        return 123;
+      },
+    );
+
+    const { unmount } = render(<ParticleBackgroundLazy />);
+    unmount();
+
+    act(() => {
+      capturedCallback?.({ didTimeout: false, timeRemaining: () => 50 });
+    });
+
+    expect(screen.queryByTestId('particle-bg')).not.toBeInTheDocument();
+    expect(dynamicImportCalls.count).toBe(0);
   });
 });
