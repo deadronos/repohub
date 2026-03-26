@@ -135,3 +135,25 @@ describe('ParticleBackground', () => {
     expect(restoredPoints).toBe(initialPoints);
   });
 });
+
+describe('ParticleBackground gpu events', () => {
+  it('handles gpu context loss and restore', async () => {
+    render(<ParticleBackground />);
+
+    const canvas = await screen.findByTestId('r3f-canvas');
+
+    await waitFor(() => {
+      const lostEvent = new Event('gpucontextlost', { cancelable: true });
+      canvas.dispatchEvent(lostEvent);
+      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'lost');
+    });
+
+    act(() => {
+      canvas.dispatchEvent(new Event('gpucontextrestored'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'ok');
+    });
+  });
+});
