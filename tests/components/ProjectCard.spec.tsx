@@ -100,4 +100,29 @@ describe('ProjectCard component', () => {
     const chips = container.querySelectorAll('span.text-xs');
     expect(chips).toHaveLength(1);
   });
+
+  it('renders gracefully when short_description is null', () => {
+    const onClick = vi.fn();
+    const project: Project = {
+      ...baseProject,
+      short_description: null,
+    };
+
+    const { container } = render(<ProjectCard project={project} onClick={onClick} />);
+    const descElement = container.querySelector('.line-clamp-2');
+    expect(descElement).toHaveTextContent('');
+  });
+
+  it('truncates long short_description to 100 characters', () => {
+    const onClick = vi.fn();
+    const longDescription = 'A'.repeat(150);
+    const project: Project = {
+      ...baseProject,
+      short_description: longDescription,
+    };
+
+    const { container } = render(<ProjectCard project={project} onClick={onClick} />);
+    const descElement = container.querySelector('.line-clamp-2');
+    expect(descElement).toHaveTextContent('A'.repeat(97) + '...');
+  });
 });
