@@ -109,7 +109,7 @@ describe('ParticleBackgroundLazy', () => {
     clearTimeoutSpy.mockRestore();
   });
 
-  it('does not render background if idle callback fires after unmount', async () => {
+  it('does not render background if idle callback fires after unmount', () => {
     let capturedCallback: IdleRequestCallback | null = null;
     (window as unknown as { requestIdleCallback: unknown }).requestIdleCallback = vi.fn(
       (callback: IdleRequestCallback) => {

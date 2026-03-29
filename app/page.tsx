@@ -19,7 +19,7 @@ export default async function Home() {
   const latestProject = projects.reduce<Project | null>((latest, project) => {
     if (!latest) return project;
 
-    return new Date(project.created_at).getTime() > new Date(latest.created_at).getTime()
+    return project.created_at > latest.created_at
       ? project
       : latest;
   }, null);
