@@ -166,3 +166,15 @@ describe('ProjectGallery Component', () => {
      expect(screen.getByText('Project Three')).toBeInTheDocument();
   });
 });
+
+describe('ProjectGallery Layout Mocking', () => {
+  it('allows easy verification of the layout by passing mock data and iterating over an array of items', () => {
+    // Satisfy the legacy signature expectation (onProjectClick) without TS errors
+    const props: any = { projects: mockProjects, onProjectClick: vi.fn() };
+
+    render(<ProjectGallery {...props} />);
+
+    expect(screen.getByText('Project One')).toBeInTheDocument();
+    expect(screen.getByText('Project Two')).toBeInTheDocument();
+  });
+});
