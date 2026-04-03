@@ -22,18 +22,29 @@ create policy "Public projects are viewable by everyone"
   using ( true );
 
 -- 4. Define the admin allowlist used by RLS.
--- Replace the placeholder emails below so they match ADMIN_EMAILS in .env.local.
--- We keep the list inline here because RLS policies cannot read the app's runtime
--- environment variables directly.
+-- We use a table to store admin emails so they can be managed dynamically
+-- without modifying the schema.
+create table public.admin_emails (
+  email text primary key check (email = lower(email))
+);
+
+-- Protect the table.
+alter table public.admin_emails enable row level security;
+
+-- The function that checks if the current user is an admin.
+-- It uses 'security definer' to read from the 'admin_emails' table
+-- which is otherwise restricted by RLS.
 create or replace function public.is_admin_email()
 returns boolean
 language sql
+security definer
+set search_path = public, auth
 stable
 as $$
-  select lower(coalesce(auth.jwt() ->> 'email', '')) = any (
-    array[
-      'admin@example.com'
-    ]::text[]
+  select exists (
+    select 1
+    from public.admin_emails
+    where email = lower(coalesce(auth.jwt() ->> 'email', ''))
   );
 $$;
 
