@@ -135,6 +135,14 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
     setFeedback(null);
   };
 
+  const handleFormComplete = (warning?: string | null) => {
+    closeForm();
+    if (warning) {
+      setFeedback({ tone: 'warning', message: warning });
+    }
+    router.refresh();
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -264,13 +272,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         isOpen={isFormOpen}
         project={editingProject}
         onClose={closeForm}
-        onComplete={(warning) => {
-          closeForm();
-          if (warning) {
-            setFeedback({ tone: 'warning', message: warning });
-          }
-          router.refresh();
-        }}
+        onComplete={handleFormComplete}
       />
     </div>
   );
