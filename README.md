@@ -55,12 +55,12 @@ ADMIN_EMAILS=admin@example.com
 Setup steps:
 
 1. In Supabase Storage, create a new bucket named `projects` and enable **Public Bucket**.
-2. Open [`supabase/schema.sql`](supabase/schema.sql) and replace the placeholder email literals inside `public.is_admin_email()` with the same email addresses you configured in `ADMIN_EMAILS`.
-3. Run the full contents of [`supabase/schema.sql`](supabase/schema.sql) in the Supabase **SQL Editor**.
+2. Run the full contents of [`supabase/schema.sql`](supabase/schema.sql) in the Supabase **SQL Editor**.
+3. Manage admin emails by adding them to the `public.admin_emails` table in the Supabase dashboard.
 
 That schema creates all required runtime pieces, including:
 
-- The `projects` table with the `sort_order` column used by the admin UI.
+- The `projects` and `admin_emails` tables.
 - RLS policies for public reads and allowlisted admin mutations.
 - Storage policies for the `projects` bucket.
 - The `update_project_order(uuid[])` RPC used by drag-and-drop ordering in `/admin`.
@@ -73,8 +73,8 @@ Since there is no public sign-up page:
 
 1. Go to Supabase Dashboard -> **Authentication** -> **Users**.
 2. Click **Add User** and create your admin credentials.
-3. Add that exact email address to `ADMIN_EMAILS`.
-4. Keep the email literals in [`supabase/schema.sql`](supabase/schema.sql) in sync with `ADMIN_EMAILS` so direct database and storage writes stay locked down.
+3. Add that exact email address to `ADMIN_EMAILS` in your environment.
+4. Add that same email address to the `public.admin_emails` table in your Supabase database to ensure database-level RLS policies grant you access.
 
 ## 🏃‍♂️ Running Locally
 

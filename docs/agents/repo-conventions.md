@@ -30,8 +30,8 @@ These are the patterns most likely to cause subtle bugs when violated.
 - Route protection flows through `middleware.ts` → `utils/supabase/middleware.ts`.
   - Do not insert logic between `createServerClient()` and `supabase.auth.getUser()`.
 - App-side admin checks use `ADMIN_EMAILS` via `utils/supabase/admin.ts`.
-- Database-side admin checks use the inline allowlist in `supabase/schema.sql` via `public.is_admin_email()`.
-  - Keep `ADMIN_EMAILS` and the email literals in `supabase/schema.sql` synchronized.
+- Database-side admin checks use the `public.admin_emails` table via `public.is_admin_email()`.
+  - Ensure that any email in `ADMIN_EMAILS` is also present in the `public.admin_emails` table.
 
 ## Mutation patterns
 
