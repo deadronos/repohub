@@ -1,9 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { parseProjectFormData, validateProjectInput, type ProjectFormData } from '@/utils/projects/form';
+import {
+  parseProjectFormData,
+  validateProjectInput,
+  type ProjectFormData,
+} from '@/utils/projects/form';
 import { uploadProjectImage } from '@/utils/projects/storage';
 import type { ActionResult } from '@/utils/actions';
 
-type PreparedProjectMutation = {
+export type PreparedProjectMutation = {
   parsed: ProjectFormData;
   imageUrl: string | null;
   tags: string[] | null;

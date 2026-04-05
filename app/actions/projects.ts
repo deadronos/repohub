@@ -11,29 +11,24 @@ import { PROJECTS_TABLE } from '@/utils/projects/constants';
 import { deleteProjectImages } from '@/utils/projects/storage';
 import type { Project } from '@/types';
 
-import type { ProjectFormData } from '@/utils/projects/form';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { PreparedProjectMutation } from '@/utils/projects/mutations';
 
-type InitializeResult = {
-  data: {
-    parsed: ProjectFormData;
-    imageUrl: string;
-    tags: string[];
-  };
-};
-
-async function initializeProjectMutation(supabase: SupabaseClient, formData: FormData) {
+async function initializeProjectMutation(
+  supabase: SupabaseClient,
+  formData: FormData,
+): Promise<{ data: PreparedProjectMutation } | { error: string }> {
   const userResult = await requireAdminOrUnauthorized(supabase);
   if ('error' in userResult) {
-    return userResult as { error: string };
+    return { error: userResult.error };
   }
 
   const prepared = await prepareProjectMutation(supabase, formData);
   if ('error' in prepared) {
-    return { error: prepared.error } as { error: string };
+    return { error: prepared.error };
   }
 
-  return { data: prepared.data as unknown as InitializeResult['data'] };
+  return { data: prepared.data };
 }
 
 export async function createProject(formData: FormData): Promise<ActionResult<true>> {
@@ -154,7 +149,7 @@ export async function updateProject(formData: FormData): Promise<ActionResult<tr
       repo_url: parsed.repo_url,
       demo_url: parsed.demo_url,
       tags,
-      image_url: imageUrl ?? (parsed.current_image_url ?? ''),
+      image_url: imageUrl ?? parsed.current_image_url,
     })
     .eq('id', parsed.id);
 
