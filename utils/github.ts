@@ -27,7 +27,11 @@ async function fetchStatsInternal(owner: string, repo: string): Promise<GitHubSt
       return null;
     }
 
-    const data = (await res.json()) as { stargazers_count: number; forks_count: number; pushed_at: string };
+    const data = (await res.json()) as {
+      stargazers_count: number;
+      forks_count: number;
+      pushed_at: string;
+    };
     return {
       stars: data.stargazers_count,
       forks: data.forks_count,
@@ -59,3 +63,4 @@ export async function getGitHubStats(url: string): Promise<GitHubStats | null> {
 }
 
 export { parseGitHubUrl, normalizeGitHubRepoUrl };
+export type { GitHubRepoMeta } from '@/utils/github-url';
