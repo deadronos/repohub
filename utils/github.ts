@@ -58,4 +58,9 @@ export async function getGitHubStats(url: string): Promise<GitHubStats | null> {
   return getGitHubStatsCached(normalized);
 }
 
+/**
+ * Facade for GitHub-related functions.
+ * Re-exports common utilities from github-url.ts to simplify imports for consumers.
+ */
 export { parseGitHubUrl, normalizeGitHubRepoUrl };
+export type { GitHubRepoMeta } from '@/utils/github-url';
