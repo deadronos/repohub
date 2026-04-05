@@ -11,6 +11,45 @@ import type {
 } from './types';
 import { isRecord, isRendererExport, hasInit } from './types';
 
+function createRendererInstSync(
+  RendererFn: unknown,
+  defaultProps: GLProps,
+  glProp: CanvasGlProp
+): RendererInstance {
+  const glOverrides: Record<string, unknown> =
+    isRecord(glProp) && typeof glProp !== 'function'
+      ? (glProp as Record<string, unknown>)
+      : {};
+
+  const rendererOptions: Record<string, unknown> = {
+    canvas: defaultProps.canvas,
+    antialias: true,
+    alpha: true,
+    ...glOverrides,
+  };
+
+  try {
+    return new (RendererFn as RendererCtor)(rendererOptions);
+  } catch {
+    return (RendererFn as RendererFactory)(rendererOptions);
+  }
+}
+
+async function createRendererInst(
+  RendererFn: unknown,
+  defaultProps: GLProps,
+  glProp: CanvasGlProp,
+  isAsync = false
+): Promise<RendererInstance> {
+  const rendererInstance = createRendererInstSync(RendererFn, defaultProps, glProp);
+
+  if (isAsync && hasInit(rendererInstance)) {
+    await rendererInstance.init();
+  }
+
+  return rendererInstance;
+}
+
 /**
  * Hook to dynamically load the WebGPURenderer with a legacy WebGL fallback.
  */
@@ -86,30 +125,7 @@ export function useGLConfig(
       const RendererFn = Renderer;
 
       return async (defaultProps: GLProps) => {
-        const glOverrides: Record<string, unknown> =
-          isRecord(glProp) && typeof glProp !== 'function'
-            ? (glProp as Record<string, unknown>)
-            : {};
-
-        const rendererOptions: Record<string, unknown> = {
-          canvas: defaultProps.canvas,
-          antialias: true,
-          alpha: true,
-          ...glOverrides,
-        };
-
-        let rendererInstance: RendererInstance;
-        try {
-          rendererInstance = new (RendererFn as RendererCtor)(rendererOptions);
-        } catch {
-          rendererInstance = (RendererFn as RendererFactory)(rendererOptions);
-        }
-
-        if (hasInit(rendererInstance)) {
-          await rendererInstance.init();
-        }
-
-        return rendererInstance;
+        return createRendererInst(RendererFn, defaultProps, glProp, true);
       };
     }
 
@@ -121,23 +137,7 @@ export function useGLConfig(
       const LegacyRendererFn = LegacyRenderer;
 
       return (defaultProps: GLProps) => {
-        const glOverrides: Record<string, unknown> =
-          isRecord(glProp) && typeof glProp !== 'function'
-            ? (glProp as Record<string, unknown>)
-            : {};
-
-        const rendererOptions: Record<string, unknown> = {
-          canvas: defaultProps.canvas,
-          antialias: true,
-          alpha: true,
-          ...glOverrides,
-        };
-
-        try {
-          return new (LegacyRendererFn as RendererCtor)(rendererOptions);
-        } catch {
-          return (LegacyRendererFn as RendererFactory)(rendererOptions);
-        }
+        return createRendererInstSync(LegacyRendererFn, defaultProps, glProp);
       };
     }
 

@@ -11,19 +11,39 @@ import { PROJECTS_TABLE } from '@/utils/projects/constants';
 import { deleteProjectImages } from '@/utils/projects/storage';
 import type { Project } from '@/types';
 
-export async function createProject(formData: FormData): Promise<ActionResult<true>> {
-  const supabase = await createClient();
+import type { ProjectFormData } from '@/utils/projects/form';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+type InitializeResult = {
+  data: {
+    parsed: ProjectFormData;
+    imageUrl: string;
+    tags: string[];
+  };
+};
+
+async function initializeProjectMutation(supabase: SupabaseClient, formData: FormData) {
   const userResult = await requireAdminOrUnauthorized(supabase);
   if ('error' in userResult) {
-    return userResult;
+    return userResult as { error: string };
   }
 
   const prepared = await prepareProjectMutation(supabase, formData);
   if ('error' in prepared) {
-    return { error: prepared.error };
+    return { error: prepared.error } as { error: string };
   }
 
-  const { parsed, imageUrl, tags } = prepared.data;
+  return { data: prepared.data as unknown as InitializeResult['data'] };
+}
+
+export async function createProject(formData: FormData): Promise<ActionResult<true>> {
+  const supabase = await createClient();
+  const initResult = await initializeProjectMutation(supabase, formData);
+  if ('error' in initResult) {
+    return { error: initResult.error };
+  }
+  if (!initResult.data) return { error: 'Unknown Error' };
+  const { parsed, imageUrl, tags } = initResult.data;
   const sortOrder = await getNextProjectSortOrder(supabase);
 
   const { error } = await supabase.from(PROJECTS_TABLE).insert({
@@ -115,17 +135,12 @@ export async function setProjectsFeatured(
 
 export async function updateProject(formData: FormData): Promise<ActionResult<true>> {
   const supabase = await createClient();
-  const userResult = await requireAdminOrUnauthorized(supabase);
-  if ('error' in userResult) {
-    return userResult;
+  const initResult = await initializeProjectMutation(supabase, formData);
+  if ('error' in initResult) {
+    return { error: initResult.error };
   }
-
-  const prepared = await prepareProjectMutation(supabase, formData);
-  if ('error' in prepared) {
-    return { error: prepared.error };
-  }
-
-  const { parsed, imageUrl, tags } = prepared.data;
+  if (!initResult.data) return { error: 'Unknown Error' };
+  const { parsed, imageUrl, tags } = initResult.data;
   if (!parsed.id) {
     return { error: 'Missing project id' };
   }
@@ -139,7 +154,7 @@ export async function updateProject(formData: FormData): Promise<ActionResult<tr
       repo_url: parsed.repo_url,
       demo_url: parsed.demo_url,
       tags,
-      image_url: imageUrl ?? parsed.current_image_url,
+      image_url: imageUrl ?? (parsed.current_image_url ?? ''),
     })
     .eq('id', parsed.id);
 
