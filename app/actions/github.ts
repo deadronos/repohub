@@ -1,7 +1,6 @@
 'use server';
 
-import { getGitHubStats } from '@/utils/github';
-import type { GitHubStats } from '@/utils/github';
+import { getGitHubStats, type GitHubStats } from '@/utils/github';
 import { formatError, type ActionResult } from '@/utils/actions';
 
 export async function fetchGitHubStatsAction(url: string): Promise<ActionResult<GitHubStats>> {
