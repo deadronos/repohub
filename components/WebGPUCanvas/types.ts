@@ -1,10 +1,6 @@
 import { type ComponentProps } from 'react';
 import { Canvas, type RootState } from '@react-three/fiber';
 
-export type WebGPUCanvasProps = ComponentProps<typeof Canvas> & {
-  onRendererCreated?: (rendererType: 'webgpu' | 'webgl') => void;
-};
-
 export interface GLProps {
   canvas?: HTMLCanvasElement | OffscreenCanvas;
   [key: string]: unknown;
