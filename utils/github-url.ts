@@ -45,7 +45,19 @@ export function parseGitHubUrl(url: string): GitHubRepoMeta | null {
   const repoRaw = decodeURIComponent(parts[1] ?? '');
   const repo = repoRaw.replace(/\.git$/i, '');
 
-  if (!owner || !repo) {
+  // GitHub owner and repo names only allow alphanumeric, hyphens, underscores, and dots.
+  // We strictly validate these to prevent path traversal or SSRF when used in API calls.
+  const nameRegex = /^[a-zA-Z0-9._-]+$/;
+  if (
+    !owner ||
+    !repo ||
+    !nameRegex.test(owner) ||
+    !nameRegex.test(repo) ||
+    owner === '.' ||
+    owner === '..' ||
+    repo === '.' ||
+    repo === '..'
+  ) {
     return null;
   }
 

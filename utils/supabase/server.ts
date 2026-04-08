@@ -28,8 +28,9 @@ export const createClient = cache(async () => {
         },
         setAll(cookiesToSet) {
           try {
-            for (const { name, value, options } of cookiesToSet) {
-              cookieStore.set(name, value, options);
+            for (let i = 0, len = cookiesToSet.length; i < len; i++) {
+              const cookie = cookiesToSet[i];
+              cookieStore.set(cookie.name, cookie.value, cookie.options);
             }
           } catch (error) {
             handleCookieSetError(error);

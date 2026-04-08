@@ -1,8 +1,13 @@
 'use client';
 
+import { type ComponentProps } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { type WebGPUCanvasProps, type CanvasGlProp } from './types';
+import { type CanvasGlProp } from './types';
 import { useWebGPURenderer, useGLConfig, useRendererDetection } from './hooks';
+
+type Props = ComponentProps<typeof Canvas> & {
+  onRendererCreated?: (rendererType: 'webgpu' | 'webgl') => void;
+};
 
 /**
  * Enhanced Canvas component that uses WebGPURenderer with automatic WebGL fallback.
@@ -19,7 +24,7 @@ export default function WebGPUCanvas({
   onCreated,
   gl: glProp,
   ...props
-}: WebGPUCanvasProps) {
+}: Props) {
   const { webGPUState, LegacyRenderer } = useWebGPURenderer();
 
   const glConfig = useGLConfig(webGPUState, LegacyRenderer, glProp);
