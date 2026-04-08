@@ -5,7 +5,6 @@ import type {
   RendererInstance,
   RendererCtor,
   RendererFactory,
-  WebGPUCanvasProps,
   CanvasGlProp,
   RootState
 } from './types';
@@ -149,8 +148,8 @@ export function useGLConfig(
  * Hook to handle renderer creation and detection of the active backend.
  */
 export function useRendererDetection(
-  onRendererCreated: WebGPUCanvasProps['onRendererCreated'],
-  onCreated: WebGPUCanvasProps['onCreated']
+  onRendererCreated?: (rendererType: 'webgpu' | 'webgl') => void,
+  onCreated?: (state: RootState) => void
 ) {
   const [rendererType, setRendererType] = useState<'webgpu' | 'webgl' | null>(null);
   const hasNotified = useRef(false);
