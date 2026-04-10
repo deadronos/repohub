@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseGitHubUrl, normalizeGitHubRepoUrl } from '../utils/github-url';
+import { parseGitHubUrl, normalizeGitHubRepoUrl } from '@/utils/github-url';
 
 describe('utils/github-url', () => {
   describe('parseGitHubUrl', () => {
