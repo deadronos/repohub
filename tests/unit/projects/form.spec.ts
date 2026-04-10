@@ -72,9 +72,9 @@ describe('Project Form Utils', () => {
     });
 
     it('should handle undefined optional fields', () => {
-      expect(validateProjectInput({ title: 'Test', repoUrl: undefined, demoUrl: undefined })).toEqual(
-        [],
-      );
+      expect(
+        validateProjectInput({ title: 'Test', repoUrl: undefined, demoUrl: undefined }),
+      ).toEqual([]);
     });
 
     it('should ignore whitespace-only optional URLs', () => {
@@ -133,6 +133,33 @@ describe('Project Form Utils', () => {
       expect(parsed.tags).toEqual(['Next.js', 'TypeScript', 'AI']);
       expect(parsed.imageFile).toEqual(file);
       expect(parsed.current_image_url).toBe('https://example.com/image.png');
+    });
+
+    it('should set imageFile to null if image is not a File', () => {
+      const formData = new FormData();
+      formData.set('image', 'not-a-file-string');
+
+      const parsed = parseProjectFormData(formData);
+
+      expect(parsed.imageFile).toBeNull();
+    });
+
+    it('should fallback to raw repo_url if url is invalid', () => {
+      const formData = new FormData();
+      formData.set('repo_url', ' javascript:alert(1) ');
+
+      const parsed = parseProjectFormData(formData);
+
+      expect(parsed.repo_url).toBe('javascript:alert(1)');
+    });
+
+    it('should fallback to raw repo_url if url is not a github url', () => {
+      const formData = new FormData();
+      formData.set('repo_url', ' https://gitlab.com/me/repo ');
+
+      const parsed = parseProjectFormData(formData);
+
+      expect(parsed.repo_url).toBe('https://gitlab.com/me/repo');
     });
   });
 });
