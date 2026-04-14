@@ -19,15 +19,16 @@ export default async function Home() {
   const latestProject = projects.reduce<Project | null>((latest, project) => {
     if (!latest) return project;
 
-    return project.created_at > latest.created_at
-      ? project
-      : latest;
+    return project.created_at > latest.created_at ? project : latest;
   }, null);
 
   const tagFrequency = new Map<string, number>();
   for (const project of projects) {
-    for (const tag of project.tags ?? []) {
-      tagFrequency.set(tag, (tagFrequency.get(tag) ?? 0) + 1);
+    const tags = project.tags;
+    if (tags) {
+      for (const tag of tags) {
+        tagFrequency.set(tag, (tagFrequency.get(tag) ?? 0) + 1);
+      }
     }
   }
 
@@ -64,7 +65,8 @@ export default async function Home() {
             </div>
 
             <p className="max-w-xl text-sm leading-relaxed text-zinc-400 md:text-right">
-              Open any project card for a deeper look at the demo, source, and the tech stack behind it.
+              Open any project card for a deeper look at the demo, source, and the tech stack behind
+              it.
             </p>
           </div>
 

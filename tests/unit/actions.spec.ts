@@ -3,19 +3,34 @@ import { getActionError, getActionWarning, formatError } from '@/utils/actions';
 
 describe('Action Utils', () => {
   describe('getActionError', () => {
-    it('should return null for non-object values', () => {
+        it('should return null for non-object values', () => {
       expect(getActionError(null)).toBeNull();
       expect(getActionError(undefined)).toBeNull();
       expect(getActionError('error')).toBeNull();
+      expect(getActionError(123)).toBeNull();
+      expect(getActionError(true)).toBeNull();
+      expect(getActionError(Symbol('test'))).toBeNull();
+    });
+
+    it('should return null for array inputs', () => {
+      expect(getActionError(['error'])).toBeNull();
     });
 
     it('should return null when error is missing or not a string', () => {
       expect(getActionError({})).toBeNull();
       expect(getActionError({ error: 123 })).toBeNull();
+      expect(getActionError({ error: null })).toBeNull();
+      expect(getActionError({ error: true })).toBeNull();
+      expect(getActionError({ error: {} })).toBeNull();
+      expect(getActionError({ error: [] })).toBeNull();
     });
 
     it('should return error string when present', () => {
       expect(getActionError({ error: 'Failed' })).toBe('Failed');
+    });
+
+    it('should return error string when other properties are also present', () => {
+      expect(getActionError({ error: 'Failed', status: 500, message: 'Additional info' })).toBe('Failed');
     });
   });
 
