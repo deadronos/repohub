@@ -38,6 +38,23 @@ describe('supabase admin allowlist', () => {
     expect(isAdminUser(null)).toBe(false);
   });
 
+  describe('ADMIN_ACCESS_DENIED_MESSAGE and buildLoginRedirectPath', () => {
+    it('exports the correct ADMIN_ACCESS_DENIED_MESSAGE constant', async () => {
+      const { ADMIN_ACCESS_DENIED_MESSAGE } = await importAdmin();
+      expect(ADMIN_ACCESS_DENIED_MESSAGE).toBe('Admin access required');
+    });
+
+    it('buildLoginRedirectPath returns the correct path with default message', async () => {
+      const { buildLoginRedirectPath, ADMIN_ACCESS_DENIED_MESSAGE } = await importAdmin();
+      expect(buildLoginRedirectPath()).toBe('/login?message=Admin+access+required');
+    });
+
+    it('buildLoginRedirectPath returns the correct path with custom message', async () => {
+      const { buildLoginRedirectPath } = await importAdmin();
+      expect(buildLoginRedirectPath('Custom error')).toBe('/login?message=Custom+error');
+    });
+  });
+
   describe('caching', () => {
     it('caches results across multiple calls', async () => {
       vi.stubEnv('ADMIN_EMAILS', 'admin@example.com');
