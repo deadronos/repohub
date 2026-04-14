@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { revalidateProjects } from '@/utils/projects/revalidate';
 import * as nextCache from 'next/cache';
 
@@ -7,11 +7,22 @@ vi.mock('next/cache', () => ({
 }));
 
 describe('revalidateProjects', () => {
-  it('should call revalidatePath for root and admin paths', () => {
-    revalidateProjects();
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-    expect(nextCache.revalidatePath).toHaveBeenCalledTimes(2);
+  it('should invalidate the root path ("/")', () => {
+    revalidateProjects();
     expect(nextCache.revalidatePath).toHaveBeenCalledWith('/');
+  });
+
+  it('should invalidate the admin path ("/admin")', () => {
+    revalidateProjects();
     expect(nextCache.revalidatePath).toHaveBeenCalledWith('/admin');
+  });
+
+  it('should call revalidatePath exactly twice', () => {
+    revalidateProjects();
+    expect(nextCache.revalidatePath).toHaveBeenCalledTimes(2);
   });
 });
