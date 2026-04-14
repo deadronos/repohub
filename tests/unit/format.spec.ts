@@ -1,12 +1,35 @@
 import { describe, it, expect } from 'vitest';
 import { formatDate, formatNumber, formatBytes } from '@/utils/format';
 
-describe('format', () => {
+describe('formatNumber', () => {
   it('formats numbers with en-US grouping by default', () => {
     expect(formatNumber(1234)).toBe('1,234');
     expect(formatNumber(56)).toBe('56');
   });
 
+  it('formats decimals correctly', () => {
+    expect(formatNumber(1234.56)).toBe('1,234.56');
+    expect(formatNumber(0.123)).toBe('0.123');
+  });
+
+  it('formats negative numbers correctly', () => {
+    expect(formatNumber(-1234)).toBe('-1,234');
+    expect(formatNumber(-0.56)).toBe('-0.56');
+  });
+
+  it('formats numbers with specific locale', () => {
+    // In de-DE, periods are used for thousands grouping and commas for decimals
+    expect(formatNumber(1234.56, { locale: 'de-DE' })).toBe('1.234,56');
+  });
+
+  it('returns empty string for invalid inputs (NaN, Infinity)', () => {
+    expect(formatNumber(Number.NaN)).toBe('');
+    expect(formatNumber(Number.POSITIVE_INFINITY)).toBe('');
+    expect(formatNumber(Number.NEGATIVE_INFINITY)).toBe('');
+  });
+});
+
+describe('formatDate', () => {
   it('formats dates with locale and optional timezone', () => {
     expect(
       formatDate('2023-10-10T12:00:00Z', {
@@ -17,7 +40,6 @@ describe('format', () => {
   });
 
   it('returns empty string for invalid inputs', () => {
-    expect(formatNumber(Number.NaN)).toBe('');
     expect(formatDate('not-a-date')).toBe('');
   });
 });
