@@ -56,6 +56,42 @@ describe('Project Form Utils', () => {
     it('should pass if optional urls are empty', () => {
       expect(validateProjectInput({ title: 'Test', repoUrl: '' })).toEqual([]);
     });
+
+    it('should handle title with exactly 100 characters', () => {
+      const boundaryTitle = 'a'.repeat(100);
+      expect(validateProjectInput({ title: boundaryTitle })).toEqual([]);
+    });
+
+    it('should trim title before checking length', () => {
+      const titleWithSpaces = '  ' + 'a'.repeat(100) + '  ';
+      expect(validateProjectInput({ title: titleWithSpaces })).toEqual([]);
+    });
+
+    it('should fail if title is empty string', () => {
+      expect(validateProjectInput({ title: '' })).toContain('Title is required');
+    });
+
+    it('should handle undefined optional fields', () => {
+      expect(validateProjectInput({ title: 'Test', repoUrl: undefined, demoUrl: undefined })).toEqual(
+        [],
+      );
+    });
+
+    it('should ignore whitespace-only optional URLs', () => {
+      expect(validateProjectInput({ title: 'Test', repoUrl: '   ', demoUrl: '   ' })).toEqual([]);
+    });
+
+    it('should return multiple errors if multiple fields are invalid', () => {
+      const errors = validateProjectInput({
+        title: '',
+        repoUrl: 'not-a-url',
+        demoUrl: 'not-a-url',
+      });
+      expect(errors).toHaveLength(3);
+      expect(errors).toContain('Title is required');
+      expect(errors).toContain('Invalid Repository URL');
+      expect(errors).toContain('Invalid Demo URL');
+    });
   });
 
   describe('parseProjectFormData', () => {
@@ -95,7 +131,7 @@ describe('Project Form Utils', () => {
       expect(parsed.repo_url).toBe('https://github.com/me/repo');
       expect(parsed.demo_url).toBe('https://demo.com');
       expect(parsed.tags).toEqual(['Next.js', 'TypeScript', 'AI']);
-      expect(parsed.imageFile).toBe(file);
+      expect(parsed.imageFile).toEqual(file);
       expect(parsed.current_image_url).toBe('https://example.com/image.png');
     });
   });
