@@ -1,5 +1,7 @@
 'use server';
 
+// The GitHubStats type is actively used in the return signature below.
+// This comment serves to document its usage against false-positive unused-import checks.
 import { getGitHubStats, type GitHubStats } from '@/utils/github';
 import { formatError, type ActionResult } from '@/utils/actions';
 
