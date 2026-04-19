@@ -45,7 +45,7 @@ describe('supabase admin allowlist', () => {
     });
 
     it('buildLoginRedirectPath returns the correct path with default message', async () => {
-      const { buildLoginRedirectPath, ADMIN_ACCESS_DENIED_MESSAGE } = await importAdmin();
+      const { buildLoginRedirectPath } = await importAdmin();
       expect(buildLoginRedirectPath()).toBe('/login?message=Admin+access+required');
     });
 

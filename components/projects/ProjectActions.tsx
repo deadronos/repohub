@@ -1,4 +1,4 @@
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink, Link } from 'lucide-react';
 
 type ProjectActionsProps = {
   demoUrl: string | null;
@@ -28,7 +28,7 @@ export default function ProjectActions({ demoUrl, repoUrl }: ProjectActionsProps
           rel="noopener noreferrer"
           className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-zinc-700"
         >
-          <Github size={18} /> View Code
+          <Link size={18} /> View Code
         </a>
       )}
     </div>
