@@ -1,4 +1,4 @@
-import { Github } from 'lucide-react';
+import { Link } from 'lucide-react';
 
 type HeroHeaderProps = {
   projectCount: number;
@@ -46,7 +46,7 @@ export default function HeroHeader({
             className="group inline-flex items-center justify-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/35 px-6 py-3 text-sm font-medium text-zinc-200 backdrop-blur-sm transition-all duration-300 hover:border-zinc-500 hover:bg-zinc-800/65 hover:text-white"
             aria-label="Visit GitHub Profile"
           >
-            <Github className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" />
+            <Link className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" />
             @deadronos
           </a>
         </div>
