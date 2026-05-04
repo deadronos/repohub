@@ -35,7 +35,7 @@ export default function AdminToolbar({
           <button
             onClick={onFeatureSelected}
             disabled={featureStatus === 'saving'}
-            className="bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
+            className="bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Star size={18} /> Feature Selected ({selectedCount})
           </button>
@@ -43,7 +43,7 @@ export default function AdminToolbar({
           <button
             onClick={onUnfeatureSelected}
             disabled={featureStatus === 'saving'}
-            className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
+            className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <StarOff size={18} /> Unfeature Selected ({selectedCount})
           </button>

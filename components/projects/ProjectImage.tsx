@@ -11,6 +11,9 @@ type ProjectImageProps = {
   fallback?: ReactNode;
 };
 
+// Simple base64 blur placeholder (1x1 gray pixel, resized via CSS)
+const BLUR_DATA_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
 export default function ProjectImage({ imageUrl, alt, sizes, className, fallback }: ProjectImageProps) {
   if (!imageUrl) {
     return fallback ?? null;
@@ -23,6 +26,8 @@ export default function ProjectImage({ imageUrl, alt, sizes, className, fallback
       fill
       sizes={sizes}
       className={className}
+      placeholder="blur"
+      blurDataURL={BLUR_DATA_URL}
     />
   );
 }

@@ -42,10 +42,10 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
 
       {/* Card Content */}
       <div className="absolute bottom-0 left-0 p-6 z-10 w-full">
-        <h3 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">
+        <h3 title={project.title} className="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">
           {project.title}
         </h3>
-        <p className="text-zinc-400 text-sm line-clamp-2">
+        <p title={truncate(project.short_description || '', 100)} className="text-zinc-400 text-sm line-clamp-2">
           {truncate(project.short_description || '', 100)}
         </p>
 
