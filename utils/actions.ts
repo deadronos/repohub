@@ -27,9 +27,11 @@ export function getActionWarning(result: unknown): string | null {
 }
 
 export const formatError = (error: unknown, fallback = 'Failed'): string => {
-  if (process.env.NODE_ENV !== 'production' && error && typeof error === 'object') {
+  if (process.env.NODE_ENV === 'development' && error && typeof error === 'object') {
     const message = (error as Record<string, unknown>).message;
     if (typeof message === 'string' && message.trim().length > 0) {
+      // Log full error server-side for debugging
+      console.error('Action error:', error);
       return message;
     }
   }

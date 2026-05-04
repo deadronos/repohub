@@ -41,6 +41,7 @@ export default function AdminProjectCard({
             aria-label={`Select ${project.title}`}
             className="absolute top-3 left-3 z-20 w-5 h-5 accent-cyan-500 cursor-pointer"
           />
+          <span className="sr-only">Select</span>
 
           {dragHandle}
 
@@ -48,7 +49,7 @@ export default function AdminProjectCard({
             type="button"
             onClick={onEdit}
             aria-label={`Edit ${project.title}`}
-            className="absolute top-3 right-3 z-20 p-2 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cyan-600"
+            className="absolute top-3 right-3 z-20 p-2 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity hover:bg-cyan-600"
           >
             <Edit2 size={16} />
           </button>

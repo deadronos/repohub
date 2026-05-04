@@ -31,6 +31,9 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       <motion.div
         layoutId={project.id}
         key={project.id}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-modal-title"
         className="relative w-full max-w-2xl bg-[#0a0a0f] rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_50px_rgba(0,240,255,0.15)] z-50 flex flex-col max-h-[90vh]"
       >
         {/* Close Button */}
@@ -58,14 +61,14 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         <div className="p-8 overflow-y-auto">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h2 className="text-3xl font-bold text-white text-glow">{project.title}</h2>
+              <h2 id="project-modal-title" className="text-3xl font-bold text-white text-glow">{project.title}</h2>
               {project.repo_url && <GitHubStatsDisplay repoUrl={project.repo_url} />}
               <ProjectTags tags={project.tags} variant="modal" />
             </div>
           </div>
 
           <p className="text-zinc-300 leading-relaxed mb-8 whitespace-pre-wrap">
-            {project.description || project.short_description}
+            {project.description?.trim() || project.short_description}
           </p>
 
           <ProjectActions demoUrl={project.demo_url} repoUrl={project.repo_url} />

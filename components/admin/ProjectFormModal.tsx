@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Project } from '@/types';
 import ProjectForm from '@/components/AdminProjectForm';
@@ -23,7 +24,11 @@ export default function ProjectFormModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#0a0a0f] border border-zinc-800 w-full max-w-3xl rounded-2xl p-8 max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-[#0a0a0f] border border-zinc-800 w-full max-w-3xl rounded-2xl p-8 max-h-[90vh] overflow-y-auto relative shadow-[0_0_50px_rgba(0,0,0,0.8)]"
+      >
         <button
           onClick={onClose}
           aria-label="Close project form"
@@ -37,7 +42,7 @@ export default function ProjectFormModal({
         </h2>
 
         <ProjectForm project={project} onComplete={onComplete} />
-      </div>
+      </motion.div>
     </div>
   );
 }

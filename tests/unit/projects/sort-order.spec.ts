@@ -35,7 +35,7 @@ describe('getNextProjectSortOrder', () => {
     expect(result).toBe(1);
   });
 
-  it('returns 1 on error and logs it', async () => {
+  it('throws descriptive error on DB failure', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const mockSupabase = {
@@ -49,9 +49,7 @@ describe('getNextProjectSortOrder', () => {
       }),
     } as unknown as SupabaseClient;
 
-    const result = await getNextProjectSortOrder(mockSupabase);
-
-    expect(result).toBe(1);
+    await expect(getNextProjectSortOrder(mockSupabase)).rejects.toThrow('Failed to fetch sort order: DB Error');
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to fetch sort order:', expect.any(Error));
 
     consoleErrorSpy.mockRestore();

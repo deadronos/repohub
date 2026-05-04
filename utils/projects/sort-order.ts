@@ -11,7 +11,7 @@ export async function getNextProjectSortOrder(supabase: SupabaseClient): Promise
 
   if (error) {
     console.error('Failed to fetch sort order:', error);
-    return 1;
+    throw new Error(`Failed to fetch sort order: ${error.message}`);
   }
 
   const currentMax = data?.[0]?.sort_order ?? 0;
