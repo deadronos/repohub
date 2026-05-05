@@ -226,9 +226,11 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         </Link>
       </div>
 
-      {/* Global Error Message */}
+      {/* Global Feedback Message */}
       {feedback && (
         <div
+          role="alert"
+          aria-live="polite"
           className={`p-4 rounded-xl mb-6 flex items-center gap-3 ${
             feedback.tone === 'error'
               ? 'bg-red-900/20 border border-red-500/50 text-red-200 animate-pulse'
