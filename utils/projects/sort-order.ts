@@ -1,19 +1,16 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { PROJECTS_TABLE } from '@/utils/projects/constants';
 
+/**
+ * Atomically gets the next sort_order by using a database function.
+ * This avoids race conditions that can occur with SELECT max + 1 pattern.
+ */
 export async function getNextProjectSortOrder(supabase: SupabaseClient): Promise<number> {
-  const { data, error } = await supabase
-    .from(PROJECTS_TABLE)
-    .select('sort_order')
-    .order('sort_order', { ascending: false })
-    .limit(1)
-    .returns<{ sort_order: number }[]>();
+  const { data, error } = await supabase.rpc('get_next_sort_order') as { data: number | null; error: Error | null };
 
   if (error) {
     console.error('Failed to fetch sort order:', error);
     throw new Error(`Failed to fetch sort order: ${error.message}`);
   }
 
-  const currentMax = data?.[0]?.sort_order ?? 0;
-  return currentMax + 1;
+  return data ?? 1;
 }

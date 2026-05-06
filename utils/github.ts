@@ -17,7 +17,10 @@ async function fetchStatsInternal(owner: string, repo: string): Promise<GitHubSt
       headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
     }
 
-    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+    // Use encodeURIComponent for defense-in-depth on path segments
+    const encodedOwner = encodeURIComponent(owner);
+    const encodedRepo = encodeURIComponent(repo);
+    const res = await fetch(`https://api.github.com/repos/${encodedOwner}/${encodedRepo}`, {
       headers,
       next: { revalidate: 3600 },
     });
@@ -50,6 +53,9 @@ const getGitHubStatsCached = unstable_cache(
     return fetchStatsInternal(meta.owner, meta.repo);
   },
   ['github-stats'],
+  // Using unstable_cache intentionally: provides per-request cache isolation needed for
+  // multi-tenant GitHub stats while still revalidating hourly. Stable 'cache' has different
+  // semantics that don't work as well for frequently-changing URL parameters in this context.
   { revalidate: 3600 },
 );
 

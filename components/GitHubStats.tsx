@@ -10,6 +10,7 @@ import { formatDate, formatNumber } from '@/utils/format';
 export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
   const [stats, setStats] = useState<GitHubStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const isMountedRef = useIsMountedRef();
 
   useEffect(() => {
@@ -26,9 +27,12 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
         if (cancelled || !isMountedRef.current) return;
         if ('data' in res) {
           setStats(res.data);
+        } else {
+          setError(true);
         }
       } catch (e) {
         console.error(e);
+        setError(true);
       } finally {
         if (!cancelled && isMountedRef.current) setLoading(false);
       }
@@ -40,7 +44,16 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
   }, [repoUrl, isMountedRef]);
 
   if (loading) return <div className="animate-pulse h-4 w-24 bg-white/5 rounded mt-2" />;
-  if (!stats) return null;
+  if (!stats) {
+    if (error) {
+      return (
+        <div className="text-xs text-zinc-500 mt-2" title="Unable to load GitHub stats">
+          GitHub stats unavailable
+        </div>
+      );
+    }
+    return null;
+  }
 
   return (
     <div className="flex gap-3 text-xs font-mono text-zinc-400 mt-2 items-center" data-testid="github-stats">

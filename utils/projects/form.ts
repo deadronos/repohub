@@ -10,7 +10,7 @@ export interface ProjectInput {
 }
 
 export type ProjectFormData = {
-  id: string;
+  id?: string;
   title: string;
   short_description: string;
   description: string;
@@ -30,9 +30,10 @@ export function parseProjectFormData(formData: FormData): ProjectFormData {
   const imageEntry = formData.get('image');
   const repoUrl = getFormString(formData, 'repo_url');
   const normalizedRepoUrl = isValidUrl(repoUrl) ? normalizeGitHubRepoUrl(repoUrl) : null;
+  const idValue = getFormString(formData, 'id');
 
   return {
-    id: getFormString(formData, 'id'),
+    id: idValue || undefined,
     title: getFormString(formData, 'title'),
     short_description: getFormString(formData, 'short_description'),
     description: getFormString(formData, 'description'),

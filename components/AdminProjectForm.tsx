@@ -18,6 +18,7 @@ type ProjectFormProps = {
 export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const errorId = 'form-error-message';
   const { imageState, fileInputRef, clearSelectedImage, handleImageChange } = useProjectImageField({
     onResetError: () => setFormError(null),
   });
@@ -69,7 +70,7 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
       )}
 
       {formError && (
-        <div className="bg-red-900/30 text-red-300 p-3 rounded-lg border border-red-800 text-sm">
+        <div id={errorId} className="bg-red-900/30 text-red-300 p-3 rounded-lg border border-red-800 text-sm" role="alert">
           {formError}
         </div>
       )}

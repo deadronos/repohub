@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { Project } from '@/types';
@@ -15,6 +16,51 @@ type ProjectModalProps = {
 };
 
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Focus trap implementation
+  useEffect(() => {
+    const modal = modalRef.current;
+    if (!modal) return;
+
+    const focusableElements = modal.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    const previousActiveElement = document.activeElement as HTMLElement;
+
+    // Focus the close button or first focusable element on mount
+    if (closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    } else {
+      firstElement?.focus();
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previousActiveElement?.focus();
+    };
+  }, []);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -29,6 +75,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
       {/* Expanded Card */}
       <motion.div
+        ref={modalRef}
         layoutId={project.id}
         key={project.id}
         role="dialog"
@@ -38,6 +85,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       >
         {/* Close Button */}
         <button
+          ref={closeButtonRef}
           onClick={(e) => {
             e.stopPropagation();
             onClose();

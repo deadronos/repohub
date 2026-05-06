@@ -41,15 +41,15 @@ describe('GitHubStatsDisplay', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('renders nothing if fetch fails', async () => {
+  it('renders error state when fetch fails', async () => {
     (githubActions.fetchGitHubStatsAction as Mock).mockResolvedValue({
         error: 'Failed'
     });
 
-    const { container } = render(<GitHubStatsDisplay repoUrl="https://github.com/test/repo" />);
+    render(<GitHubStatsDisplay repoUrl="https://github.com/test/repo" />);
 
     await waitFor(() => {
-        expect(container.firstChild).toBeNull();
+        expect(screen.getByText('GitHub stats unavailable')).toBeInTheDocument();
     });
   });
 });

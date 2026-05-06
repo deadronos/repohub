@@ -4,32 +4,17 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 describe('getNextProjectSortOrder', () => {
   it('returns next sort order when table has rows', async () => {
-    const mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockReturnThis(),
-      returns: vi.fn().mockResolvedValue({
-        data: [{ sort_order: 5 }],
-        error: null,
-      }),
-    } as unknown as SupabaseClient;
+    const mockRpc = vi.fn().mockResolvedValue({ data: 6, error: null });
+    const mockSupabase = { rpc: mockRpc } as unknown as SupabaseClient;
 
     const result = await getNextProjectSortOrder(mockSupabase);
     expect(result).toBe(6);
+    expect(mockRpc).toHaveBeenCalledWith('get_next_sort_order');
   });
 
-  it('returns 1 when table is empty', async () => {
-    const mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockReturnThis(),
-      returns: vi.fn().mockResolvedValue({
-        data: [],
-        error: null,
-      }),
-    } as unknown as SupabaseClient;
+  it('returns 1 when table is empty (rpc returns 1)', async () => {
+    const mockRpc = vi.fn().mockResolvedValue({ data: 1, error: null });
+    const mockSupabase = { rpc: mockRpc } as unknown as SupabaseClient;
 
     const result = await getNextProjectSortOrder(mockSupabase);
     expect(result).toBe(1);
@@ -38,16 +23,8 @@ describe('getNextProjectSortOrder', () => {
   it('throws descriptive error on DB failure', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockReturnThis(),
-      returns: vi.fn().mockResolvedValue({
-        data: null,
-        error: new Error('DB Error'),
-      }),
-    } as unknown as SupabaseClient;
+    const mockRpc = vi.fn().mockResolvedValue({ data: null, error: new Error('DB Error') });
+    const mockSupabase = { rpc: mockRpc } as unknown as SupabaseClient;
 
     await expect(getNextProjectSortOrder(mockSupabase)).rejects.toThrow('Failed to fetch sort order: DB Error');
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to fetch sort order:', expect.any(Error));

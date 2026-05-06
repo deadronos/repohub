@@ -3,6 +3,19 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ParticleBackground from '@/components/ParticleBackground';
 
+// Mock window.matchMedia for prefers-reduced-motion
+const mockMatchMedia = (matches: boolean) => ({
+  matches,
+  media: '(prefers-reduced-motion: reduce)',
+  onchange: null,
+  addListener: vi.fn(),
+  removeListener: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+});
+vi.stubGlobal('matchMedia', vi.fn().mockImplementation(() => mockMatchMedia(false)));
+
 // Mock WebGPUCanvas to directly use Canvas mock in tests (no async loading)
 vi.mock('@/components/WebGPUCanvas', () => {
   function WebGPUCanvasMock({

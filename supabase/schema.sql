@@ -13,6 +13,12 @@ create table projects (
   is_featured boolean default false
 );
 
+-- Index for efficient ordering queries (e.g., ORDER BY sort_order)
+create index idx_projects_sort_order on projects(sort_order);
+
+-- Index for featured project filtering
+create index idx_projects_is_featured on projects(is_featured) where is_featured = true;
+
 -- 2. Enable Row Level Security (RLS)
 alter table projects enable row level security;
 
@@ -98,4 +104,13 @@ as $$
   select count(*) from updates;
 $$;
 
+-- 8. Atomic sort_order generator (avoids race conditions)
+create or replace function get_next_sort_order()
+returns integer
+language sql
+as $$
+  select coalesce(max(sort_order), 0) + 1 from projects;
+$$;
+
 grant execute on function update_project_order(uuid[]) to authenticated;
+grant execute on function get_next_sort_order() to authenticated;
