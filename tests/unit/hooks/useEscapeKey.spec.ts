@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useEscapeKey } from '@/utils/hooks/useEscapeKey';
 import { vi, describe, it, expect } from 'vitest';
 
@@ -28,5 +28,21 @@ describe('useEscapeKey', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
     expect(onEscape).not.toHaveBeenCalled();
+  });
+
+  it('should use the latest onEscape callback', () => {
+    const onEscape1 = vi.fn();
+    const onEscape2 = vi.fn();
+    renderHook(
+      ({ callback, enabled }) => useEscapeKey(callback, enabled),
+      { initialProps: { callback: onEscape1, enabled: true } },
+    ).rerender({ callback: onEscape2, enabled: true });
+
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    });
+
+    expect(onEscape1).not.toHaveBeenCalled();
+    expect(onEscape2).toHaveBeenCalledTimes(1);
   });
 });

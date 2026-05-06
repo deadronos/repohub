@@ -1,10 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useCallback } from 'react';
 
 export function useEscapeKey(onEscape: () => void, enabled: boolean) {
-  const onEscapeRef = useRef(onEscape);
-
-  useEffect(() => {
-    onEscapeRef.current = onEscape;
+  const handleEscape = useCallback(() => {
+    onEscape();
   }, [onEscape]);
 
   useEffect(() => {
@@ -13,14 +11,12 @@ export function useEscapeKey(onEscape: () => void, enabled: boolean) {
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') {
-        return;
+      if (event.key === 'Escape') {
+        handleEscape();
       }
-
-      onEscapeRef.current();
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [enabled]);
+  }, [enabled, handleEscape]);
 }

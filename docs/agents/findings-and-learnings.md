@@ -69,3 +69,17 @@ When a major docs correction happens, verify the corresponding code or config be
 - **Why it matters:** The gallery may still work functionally while feeling slower and becoming more expensive to render.
 - **What changed:** GitHub stats are treated as on-demand modal content rather than default per-card content.
 - **Where it lives:** `docs/agents/repo-conventions.md`, `components/ProjectModal.tsx`, `components/ProjectCard.tsx`, `components/GitHubStats.tsx`
+
+### Prefer useCallback over useRef for stable callback references in hooks
+
+- **Finding:** Using a ref to track the latest callback (with double-useEffect pattern) works but adds unnecessary indirection.
+- **Why it matters:** A single `useCallback` with proper dependency tracking is idiomatic, clearer, and triggers fewer re-renders when the callback changes intentionally.
+- **What changed:** `useEscapeKey` was refactored to use `useCallback` instead of the ref-to-current pattern.
+- **Where it lives:** `utils/hooks/useEscapeKey.ts`, `tests/unit/hooks/useEscapeKey.spec.ts`
+
+### Accessibility: aria-live regions for dynamic feedback messages
+
+- **Finding:** Dynamic feedback messages without `aria-live` are invisible to screen readers.
+- **Why it matters:** Users relying on assistive technology may miss important error or warning states.
+- **What changed:** Added `role="alert" aria-live="polite"` to feedback containers in AdminDashboard.
+- **Where it lives:** `components/AdminDashboard.tsx`
