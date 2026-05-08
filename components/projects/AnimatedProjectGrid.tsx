@@ -3,7 +3,6 @@
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import type { Project } from '@/types';
 import ProjectCard from '@/components/ProjectCard';
-import ScrollReveal from '@/components/projects/ScrollReveal';
 
 type AnimatedProjectGridProps = {
   projects: Project[];
@@ -15,19 +14,18 @@ export default function AnimatedProjectGrid({ projects, onProjectClick }: Animat
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence initial={false} mode="popLayout">
         {projects.map((project) => (
-          <ScrollReveal key={project.id}>
-            <motion.div
-              layoutId={project.id}
-              initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
-              animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-              exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ProjectCard project={project} onClick={onProjectClick} />
-            </motion.div>
-          </ScrollReveal>
+          <motion.div
+            key={project.id}
+            layout
+            initial={false}
+            animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ProjectCard project={project} onClick={onProjectClick} />
+          </motion.div>
         ))}
       </AnimatePresence>
     </div>

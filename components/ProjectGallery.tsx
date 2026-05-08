@@ -34,6 +34,7 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
 
   useEscapeKey(() => setSelectedId(null), Boolean(selectedId));
   const hasFilters = activeTags.size > 0 || searchQuery !== '';
+  const visibleProjects = hasFilters ? filteredProjects : projects;
 
   if (projects.length === 0) {
     return (
@@ -59,7 +60,7 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
         <FilterSync activeTags={activeTags} />
       </Suspense>
 
-      {filteredProjects.length === 0 && hasFilters && (
+      {visibleProjects.length === 0 && hasFilters && (
         <EmptyFilterState
           activeTags={Array.from(activeTags)}
           searchQuery={searchQuery}
@@ -67,11 +68,11 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
         />
       )}
 
-      {filteredProjects.length > 0 &&
+      {visibleProjects.length > 0 &&
         (projects.length <= 50 ? (
-          <AnimatedProjectGrid projects={filteredProjects} onProjectClick={setSelectedId} />
+          <AnimatedProjectGrid projects={visibleProjects} onProjectClick={setSelectedId} />
         ) : (
-          <VirtualizedProjectGrid projects={filteredProjects} onProjectClick={setSelectedId} />
+          <VirtualizedProjectGrid projects={visibleProjects} onProjectClick={setSelectedId} />
         ))}
 
       <AnimatePresence>
