@@ -28,6 +28,12 @@ vi.mock('react-virtualized-auto-sizer', async () => {
   return createAutoSizerMock();
 });
 
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => new URLSearchParams(),
+  useRouter: () => ({ replace: vi.fn() }),
+  usePathname: () => '/',
+}));
+
 
 const mockProjects: Project[] = [
   makeProject({
@@ -76,7 +82,7 @@ describe('ProjectGallery Component', () => {
   it('cards are accessible with keyboard', () => {
     render(<ProjectGallery projects={mockProjects} />);
 
-    const card = screen.getAllByRole('button')[0];
+    const card = screen.getByRole('button', { name: 'View details for Project One' });
     expect(card).toHaveAttribute('tabIndex', '0');
     expect(card).toHaveAttribute('aria-label', 'View details for Project One');
   });
@@ -84,7 +90,7 @@ describe('ProjectGallery Component', () => {
   it('opens modal on Enter key', () => {
     render(<ProjectGallery projects={mockProjects} />);
 
-    const card = screen.getAllByRole('button')[0];
+    const card = screen.getByRole('button', { name: 'View details for Project One' });
     fireEvent.keyDown(card, { key: 'Enter' });
 
     expect(screen.getByText('A longer description for project one.')).toBeInTheDocument();
@@ -93,7 +99,7 @@ describe('ProjectGallery Component', () => {
   it('modal close button has aria-label', () => {
     render(<ProjectGallery projects={mockProjects} />);
 
-    const card = screen.getAllByRole('button')[0];
+    const card = screen.getByRole('button', { name: 'View details for Project One' });
     fireEvent.click(card);
 
     const closeButton = screen.getByLabelText('Close project details');

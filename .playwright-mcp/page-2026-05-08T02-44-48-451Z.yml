@@ -1,0 +1,39 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e7]: Live experiments & digital builds
+          - generic [ref=e9]:
+            - heading "PROJECT HUB" [level=1] [ref=e10]
+            - paragraph [ref=e11]: A curated archive of playable experiments, immersive 3D ideas, and open-source tools. Built for fast scanning, deep dives, and desktop-first exploration.
+          - generic [ref=e12]:
+            - link "Explore projects" [ref=e13] [cursor=pointer]:
+              - /url: "#projects"
+            - link "Visit GitHub Profile" [ref=e14] [cursor=pointer]:
+              - /url: https://github.com/deadronos
+              - img [ref=e15]
+              - text: "@deadronos"
+        - complementary [ref=e18]:
+          - paragraph [ref=e19]: At a glance
+          - generic [ref=e20]:
+            - generic [ref=e21]:
+              - term [ref=e22]: Projects
+              - definition [ref=e23]: "19"
+            - generic [ref=e24]:
+              - term [ref=e25]: Featured
+              - definition [ref=e26]: "2"
+            - generic [ref=e27]:
+              - term [ref=e28]: Newest drop
+              - definition [ref=e29]: Mar 14, 2026
+            - generic [ref=e30]:
+              - term [ref=e31]: Top tag
+              - definition [ref=e32]: Open source
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - paragraph [ref=e36]: Selected work
+          - heading "Browse the archive" [level=2] [ref=e37]
+        - paragraph [ref=e38]: Open any project card for a deeper look at the demo, source, and the tech stack behind it.
+  - button "Open Next.js Dev Tools" [ref=e46] [cursor=pointer]:
+    - img [ref=e47]
+  - alert [ref=e50]

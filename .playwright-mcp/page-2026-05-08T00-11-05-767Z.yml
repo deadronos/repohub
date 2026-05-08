@@ -1,0 +1,187 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: Live experiments & digital builds
+          - generic [ref=e8]:
+            - heading "PROJECT HUB" [level=1] [ref=e9]
+            - paragraph [ref=e10]: A curated archive of playable experiments, immersive 3D ideas, and open-source tools. Built for fast scanning, deep dives, and desktop-first exploration.
+          - generic [ref=e11]:
+            - link "Explore projects" [ref=e12] [cursor=pointer]:
+              - /url: "#projects"
+            - link "Visit GitHub Profile" [ref=e13] [cursor=pointer]:
+              - /url: https://github.com/deadronos
+              - img [ref=e14]
+              - text: "@deadronos"
+        - complementary [ref=e17]:
+          - paragraph [ref=e18]: At a glance
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - term [ref=e21]: Projects
+              - definition [ref=e22]: "19"
+            - generic [ref=e23]:
+              - term [ref=e24]: Featured
+              - definition [ref=e25]: "2"
+            - generic [ref=e26]:
+              - term [ref=e27]: Newest drop
+              - definition [ref=e28]: Mar 14, 2026
+            - generic [ref=e29]:
+              - term [ref=e30]: Top tag
+              - definition [ref=e31]
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - paragraph [ref=e35]: Selected work
+            - heading "Browse the archive" [level=2] [ref=e36]
+          - paragraph [ref=e37]: Open any project card for a deeper look at the demo, source, and the tech stack behind it.
+        - grid [ref=e45]:
+          - row "View details for Idle Dungeon Crawler View details for SpaceAutoBattler View details for Voxel Celebration":
+            - generic [ref=e210]:
+              - button "View details for Idle Dungeon Crawler":
+                - generic:
+                  - img "Idle Dungeon Crawler"
+                - generic:
+                  - heading "Idle Dungeon Crawler" [level=3]
+                  - paragraph: Idle Dungeon Crawler A browser-based incremental RPG
+                  - generic:
+                    - generic: React
+                    - generic: Typescript
+                    - generic: Shadcn UI
+            - button "View details for SpaceAutoBattler" [ref=e212] [cursor=pointer]:
+              - img "SpaceAutoBattler" [ref=e214]
+              - generic [ref=e216]:
+                - heading "SpaceAutoBattler" [level=3] [ref=e217]
+                - paragraph [ref=e218]: 3D space combat simulator
+            - button "View details for Voxel Celebration" [ref=e220] [cursor=pointer]:
+              - img "Voxel Celebration" [ref=e222]
+              - generic [ref=e224]:
+                - heading "Voxel Celebration" [level=3] [ref=e225]
+                - paragraph [ref=e226]: Voxel Fireworks
+          - row "View details for Planet Life 3D View details for Copilot Chat Playground View details for RobotSpaceBattler":
+            - button "View details for Planet Life 3D" [ref=e228] [cursor=pointer]:
+              - img "Planet Life 3D" [ref=e230]
+              - generic [ref=e232]:
+                - heading "Planet Life 3D" [level=3] [ref=e233]
+                - paragraph [ref=e234]: 3d conway's game of life
+            - button "View details for Copilot Chat Playground" [ref=e236] [cursor=pointer]:
+              - img "Copilot Chat Playground" [ref=e238]
+              - generic [ref=e240]:
+                - heading "Copilot Chat Playground" [level=3] [ref=e241]
+                - paragraph [ref=e242]: Chat UI for Copilot SDK
+                - generic [ref=e243]:
+                  - generic [ref=e244]: Copilot-sdk
+                  - generic [ref=e245]: Copilot-cli
+                  - generic [ref=e246]: Docker
+            - button "View details for RobotSpaceBattler" [ref=e248] [cursor=pointer]:
+              - img "RobotSpaceBattler" [ref=e250]
+              - generic [ref=e252]:
+                - heading "RobotSpaceBattler" [level=3] [ref=e253]
+                - paragraph [ref=e254]: A 3D team-vs-team auto-battler simulation built with React, TypeScript, and Three.js.
+          - row "View details for Neon Defense 3D View details for vibe-aquarium-sim View details for Idle Bricks 3D":
+            - button "View details for Neon Defense 3D" [ref=e256] [cursor=pointer]:
+              - img "Neon Defense 3D" [ref=e258]
+              - generic [ref=e260]:
+                - heading "Neon Defense 3D" [level=3] [ref=e261]
+                - paragraph [ref=e262]: immersive 3D Tower Defense
+            - button "View details for vibe-aquarium-sim" [ref=e264] [cursor=pointer]:
+              - img "vibe-aquarium-sim" [ref=e266]
+              - generic [ref=e268]:
+                - heading "vibe-aquarium-sim" [level=3] [ref=e269]
+                - paragraph [ref=e270]: Vibe Aquarium Sim
+                - generic [ref=e271]:
+                  - generic [ref=e272]: React
+                  - generic [ref=e273]: Typescript
+                  - generic [ref=e274]: ReactThreeFiber
+            - button "View details for Idle Bricks 3D" [ref=e276] [cursor=pointer]:
+              - img "Idle Bricks 3D" [ref=e278]
+              - generic [ref=e280]:
+                - heading "Idle Bricks 3D" [level=3] [ref=e281]
+                - paragraph [ref=e282]: 3D Breakout
+          - row "View details for NanoBotsIdle View details for mining-drones-idle View details for space-unicorn-clicker":
+            - button "View details for NanoBotsIdle" [ref=e284] [cursor=pointer]:
+              - img "NanoBotsIdle" [ref=e286]
+              - generic [ref=e288]:
+                - heading "NanoBotsIdle" [level=3] [ref=e289]
+                - paragraph [ref=e290]: 3D Voxel Incremental/Idle game
+                - generic [ref=e291]:
+                  - generic [ref=e292]: React
+                  - generic [ref=e293]: React Three Fiber
+                  - generic [ref=e294]: Typerscript
+            - button "View details for mining-drones-idle" [ref=e296] [cursor=pointer]:
+              - img "mining-drones-idle" [ref=e298]
+              - generic [ref=e300]:
+                - heading "mining-drones-idle" [level=3] [ref=e301]
+                - paragraph [ref=e302]: Manage factories, deploy fleets of mining drones, optimize logistics, and expand your industrial ...
+            - button "View details for space-unicorn-clicker" [ref=e304] [cursor=pointer]:
+              - img "space-unicorn-clicker" [ref=e306]
+              - generic [ref=e308]:
+                - heading "space-unicorn-clicker" [level=3] [ref=e309]
+                - paragraph [ref=e310]: Minimal idle/clicker MVP where a cosmic unicorn raids battleships with a glowing laser horn.
+          - row "View details for DiceTycoon View details for The URL List View details for vibe-idle-bricks":
+            - button "View details for DiceTycoon" [ref=e312] [cursor=pointer]:
+              - img "DiceTycoon" [ref=e314]
+              - generic [ref=e316]:
+                - heading "DiceTycoon" [level=3] [ref=e317]
+                - paragraph [ref=e318]: A React-based incremental idle game where you roll dice, earn credits, and build an empire of upg...
+            - button "View details for The URL List" [ref=e320] [cursor=pointer]:
+              - img "The URL List" [ref=e322]
+              - generic [ref=e324]:
+                - heading "The URL List" [level=3] [ref=e325]
+                - paragraph [ref=e326]: A lightweight, shareable link-collection application for curating and publishing lists of useful ...
+            - button "View details for vibe-idle-bricks" [ref=e328] [cursor=pointer]:
+              - img "vibe-idle-bricks" [ref=e330]
+              - generic [ref=e332]:
+                - heading "vibe-idle-bricks" [level=3] [ref=e333]
+                - paragraph [ref=e334]: An idle/incremental breakout-style game
+          - row "View details for Mycelial Empire View details for Asteroid Defender View details for NorthPoleMail IT Support":
+            - button "View details for Mycelial Empire" [ref=e336] [cursor=pointer]:
+              - img "Mycelial Empire" [ref=e338]
+              - generic [ref=e340]:
+                - heading "Mycelial Empire" [level=3] [ref=e341]
+                - paragraph [ref=e342]: Idle game simulating a glowing underground fungal colony.
+                - generic [ref=e343]:
+                  - generic [ref=e344]: TypeScript
+                  - generic [ref=e345]: React
+            - button "View details for Asteroid Defender" [ref=e347] [cursor=pointer]:
+              - img "Asteroid Defender" [ref=e349]
+              - generic [ref=e351]:
+                - heading "Asteroid Defender" [level=3] [ref=e352]
+                - paragraph [ref=e353]: 3d Turrets shooting down Asteroids
+            - button "View details for NorthPoleMail IT Support" [ref=e355] [cursor=pointer]:
+              - img "NorthPoleMail IT Support" [ref=e357]
+              - generic [ref=e359]:
+                - heading "NorthPoleMail IT Support" [level=3] [ref=e360]
+                - paragraph [ref=e361]: Santa mail support
+        - dialog "Idle Dungeon Crawler" [ref=e364]:
+          - button "Close project details" [active] [ref=e365]:
+            - img [ref=e366]
+          - img "Idle Dungeon Crawler" [ref=e370]
+          - generic [ref=e372]:
+            - generic [ref=e374]:
+              - heading "Idle Dungeon Crawler" [level=2] [ref=e375]
+              - generic [ref=e376]:
+                - generic "Stars" [ref=e377]:
+                  - img [ref=e378]
+                  - generic [ref=e380]: "0"
+                - generic "Forks" [ref=e381]:
+                  - img [ref=e382]
+                  - generic [ref=e387]: "1"
+                - generic "Last Updated" [ref=e388]:
+                  - img [ref=e389]
+                  - generic [ref=e391]: 5/7/2026
+              - generic [ref=e392]:
+                - generic [ref=e393]: React
+                - generic [ref=e394]: Typescript
+                - generic [ref=e395]: Shadcn UI
+            - paragraph [ref=e396]: Idle Dungeon Crawler A browser-based incremental RPG where you manage a party of heroes fighting through dungeon floors.
+            - generic [ref=e397]:
+              - link "Play / Demo" [ref=e398] [cursor=pointer]:
+                - /url: https://deadronos.github.io/idle-dungeon-crawler/
+                - img [ref=e399]
+                - text: Play / Demo
+              - link "View Code" [ref=e403] [cursor=pointer]:
+                - /url: https://github.com/deadronos/idle-dungeon-crawler
+                - img [ref=e404]
+                - text: View Code
+  - alert [ref=e41]

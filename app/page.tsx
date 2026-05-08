@@ -1,5 +1,5 @@
 import { getCachedProjects } from '@/utils/projects/queries';
-import HeroHeader from '@/components/HeroHeader';
+import HeroHeaderClient from '@/components/HeroHeaderClient';
 import HomepageAtmosphere from '@/components/HomepageAtmosphere';
 import dynamic from 'next/dynamic';
 import type { Project } from '@/types';
@@ -46,7 +46,7 @@ export default async function Home() {
       <HomepageAtmosphere />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-16 md:gap-20">
-        <HeroHeader
+        <HeroHeaderClient
           projectCount={projects.length}
           featuredCount={featuredProjects}
           latestProjectLabel={latestProjectLabel}

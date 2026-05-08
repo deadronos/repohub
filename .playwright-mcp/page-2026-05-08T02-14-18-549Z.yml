@@ -1,0 +1,37 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]: Live experiments & digital builds
+          - generic [ref=e8]:
+            - heading "PROJECT HUB" [level=1] [ref=e9]
+            - paragraph [ref=e10]: A curated archive of playable experiments, immersive 3D ideas, and open-source tools. Built for fast scanning, deep dives, and desktop-first exploration.
+          - generic [ref=e11]:
+            - link "Explore projects" [ref=e12] [cursor=pointer]:
+              - /url: "#projects"
+            - link "Visit GitHub Profile" [ref=e13] [cursor=pointer]:
+              - /url: https://github.com/deadronos
+              - img [ref=e14]
+              - text: "@deadronos"
+        - complementary [ref=e17]:
+          - paragraph [ref=e18]: At a glance
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - term [ref=e21]: Projects
+              - definition [ref=e22]: "19"
+            - generic [ref=e23]:
+              - term [ref=e24]: Featured
+              - definition [ref=e25]: "2"
+            - generic [ref=e26]:
+              - term [ref=e27]: Newest drop
+              - definition [ref=e28]: Mar 14, 2026
+            - generic [ref=e29]:
+              - term [ref=e30]: Top tag
+              - definition [ref=e31]
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - paragraph [ref=e35]: Selected work
+          - heading "Browse the archive" [level=2] [ref=e36]
+        - paragraph [ref=e37]: Open any project card for a deeper look at the demo, source, and the tech stack behind it.
+  - alert [ref=e41]
