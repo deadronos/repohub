@@ -12,7 +12,6 @@ import { useFilterState } from '@/components/projects/useFilterState';
 import { useFilterSync } from '@/components/projects/useFilterSync';
 import { useSelectedProject } from '@/components/projects/useSelectedProject';
 import { useEscapeKey } from '@/utils/hooks/useEscapeKey';
-import { extractAllTags } from '@/utils/projects/tags';
 
 type ProjectGalleryProps = {
   projects: Project[];
@@ -20,26 +19,20 @@ type ProjectGalleryProps = {
 
 function FilterSync({
   activeTags,
-  setActiveTags,
-  allProjectTags,
 }: {
   activeTags: Set<string>;
-  setActiveTags: (tags: Set<string>) => void;
-  allProjectTags: string[];
 }) {
-  useFilterSync(activeTags, setActiveTags, allProjectTags);
+  useFilterSync(activeTags);
   return null;
 }
 
 export default function ProjectGallery({ projects }: ProjectGalleryProps) {
   const { selectedId, selectedProject, setSelectedId, goToNext, goToPrevious } =
     useSelectedProject(projects);
-  const { activeTags, searchQuery, filteredProjects, toggleTag, setActiveTags, setSearchQuery, clearFilters } =
+  const { activeTags, searchQuery, filteredProjects, toggleTag, setSearchQuery, clearFilters } =
     useFilterState(projects);
 
   useEscapeKey(() => setSelectedId(null), Boolean(selectedId));
-
-  const allProjectTags = extractAllTags(projects).map((t) => t.tag);
   const hasFilters = activeTags.size > 0 || searchQuery !== '';
 
   if (projects.length === 0) {
@@ -63,7 +56,7 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
       />
 
       <Suspense fallback={null}>
-        <FilterSync activeTags={activeTags} setActiveTags={setActiveTags} allProjectTags={allProjectTags} />
+        <FilterSync activeTags={activeTags} />
       </Suspense>
 
       {filteredProjects.length === 0 && hasFilters && (

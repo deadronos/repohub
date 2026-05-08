@@ -135,3 +135,32 @@ type FilterBarProps = {
 - `npx vitest run tests/unit/projects/` — 90 passed (all project tests)
 - `npm run typecheck` — no errors
 - `lsp_diagnostics` on FilterBar.tsx and spec file — zero errors
+
+## 2026-05-08: Bug Fixes in RepoHub UI
+
+### Bug 1: Tag deselection fix in useFilterSync
+
+**Problem:** The `useFilterSync` hook had a mount effect that read URL params on mount, conflicting with user interactions and preventing tag deselection.
+
+**Solution:** Removed the mount effect entirely. The hook now only syncs state TO the URL via `updateUrl`, not FROM the URL. URL initialization should happen in a parent component if needed.
+
+**Files changed:**
+- `components/projects/useFilterSync.ts` - Removed mount effect, simplified to single `useEffect` for URL writes
+- `components/ProjectGallery.tsx` - Removed unused `setActiveTags`, `allProjectTags` variables and `extractAllTags` import
+
+**Note:** The hook's signature changed from 3 params to 1 param (`activeTags`). `onTagsChange` and `allProjectTags` were only needed for the removed mount effect.
+
+### Bug 2: Modal image fallback handling
+
+**Problem:** Some project images don't load when modal opens due to Next.js `next/image` with `fill` having loading issues during Framer Motion layout animation.
+
+**Solution:** 
+1. Added `onError` handler to `ProjectImage` component with `useState` tracking
+2. Added `priority` prop for modal images (since they're main content when modal opens)
+3. Added gradient fallback with project initial when image fails to load
+
+**Files changed:**
+- `components/projects/ProjectImage.tsx` - Added `hasError` state and `onError` handler, added `priority` prop
+- `components/ProjectModal.tsx` - Added `priority={true}` and a styled `fallback` prop with gradient and initial
+
+**Verification:** All 398 tests pass, `npm run check` passes (lint, typecheck, tests).

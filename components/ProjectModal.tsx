@@ -149,6 +149,12 @@ export default function ProjectModal({ project, onNext, onPrevious, onClose }: P
             alt={project.title}
             sizes={PROJECT_MODAL_IMAGE_SIZES}
             className="object-cover"
+            priority={true}
+            fallback={
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-900/30 to-purple-900/30">
+                <span className="text-4xl font-bold text-white/30">{project.title.charAt(0)}</span>
+              </div>
+            }
           />
           <div className="absolute inset-0 bg-linear-to-t from-[#0a0a0f] to-transparent opacity-80" />
         </div>
