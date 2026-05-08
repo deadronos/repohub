@@ -17,9 +17,9 @@ function matchesSearch(project: Project, query: string): boolean {
 function matchesTags(project: Project, tags: Set<string>): boolean {
   if (tags.size === 0) return true;
 
-  const projectTags = project.tags ?? [];
+  const projectTags = (project.tags ?? []).map((t) => t.toLowerCase());
   for (const tag of tags) {
-    if (projectTags.includes(tag)) return true;
+    if (projectTags.includes(tag.toLowerCase())) return true;
   }
   return false;
 }

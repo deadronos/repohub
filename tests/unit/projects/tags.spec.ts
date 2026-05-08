@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeTags, getVisibleTags, getPrimaryTag, formatTagLabel } from '@/utils/projects/tags';
+import {
+  normalizeTags,
+  extractAllTags,
+  getVisibleTags,
+  getPrimaryTag,
+  formatTagLabel,
+} from '@/utils/projects/tags';
+import type { Project } from '@/types';
 
 describe('Project Tags Utils', () => {
   describe('normalizeTags', () => {
@@ -11,6 +18,78 @@ describe('Project Tags Utils', () => {
     it('returns empty array for null or undefined', () => {
       expect(normalizeTags(null)).toEqual([]);
       expect(normalizeTags(undefined)).toEqual([]);
+    });
+  });
+
+  describe('extractAllTags', () => {
+    const makeProject = (tags: string[] | null): Project =>
+      ({
+        id: '1',
+        title: 'Test',
+        short_description: '',
+        description: '',
+        tags,
+        image_url: null,
+        created_at: '2023-01-01T00:00:00Z',
+        sort_order: 0,
+        demo_url: null,
+        repo_url: null,
+        is_featured: false,
+      }) as Project;
+
+    it('returns empty array for null or undefined input', () => {
+      expect(extractAllTags(null)).toEqual([]);
+      expect(extractAllTags(undefined)).toEqual([]);
+    });
+
+    it('returns sorted tag counts', () => {
+      const projects = [
+        makeProject(['react', 'next.js']),
+        makeProject(['react', 'three.js']),
+      ];
+
+      expect(extractAllTags(projects)).toEqual([
+        { tag: 'next.js', count: 1 },
+        { tag: 'react', count: 2 },
+        { tag: 'three.js', count: 1 },
+      ]);
+    });
+
+    it('merges tags case-insensitively preserving first casing', () => {
+      const projects = [
+        makeProject(['TypeScript', 'React']),
+        makeProject(['typescript', 'react']),
+        makeProject(['TYPESCRIPT']),
+      ];
+
+      const result = extractAllTags(projects);
+      expect(result).toHaveLength(2);
+
+      const tsEntry = result.find((e) => e.tag.toLowerCase() === 'typescript');
+      expect(tsEntry).toBeTruthy();
+      expect(tsEntry!.count).toBe(3);
+
+      const reactEntry = result.find((e) => e.tag.toLowerCase() === 'react');
+      expect(reactEntry).toBeTruthy();
+      expect(reactEntry!.count).toBe(2);
+    });
+
+    it('handles projects with null tags', () => {
+      const projects = [
+        makeProject(null),
+        makeProject(['react']),
+      ];
+
+      expect(extractAllTags(projects)).toEqual([{ tag: 'react', count: 1 }]);
+    });
+
+    it('filters out empty string tags', () => {
+      const projects = [
+        makeProject(['']),
+        makeProject(['react', '']),
+      ];
+
+      expect(extractAllTags(projects)).toEqual([{ tag: 'react', count: 1 }]);
     });
   });
 

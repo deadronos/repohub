@@ -1,4 +1,5 @@
 import { getCachedProjects } from '@/utils/projects/queries';
+import { normalizeTags } from '@/utils/projects/tags';
 import HeroHeaderClient from '@/components/HeroHeaderClient';
 import HomepageAtmosphere from '@/components/HomepageAtmosphere';
 import dynamic from 'next/dynamic';
@@ -24,11 +25,10 @@ export default async function Home() {
 
   const tagFrequency = new Map<string, number>();
   for (const project of projects) {
-    const tags = project.tags;
-    if (tags) {
-      for (const tag of tags) {
-        tagFrequency.set(tag, (tagFrequency.get(tag) ?? 0) + 1);
-      }
+    const tags = normalizeTags(project.tags);
+    for (const tag of tags) {
+      const key = tag.toLowerCase();
+      tagFrequency.set(key, (tagFrequency.get(key) ?? 0) + 1);
     }
   }
 

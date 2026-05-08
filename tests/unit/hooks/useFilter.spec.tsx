@@ -166,6 +166,23 @@ describe('useFilterState', () => {
       expect(result.current.filteredProjects).toHaveLength(1);
       expect(result.current.filteredProjects[0].id).toBe('2');
     });
+
+    it('should match tags case-insensitively', () => {
+      const projectsWithMixedCase = [
+        makeProject({ id: '1', title: 'A', tags: ['TypeScript', 'React'] }),
+        makeProject({ id: '2', title: 'B', tags: ['typescript', 'next.js'] }),
+        makeProject({ id: '3', title: 'C', tags: ['TYPESCRIPT'] }),
+      ];
+
+      const { result } = renderHook(() => useFilterState(projectsWithMixedCase));
+
+      act(() => {
+        result.current.toggleTag('typescript');
+      });
+
+      expect(result.current.filteredProjects).toHaveLength(3);
+      expect(result.current.filteredProjects.map((p) => p.id)).toEqual(['1', '2', '3']);
+    });
   });
 
   describe('searchQuery management', () => {

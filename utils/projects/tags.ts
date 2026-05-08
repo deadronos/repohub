@@ -18,18 +18,24 @@ export interface TagCount {
 export function extractAllTags(projects: Project[] | null | undefined): TagCount[] {
   if (!projects) return [];
 
-  const tagCounts = new Map<string, number>();
+  const tagCounts = new Map<string, { display: string; count: number }>();
 
   for (const project of projects) {
     const tags = normalizeTags(project.tags);
     for (const tag of tags) {
-      tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+      const key = tag.toLowerCase();
+      const entry = tagCounts.get(key);
+      if (entry) {
+        entry.count += 1;
+      } else {
+        tagCounts.set(key, { display: tag, count: 1 });
+      }
     }
   }
 
   const result: TagCount[] = [];
-  for (const [tag, count] of tagCounts) {
-    result.push({ tag, count });
+  for (const { display, count } of tagCounts.values()) {
+    result.push({ tag: display, count });
   }
 
   return result.sort((a, b) => a.tag.localeCompare(b.tag));
