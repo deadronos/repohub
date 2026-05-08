@@ -1,4 +1,6 @@
 import { Link } from 'lucide-react';
+import { formatTagLabel } from '@/utils/projects/tags';
+import StatsCounter from './projects/StatsCounter';
 
 type HeroHeaderProps = {
   projectCount: number;
@@ -60,12 +62,16 @@ export default function HeroHeader({
         <dl className="mt-5 grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <dt className="text-xs uppercase tracking-[0.26em] text-zinc-500">Projects</dt>
-            <dd className="mt-2 text-3xl font-semibold text-white">{projectCount}</dd>
+            <dd className="mt-2 text-3xl font-semibold text-white">
+              <StatsCounter value={projectCount} label="Projects" />
+            </dd>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <dt className="text-xs uppercase tracking-[0.26em] text-zinc-500">Featured</dt>
-            <dd className="mt-2 text-3xl font-semibold text-white">{featuredCount}</dd>
+            <dd className="mt-2 text-3xl font-semibold text-white">
+              <StatsCounter value={featuredCount} label="Featured" />
+            </dd>
           </div>
 
           <div className="col-span-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -76,7 +82,7 @@ export default function HeroHeader({
           <div className="col-span-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <dt className="text-xs uppercase tracking-[0.26em] text-zinc-500">Top tag</dt>
             <dd className="mt-2 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-sm font-medium text-cyan-100">
-              {topTag}
+              {topTag.trim() ? formatTagLabel(topTag) : 'Open source'}
             </dd>
           </div>
         </dl>

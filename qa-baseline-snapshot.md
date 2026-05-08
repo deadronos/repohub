@@ -1,0 +1,44 @@
+- generic [active] [ref=e1]:
+  - main [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e15]: Live experiments & digital builds
+          - generic [ref=e17]:
+            - heading "PROJECT HUB" [level=1] [ref=e18]
+            - paragraph [ref=e19]: A curated archive of playable experiments, immersive 3D ideas, and open-source tools. Built for fast scanning, deep dives, and desktop-first exploration.
+          - generic [ref=e20]:
+            - link "Explore projects" [ref=e21] [cursor=pointer]:
+              - /url: "#projects"
+            - link "Visit GitHub Profile" [ref=e22] [cursor=pointer]:
+              - /url: https://github.com/deadronos
+              - img [ref=e23]
+              - text: "@deadronos"
+        - complementary [ref=e26]:
+          - paragraph [ref=e27]: At a glance
+          - generic [ref=e28]:
+            - generic [ref=e29]:
+              - term [ref=e30]: Projects
+              - definition [ref=e31]: "0"
+            - generic [ref=e32]:
+              - term [ref=e33]: Featured
+              - definition [ref=e34]: "0"
+            - generic [ref=e35]:
+              - term [ref=e36]: Newest drop
+              - definition [ref=e37]: No projects yet
+            - generic [ref=e38]:
+              - term [ref=e39]: Top tag
+              - definition [ref=e40]: Open source
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - paragraph [ref=e44]: Selected work
+            - heading "Browse the archive" [level=2] [ref=e45]
+          - paragraph [ref=e46]: Open any project card for a deeper look at the demo, source, and the tech stack behind it.
+        - generic [ref=e47]:
+          - paragraph [ref=e48]: No projects yet
+          - paragraph [ref=e49]: Check back later for new additions.
+    - paragraph [ref=e51]: No projects found. Time to build something.
+  - button "Open Next.js Dev Tools" [ref=e57] [cursor=pointer]:
+    - img [ref=e58]
+  - alert [ref=e6]

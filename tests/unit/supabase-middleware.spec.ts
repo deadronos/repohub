@@ -61,4 +61,24 @@ describe('supabase middleware admin authorization', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('location')).toBeNull();
   });
+
+  it('redirects unauthenticated users away from /admin', async () => {
+    vi.stubEnv('ADMIN_EMAILS', 'admin@example.com');
+    getUserMock.mockResolvedValue({ data: { user: null } });
+
+    const response = await updateSession(new NextRequest('http://localhost/admin'));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toContain('/login?message=Admin+access+required');
+  });
+
+  it('does not affect non-admin routes', async () => {
+    vi.stubEnv('ADMIN_EMAILS', 'admin@example.com');
+    getUserMock.mockResolvedValue({ data: { user: null } });
+
+    const response = await updateSession(new NextRequest('http://localhost/'));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('location')).toBeNull();
+  });
 });

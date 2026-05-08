@@ -1,0 +1,182 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e7]: Live experiments & digital builds
+          - generic [ref=e9]:
+            - heading "PROJECT HUB" [level=1] [ref=e10]
+            - paragraph [ref=e11]: A curated archive of playable experiments, immersive 3D ideas, and open-source tools. Built for fast scanning, deep dives, and desktop-first exploration.
+          - generic [ref=e12]:
+            - link "Explore projects" [ref=e13] [cursor=pointer]:
+              - /url: "#projects"
+            - link "Visit GitHub Profile" [ref=e14] [cursor=pointer]:
+              - /url: https://github.com/deadronos
+              - img [ref=e15]
+              - text: "@deadronos"
+        - complementary [ref=e18]:
+          - paragraph [ref=e19]: At a glance
+          - generic [ref=e20]:
+            - generic [ref=e21]:
+              - term [ref=e22]: Projects
+              - definition [ref=e23]: "19"
+            - generic [ref=e24]:
+              - term [ref=e25]: Featured
+              - definition [ref=e26]: "2"
+            - generic [ref=e27]:
+              - term [ref=e28]: Newest drop
+              - definition [ref=e29]: Mar 14, 2026
+            - generic [ref=e30]:
+              - term [ref=e31]: Top tag
+              - definition [ref=e32]: Open source
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - paragraph [ref=e36]: Selected work
+            - heading "Browse the archive" [level=2] [ref=e37]
+          - paragraph [ref=e38]: Open any project card for a deeper look at the demo, source, and the tech stack behind it.
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - button "All" [ref=e41]
+            - button "Copilot-cli (1)" [ref=e42]
+            - button "Copilot-sdk (1)" [ref=e43]
+            - button "Docker (1)" [ref=e44]
+            - button "Multithreading (1)" [ref=e45]
+            - button "Nodejs (1)" [ref=e46]
+            - button "React (1)" [ref=e47]
+            - button "React (4)" [ref=e48]
+            - button "React Three Fiber (1)" [ref=e49]
+            - button "ReactThreeFiber (1)" [ref=e50]
+            - button "Shadcn UI (1)" [ref=e51]
+            - button "Typerscript (1)" [ref=e52]
+            - button "Typescript (2)" [ref=e53]
+            - button "TypeScript (1)" [ref=e54]
+            - button "Vite (1)" [ref=e55]
+            - button "Vite (1)" [ref=e56]
+            - button "Zustand (1)" [ref=e57]
+          - generic [ref=e58]:
+            - img
+            - textbox "Search projects..." [active] [ref=e59]
+        - generic [ref=e60]:
+          - button "View details for Idle Dungeon Crawler" [ref=e318] [cursor=pointer]:
+            - img "Idle Dungeon Crawler" [ref=e320]
+            - generic [ref=e322]:
+              - heading "Idle Dungeon Crawler" [level=3] [ref=e323]
+              - paragraph [ref=e324]: Idle Dungeon Crawler A browser-based incremental RPG
+              - generic [ref=e325]:
+                - generic [ref=e326]: React
+                - generic [ref=e327]: Typescript
+                - generic [ref=e328]: Shadcn UI
+          - button "View details for SpaceAutoBattler" [ref=e331] [cursor=pointer]:
+            - img "SpaceAutoBattler" [ref=e333]
+            - generic [ref=e335]:
+              - heading "SpaceAutoBattler" [level=3] [ref=e336]
+              - paragraph [ref=e337]: 3D space combat simulator
+          - button "View details for Voxel Celebration" [ref=e340] [cursor=pointer]:
+            - img "Voxel Celebration" [ref=e342]
+            - generic [ref=e344]:
+              - heading "Voxel Celebration" [level=3] [ref=e345]
+              - paragraph [ref=e346]: Voxel Fireworks
+          - button "View details for Planet Life 3D" [ref=e349] [cursor=pointer]:
+            - img "Planet Life 3D" [ref=e351]
+            - generic [ref=e353]:
+              - heading "Planet Life 3D" [level=3] [ref=e354]
+              - paragraph [ref=e355]: 3d conway's game of life
+          - button "View details for Copilot Chat Playground" [ref=e358] [cursor=pointer]:
+            - img "Copilot Chat Playground" [ref=e360]
+            - generic [ref=e362]:
+              - heading "Copilot Chat Playground" [level=3] [ref=e363]
+              - paragraph [ref=e364]: Chat UI for Copilot SDK
+              - generic [ref=e365]:
+                - generic [ref=e366]: Copilot-sdk
+                - generic [ref=e367]: Copilot-cli
+                - generic [ref=e368]: Docker
+          - button "View details for RobotSpaceBattler" [ref=e371] [cursor=pointer]:
+            - img "RobotSpaceBattler" [ref=e373]
+            - generic [ref=e375]:
+              - heading "RobotSpaceBattler" [level=3] [ref=e376]
+              - paragraph [ref=e377]: A 3D team-vs-team auto-battler simulation built with React, TypeScript, and Three.js.
+          - button "View details for Neon Defense 3D" [ref=e380] [cursor=pointer]:
+            - img "Neon Defense 3D" [ref=e382]
+            - generic [ref=e384]:
+              - heading "Neon Defense 3D" [level=3] [ref=e385]
+              - paragraph [ref=e386]: immersive 3D Tower Defense
+          - button "View details for vibe-aquarium-sim" [ref=e389] [cursor=pointer]:
+            - img "vibe-aquarium-sim" [ref=e391]
+            - generic [ref=e393]:
+              - heading "vibe-aquarium-sim" [level=3] [ref=e394]
+              - paragraph [ref=e395]: Vibe Aquarium Sim
+              - generic [ref=e396]:
+                - generic [ref=e397]: React
+                - generic [ref=e398]: Typescript
+                - generic [ref=e399]: ReactThreeFiber
+          - button "View details for Idle Bricks 3D" [ref=e402] [cursor=pointer]:
+            - img "Idle Bricks 3D" [ref=e404]
+            - generic [ref=e406]:
+              - heading "Idle Bricks 3D" [level=3] [ref=e407]
+              - paragraph [ref=e408]: 3D Breakout
+          - button "View details for NanoBotsIdle" [ref=e191] [cursor=pointer]:
+            - img "NanoBotsIdle" [ref=e193]
+            - generic [ref=e195]:
+              - heading "NanoBotsIdle" [level=3] [ref=e196]
+              - paragraph [ref=e197]: 3D Voxel Incremental/Idle game
+              - generic [ref=e198]:
+                - generic [ref=e199]: React
+                - generic [ref=e200]: React Three Fiber
+                - generic [ref=e201]: Typerscript
+          - button "View details for mining-drones-idle" [ref=e411] [cursor=pointer]:
+            - img "mining-drones-idle" [ref=e413]
+            - generic [ref=e415]:
+              - heading "mining-drones-idle" [level=3] [ref=e416]
+              - paragraph [ref=e417]: Manage factories, deploy fleets of mining drones, optimize logistics, and expand your industrial ...
+          - button "View details for space-unicorn-clicker" [ref=e420] [cursor=pointer]:
+            - img "space-unicorn-clicker" [ref=e422]
+            - generic [ref=e424]:
+              - heading "space-unicorn-clicker" [level=3] [ref=e425]
+              - paragraph [ref=e426]: Minimal idle/clicker MVP where a cosmic unicorn raids battleships with a glowing laser horn.
+          - button "View details for DiceTycoon" [ref=e429] [cursor=pointer]:
+            - img "DiceTycoon" [ref=e431]
+            - generic [ref=e433]:
+              - heading "DiceTycoon" [level=3] [ref=e434]
+              - paragraph [ref=e435]: A React-based incremental idle game where you roll dice, earn credits, and build an empire of upg...
+          - button "View details for The URL List" [ref=e438] [cursor=pointer]:
+            - img "The URL List" [ref=e440]
+            - generic [ref=e442]:
+              - heading "The URL List" [level=3] [ref=e443]
+              - paragraph [ref=e444]: A lightweight, shareable link-collection application for curating and publishing lists of useful ...
+          - button "View details for vibe-idle-bricks" [ref=e447] [cursor=pointer]:
+            - img "vibe-idle-bricks" [ref=e449]
+            - generic [ref=e451]:
+              - heading "vibe-idle-bricks" [level=3] [ref=e452]
+              - paragraph [ref=e453]: An idle/incremental breakout-style game
+          - button "View details for Mycelial Empire" [ref=e456] [cursor=pointer]:
+            - img "Mycelial Empire" [ref=e458]
+            - generic [ref=e460]:
+              - heading "Mycelial Empire" [level=3] [ref=e461]
+              - paragraph [ref=e462]: Idle game simulating a glowing underground fungal colony.
+              - generic [ref=e463]:
+                - generic [ref=e464]: TypeScript
+                - generic [ref=e465]: React
+          - button "View details for Asteroid Defender" [ref=e468] [cursor=pointer]:
+            - img "Asteroid Defender" [ref=e470]
+            - generic [ref=e472]:
+              - heading "Asteroid Defender" [level=3] [ref=e473]
+              - paragraph [ref=e474]: 3d Turrets shooting down Asteroids
+          - button "View details for NorthPoleMail IT Support" [ref=e477] [cursor=pointer]:
+            - img "NorthPoleMail IT Support" [ref=e479]
+            - generic [ref=e481]:
+              - heading "NorthPoleMail IT Support" [level=3] [ref=e482]
+              - paragraph [ref=e483]: Santa mail support
+          - button "View details for The L-System Arboretum" [ref=e486] [cursor=pointer]:
+            - img "The L-System Arboretum" [ref=e488]
+            - generic [ref=e490]:
+              - heading "The L-System Arboretum" [level=3] [ref=e491]
+              - paragraph [ref=e492]: A web-based incremental idle game where you cultivate a procedurally generated fractal tree using...
+  - button "Open Next.js Dev Tools" [ref=e104] [cursor=pointer]:
+    - generic [ref=e506]:
+      - text: Compiling
+      - generic [ref=e507]:
+        - generic [ref=e508]: .
+        - generic [ref=e509]: .
+        - generic [ref=e510]: .
+  - alert [ref=e112]: Project Hub | Digital Portfolio

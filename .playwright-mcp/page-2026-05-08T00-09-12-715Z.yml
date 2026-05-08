@@ -1,0 +1,29 @@
+- generic [ref=e3]:
+  - complementary "agentList" [ref=e4]:
+    - generic [ref=e5]:
+      - heading "AGENTS" [level=2] [ref=e6]
+      - generic "totalAgents" [ref=e7]: "0"
+    - list [ref=e8]
+  - generic [ref=e9]:
+    - banner [ref=e10]:
+      - generic [ref=e11]:
+        - button "Toggle Sidebar" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+        - generic [ref=e14]: ClaudeVille
+        - generic [ref=e15]: v0.1
+      - tablist "viewMode" [ref=e17]:
+        - tab "WORLD" [selected] [ref=e18] [cursor=pointer]
+        - tab "DASHBOARD" [ref=e19] [cursor=pointer]
+      - generic [ref=e20]:
+        - status "agentStats" [ref=e21]:
+          - generic "WORKING" [ref=e22]:
+            - generic [ref=e24]: "0"
+            - generic [ref=e25]: WORKING
+          - generic "IDLE" [ref=e26]:
+            - generic [ref=e28]: "0"
+            - generic [ref=e29]: IDLE
+          - generic "WAITING" [ref=e30]:
+            - generic [ref=e32]: "0"
+            - generic [ref=e33]: WAITING
+        - button "SETTINGS" [ref=e34] [cursor=pointer]: ⚙
+    - button "Debug" [ref=e44] [cursor=pointer]

@@ -1,0 +1,52 @@
+'use client';
+
+import { useEffect, useCallback } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+
+export function useFilterSync(
+  activeTags: Set<string>,
+  onTagsChange: (tags: Set<string>) => void,
+  allProjectTags: string[],
+) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const tagsFromUrl = searchParams.getAll('tag');
+    const validTags = new Set<string>();
+
+    for (const tag of tagsFromUrl) {
+      if (allProjectTags.includes(tag)) {
+        validTags.add(tag);
+      }
+    }
+
+    if (validTags.size > 0) {
+      onTagsChange(validTags);
+    }
+  }, [allProjectTags, onTagsChange, searchParams]);
+
+  const updateUrl = useCallback(
+    (tags: Set<string>) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      params.delete('tag');
+      for (const tag of tags) {
+        params.append('tag', tag);
+      }
+
+      const queryString = params.toString();
+      const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+
+      router.replace(newUrl, { scroll: false });
+    },
+    [searchParams, pathname, router],
+  );
+
+  useEffect(() => {
+    updateUrl(activeTags);
+  }, [activeTags, updateUrl]);
+
+  return null;
+}

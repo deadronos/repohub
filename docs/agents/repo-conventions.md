@@ -27,7 +27,8 @@ These are the patterns most likely to cause subtle bugs when violated.
 ## Admin and auth patterns
 
 - `app/admin/page.tsx` verifies access with `ensureAdmin()` and then fetches projects.
-- Route protection flows through `middleware.ts` → `utils/supabase/middleware.ts`.
+- Route protection flows through `proxy.ts` → `utils/supabase/middleware.ts`.
+  - Next.js 16 uses `proxy.ts` (the new convention) instead of `middleware.ts`.
   - Do not insert logic between `createServerClient()` and `supabase.auth.getUser()`.
 - App-side admin checks use `ADMIN_EMAILS` via `utils/supabase/admin.ts`.
 - Database-side admin checks use the `public.admin_emails` table via `public.is_admin_email()`.

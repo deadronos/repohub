@@ -1,0 +1,9 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - heading "System Access" [level=1] [ref=e4]
+    - generic [ref=e5]:
+      - alert [ref=e6]: Admin access required
+      - textbox "you@example.com" [ref=e7]
+      - textbox "••••••••" [ref=e8]
+      - button "Authenticate" [ref=e9]
+  - alert [ref=e10]

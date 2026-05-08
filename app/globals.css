@@ -73,6 +73,52 @@ body {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.motion-reduced,
+.motion-reduced *,
+.motion-reduced *::before,
+.motion-reduced *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* AnimatedCard enhanced hover visuals */
+.animated-card img {
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.animated-card--hovered img {
+  transform: scale(1.05);
+}
+
+.animated-card p.text-zinc-400 {
+  transition: color 0.3s ease-out;
+}
+
+.animated-card--hovered p.text-zinc-400 {
+  color: #e4e4e7;
+}
+
+.animated-card span.text-cyan-200 {
+  transition: text-shadow 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.animated-card--hovered span.text-cyan-200 {
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 6px rgba(34, 211, 238, 0.2);
+}
+
 .homepage-atmosphere {
   position: absolute;
   inset: 0;

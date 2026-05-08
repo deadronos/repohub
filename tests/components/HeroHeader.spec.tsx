@@ -1,6 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import HeroHeader from '@/components/HeroHeader';
+
+vi.mock('@/components/projects/StatsCounter', () => ({
+  default: vi.fn(({ value }: { value: number }) => <span>{value}</span>),
+}));
 
 describe('HeroHeader Component', () => {
   const props = {
@@ -31,7 +35,6 @@ describe('HeroHeader Component', () => {
 
   it('renders the summary metrics', () => {
     render(<HeroHeader {...props} />);
-
     expect(screen.getByText('12')).toBeInTheDocument();
     expect(screen.getByText('4')).toBeInTheDocument();
     expect(screen.getByText('Mar 20, 2026')).toBeInTheDocument();

@@ -1,0 +1,76 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e7]: Live experiments & digital builds
+          - generic [ref=e9]:
+            - heading "PROJECT HUB" [level=1] [ref=e10]
+            - paragraph [ref=e11]: A curated archive of playable experiments, immersive 3D ideas, and open-source tools. Built for fast scanning, deep dives, and desktop-first exploration.
+          - generic [ref=e12]:
+            - link "Explore projects" [ref=e13] [cursor=pointer]:
+              - /url: "#projects"
+            - link "Visit GitHub Profile" [ref=e14] [cursor=pointer]:
+              - /url: https://github.com/deadronos
+              - img [ref=e15]
+              - text: "@deadronos"
+        - complementary [ref=e18]:
+          - paragraph [ref=e19]: At a glance
+          - generic [ref=e20]:
+            - generic [ref=e21]:
+              - term [ref=e22]: Projects
+              - definition [ref=e23]: "19"
+            - generic [ref=e24]:
+              - term [ref=e25]: Featured
+              - definition [ref=e26]: "2"
+            - generic [ref=e27]:
+              - term [ref=e28]: Newest drop
+              - definition [ref=e29]: Mar 14, 2026
+            - generic [ref=e30]:
+              - term [ref=e31]: Top tag
+              - definition [ref=e32]: Open source
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - paragraph [ref=e36]: Selected work
+            - heading "Browse the archive" [level=2] [ref=e37]
+          - paragraph [ref=e38]: Open any project card for a deeper look at the demo, source, and the tech stack behind it.
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - button "All" [ref=e41]
+            - button "Copilot-cli (1)" [ref=e42]
+            - button "Copilot-sdk (1)" [ref=e43]
+            - button "Docker (1)" [ref=e44]
+            - button "Multithreading (1)" [ref=e45]
+            - button "Nodejs (1)" [ref=e46]
+            - button "React (1)" [ref=e47]
+            - button "React (4)" [ref=e48]
+            - button "React Three Fiber (1)" [ref=e49]
+            - button "ReactThreeFiber (1)" [ref=e50]
+            - button "Shadcn UI (1)" [ref=e51]
+            - button "Typerscript (1)" [ref=e52]
+            - button "Typescript (2)" [ref=e53]
+            - button "TypeScript (1)" [ref=e54]
+            - button "Vite (1)" [ref=e55]
+            - button "Vite (1)" [ref=e56]
+            - button "Zustand (1)" [ref=e57]
+          - generic [ref=e58]:
+            - img
+            - textbox "Search projects..." [active] [ref=e59]: Voxel
+        - button "View details for NanoBotsIdle" [ref=e191] [cursor=pointer]:
+          - img "NanoBotsIdle" [ref=e193]
+          - generic [ref=e195]:
+            - heading "NanoBotsIdle" [level=3] [ref=e196]
+            - paragraph [ref=e197]: 3D Voxel Incremental/Idle game
+            - generic [ref=e198]:
+              - generic [ref=e199]: React
+              - generic [ref=e200]: React Three Fiber
+              - generic [ref=e201]: Typerscript
+  - button "Open Next.js Dev Tools" [ref=e104] [cursor=pointer]:
+    - generic [ref=e299]:
+      - text: Compiling
+      - generic [ref=e300]:
+        - generic [ref=e301]: .
+        - generic [ref=e302]: .
+        - generic [ref=e303]: .
+  - alert [ref=e112]: Project Hub | Digital Portfolio
