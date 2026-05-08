@@ -2,16 +2,18 @@ import { getCachedProjects } from '@/utils/projects/queries';
 import { normalizeTags } from '@/utils/projects/tags';
 import HeroHeaderClient from '@/components/HeroHeaderClient';
 import HomepageAtmosphere from '@/components/HomepageAtmosphere';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import type { Project } from '@/types';
 
-const ProjectGallery = dynamic(() => import('@/components/ProjectGallery'), {
+const ProjectGallery = nextDynamic(() => import('@/components/ProjectGallery'), {
   loading: () => (
     <div className="w-full h-[800px] p-4 md:p-8">
       <div className="w-full h-full bg-zinc-900/20 rounded-xl animate-pulse border border-zinc-800/50" />
     </div>
   ),
 });
+
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const projects = await getCachedProjects();
