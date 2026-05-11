@@ -94,4 +94,28 @@ describe('supabase admin allowlist', () => {
       expect(first).not.toBe(second);
     });
   });
+
+  describe('database allowlist validation', () => {
+    it('uses the is_admin_email RPC for the active session', async () => {
+      const rpc = vi.fn().mockResolvedValue({ data: true, error: null });
+      const { isAdminEmailInDb } = await importAdmin();
+
+      await expect(isAdminEmailInDb({ rpc } as never)).resolves.toBe(true);
+      expect(rpc).toHaveBeenCalledWith('is_admin_email');
+    });
+
+    it('treats RPC failures as not allowlisted', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const rpc = vi.fn().mockResolvedValue({ data: null, error: new Error('RLS unavailable') });
+      const { isAdminEmailInDb } = await importAdmin();
+
+      await expect(isAdminEmailInDb({ rpc } as never)).resolves.toBe(false);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Failed to validate admin email against DB:',
+        expect.any(Error),
+      );
+
+      consoleErrorSpy.mockRestore();
+    });
+  });
 });

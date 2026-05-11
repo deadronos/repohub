@@ -1,4 +1,4 @@
-import { listProjects } from '@/utils/projects/queries';
+import { getCachedProjects } from '@/utils/projects/queries';
 import { normalizeTags } from '@/utils/projects/tags';
 import HeroHeaderClient from '@/components/HeroHeaderClient';
 import HomepageAtmosphere from '@/components/HomepageAtmosphere';
@@ -13,10 +13,8 @@ const ProjectGallery = nextDynamic(() => import('@/components/ProjectGallery'), 
   ),
 });
 
-export const dynamic = 'force-dynamic';
-
 export default async function Home() {
-  const projects = await listProjects();
+  const projects = await getCachedProjects();
   const featuredProjects = projects.filter((project) => project.is_featured).length;
 
   const latestProject = projects.reduce<Project | null>((latest, project) => {

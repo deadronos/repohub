@@ -39,7 +39,19 @@ export async function createProject(formData: FormData): Promise<ActionResult<tr
   }
   if (!initResult.data) return { error: 'Unknown Error' };
   const { parsed, imageUrl, tags } = initResult.data;
-  const sortOrder = await getNextProjectSortOrder(supabase);
+  let sortOrder: number;
+
+  try {
+    sortOrder = await getNextProjectSortOrder(supabase);
+  } catch (error) {
+    console.error('Failed to reserve project sort order:', error);
+
+    if (imageUrl) {
+      await deleteProjectImages(supabase, [imageUrl]);
+    }
+
+    return { error: formatError(error, 'Failed') };
+  }
 
   const { error } = await supabase.from(PROJECTS_TABLE).insert({
     title: parsed.title,

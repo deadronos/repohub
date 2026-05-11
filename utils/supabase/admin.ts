@@ -50,21 +50,18 @@ export function isAdminUser(
  * Validates that an admin email exists in the DB admin table.
  * Used as a secondary check when ADMIN_EMAILS env var check passes.
  */
-export async function isAdminEmailInDb(
-  supabase: SupabaseClient,
-  email: string,
-): Promise<boolean> {
-  const { data, error } = await supabase
-    .from(ADMIN_TABLE)
-    .select('email')
-    .eq('email', normalizeEmail(email))
-    .single();
+export async function isAdminEmailInDb(supabase: SupabaseClient): Promise<boolean> {
+  const result = (await supabase.rpc('is_admin_email')) as {
+    data: boolean | null;
+    error: Error | null;
+  };
 
-  if (error || !data) {
+  if (result.error) {
+    console.error('Failed to validate admin email against DB:', result.error);
     return false;
   }
 
-  return true;
+  return result.data === true;
 }
 
 /**
