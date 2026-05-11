@@ -1,6 +1,6 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
-import { buildLoginRedirectPath, isAdminUser } from '@/utils/supabase/admin';
+import { buildLoginRedirectPath, isAdminEmailInDb, isAdminUser } from '@/utils/supabase/admin';
 
 export async function ensureUser(supabase: SupabaseClient, shouldRedirect = false) {
   const {
@@ -17,7 +17,7 @@ export async function ensureUser(supabase: SupabaseClient, shouldRedirect = fals
 export async function ensureAdmin(supabase: SupabaseClient, shouldRedirect = false) {
   const user = await ensureUser(supabase);
 
-  if (user && isAdminUser(user)) {
+  if (user && isAdminUser(user) && (await isAdminEmailInDb(supabase))) {
     return user;
   }
 

@@ -5,6 +5,7 @@ const {
   ensureUserMock,
   requireAdminOrUnauthorizedMock,
   prepareProjectMutationMock,
+  getNextProjectSortOrderMock,
   revalidateProjectsMock,
   deleteProjectImagesMock,
 } = vi.hoisted(() => ({
@@ -12,6 +13,7 @@ const {
   ensureUserMock: vi.fn(),
   requireAdminOrUnauthorizedMock: vi.fn(),
   prepareProjectMutationMock: vi.fn(),
+  getNextProjectSortOrderMock: vi.fn(),
   revalidateProjectsMock: vi.fn(),
   deleteProjectImagesMock: vi.fn(),
 }));
@@ -27,6 +29,10 @@ vi.mock('@/utils/supabase/auth', () => ({
 
 vi.mock('@/utils/projects/mutations', () => ({
   prepareProjectMutation: prepareProjectMutationMock,
+}));
+
+vi.mock('@/utils/projects/sort-order', () => ({
+  getNextProjectSortOrder: getNextProjectSortOrderMock,
 }));
 
 vi.mock('@/utils/projects/revalidate', () => ({
@@ -49,12 +55,14 @@ import { createProject, deleteProjects, updateProject } from '@/app/actions/proj
 function createSupabaseDouble() {
   const eqMock = vi.fn();
   const updateMock = vi.fn(() => ({ eq: eqMock }));
+  const insertMock = vi.fn();
   const returnsMock = vi.fn();
   const selectInMock = vi.fn(() => ({ returns: returnsMock }));
   const selectMock = vi.fn(() => ({ in: selectInMock }));
   const deleteInMock = vi.fn();
   const deleteMock = vi.fn(() => ({ in: deleteInMock }));
   const fromMock = vi.fn(() => ({
+    insert: insertMock,
     update: updateMock,
     select: selectMock,
     delete: deleteMock,
@@ -64,6 +72,7 @@ function createSupabaseDouble() {
     supabase: {
       from: fromMock,
     },
+    insertMock,
     updateMock,
     eqMock,
     selectMock,
@@ -78,6 +87,7 @@ describe('project action storage cleanup', () => {
     vi.clearAllMocks();
     ensureUserMock.mockResolvedValue({ id: 'user-1' });
     requireAdminOrUnauthorizedMock.mockResolvedValue({ data: { id: 'user-1' } });
+    getNextProjectSortOrderMock.mockResolvedValue(1);
     deleteProjectImagesMock.mockResolvedValue({ deletedPaths: [], warning: null });
   });
 
@@ -90,6 +100,40 @@ describe('project action storage cleanup', () => {
 
     expect(prepareProjectMutationMock).not.toHaveBeenCalled();
     expect(result).toEqual({ error: 'Unauthorized' });
+  });
+
+  it('removes an uploaded image if sort order reservation fails during create', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const { supabase, insertMock } = createSupabaseDouble();
+    createClientMock.mockResolvedValue(supabase);
+    prepareProjectMutationMock.mockResolvedValue({
+      data: {
+        parsed: {
+          title: 'Project',
+          short_description: 'Short',
+          description: 'Long',
+          repo_url: '',
+          demo_url: '',
+          tags: [],
+          imageFile: null,
+          current_image_url: '',
+        },
+        imageUrl: 'https://demo.supabase.co/storage/v1/object/public/projects/new-image.png',
+        tags: ['react'],
+      },
+    });
+    getNextProjectSortOrderMock.mockRejectedValue(new Error('sort order unavailable'));
+
+    const result = await createProject(new FormData());
+
+    expect(insertMock).not.toHaveBeenCalled();
+    expect(deleteProjectImagesMock).toHaveBeenCalledWith(supabase, [
+      'https://demo.supabase.co/storage/v1/object/public/projects/new-image.png',
+    ]);
+    expect(revalidateProjectsMock).not.toHaveBeenCalled();
+    expect(result).toEqual({ error: 'Failed' });
+
+    consoleErrorSpy.mockRestore();
   });
 
   it('removes the previous image after a successful project image replacement', async () => {

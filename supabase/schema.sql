@@ -16,6 +16,10 @@ create table projects (
 -- Index for efficient ordering queries (e.g., ORDER BY sort_order)
 create index idx_projects_sort_order on projects(sort_order);
 
+-- Sequence used to reserve project ordering slots atomically across concurrent creates.
+create sequence if not exists projects_sort_order_seq;
+alter table projects alter column sort_order set default nextval('projects_sort_order_seq');
+
 -- Index for featured project filtering
 create index idx_projects_is_featured on projects(is_featured) where is_featured = true;
 
@@ -109,8 +113,14 @@ create or replace function get_next_sort_order()
 returns integer
 language sql
 as $$
-  select coalesce(max(sort_order), 0) + 1 from projects;
+  select nextval('projects_sort_order_seq')::integer;
 $$;
+
+select setval(
+  'projects_sort_order_seq',
+  greatest((select coalesce(max(sort_order), 0) from projects), 1),
+  true
+);
 
 grant execute on function update_project_order(uuid[]) to authenticated;
 grant execute on function get_next_sort_order() to authenticated;

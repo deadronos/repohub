@@ -33,12 +33,14 @@ These are the patterns most likely to cause subtle bugs when violated.
 - App-side admin checks use `ADMIN_EMAILS` via `utils/supabase/admin.ts`.
 - Database-side admin checks use the `public.admin_emails` table via `public.is_admin_email()`.
   - Ensure that any email in `ADMIN_EMAILS` is also present in the `public.admin_emails` table.
+  - Server-side admin entry and mutations verify both allowlists so env/database drift fails loudly before RLS/storage policies fail later.
 
 ## Mutation patterns
 
 - Server Actions live under `app/actions/*`.
 - Project mutations live in `app/actions/projects.ts`.
 - After project writes, use the existing `revalidateProjects()` helper rather than inventing new invalidation rules.
+- New project `sort_order` values are reserved with the `projects_sort_order_seq` sequence through `get_next_sort_order()`; do not replace it with `max(sort_order) + 1`.
 - Image uploads go to the public `projects` Storage bucket.
   - Persist the returned public URL into `projects.image_url`.
   - When replacing or deleting projects, keep storage cleanup behavior intact.

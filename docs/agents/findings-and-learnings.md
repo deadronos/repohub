@@ -1,5 +1,12 @@
 # Findings and learnings
 
+## 2026-05-11: Admin and ordering hardening
+
+- Public homepage data should stay on `getCachedProjects()` so the documented cache/revalidation path is used.
+- Admin access has two allowlists: `ADMIN_EMAILS` and `public.admin_emails`. Server-side admin checks now validate both, using the `public.is_admin_email()` RPC for the active Supabase session.
+- Project creation must clean up any newly uploaded image if a later create step fails before the database insert.
+- Project ordering slots are reserved by `projects_sort_order_seq`; avoid reintroducing `max(sort_order) + 1` because concurrent creates can collide.
+
 Use this file to capture durable lessons discovered while fixing bugs, aligning docs with code, tightening security, improving performance, or clarifying workflows.
 
 This file is for lessons that should change how future contributors work in RepoHub.
