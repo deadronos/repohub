@@ -11,7 +11,7 @@ import type { Project } from '@/types';
 describe('Project Tags Utils', () => {
   describe('normalizeTags', () => {
     it('normalizes tags by trimming and removing empty/invalid ones', () => {
-      expect(normalizeTags([' react ', '', 'next.js', null as any, '  ']))
+      expect(normalizeTags([' react ', '', 'next.js', null, '  '] as any))
         .toEqual(['react', 'next.js']);
     });
 
@@ -35,7 +35,7 @@ describe('Project Tags Utils', () => {
         demo_url: null,
         repo_url: null,
         is_featured: false,
-      }) as Project;
+      });
 
     it('returns empty array for null or undefined input', () => {
       expect(extractAllTags(null)).toEqual([]);
