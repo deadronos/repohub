@@ -17,7 +17,7 @@ function createRendererInstSync(
 ): RendererInstance {
   const glOverrides: Record<string, unknown> =
     isRecord(glProp) && typeof glProp !== 'function'
-      ? (glProp as Record<string, unknown>)
+      ? glProp
       : {};
 
   const rendererOptions: Record<string, unknown> = {

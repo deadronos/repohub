@@ -26,7 +26,7 @@ export default function ParticleBackgroundLazy() {
     let timeoutId: number | null = null;
     let idleCallbackId: number | null = null;
 
-    const win = window as WindowWithIdleCallback;
+    const win: WindowWithIdleCallback = window;
 
     const onIdle = () => {
       if (!isMountedRef.current) return;

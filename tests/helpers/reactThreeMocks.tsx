@@ -113,7 +113,7 @@ export async function createDreiPointsMock() {
       if (typeof ref === 'function') {
         ref(instance);
       } else if (ref) {
-        (ref as React.MutableRefObject<PointsInstance | null>).current = instance;
+        ref.current = instance;
       }
     }, [instance, ref]);
 
