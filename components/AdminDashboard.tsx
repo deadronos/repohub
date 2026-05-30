@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   KeyboardSensor,
   PointerSensor,
@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
 import { getActionError, getActionWarning } from '@/utils/actions';
+import { createClient } from '@/utils/supabase/client';
 import ProjectFormModal from '@/components/admin/ProjectFormModal';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 import AdminSortableGrid from '@/components/admin/AdminSortableGrid';
@@ -52,6 +53,38 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
     const timeout = setTimeout(() => setOrderStatus('idle'), 1500);
     return () => clearTimeout(timeout);
   }, [orderStatus]);
+
+  // Debounced refresh for Supabase Realtime to coalesce rapid changes
+  // (e.g. drag-reorder fires many UPDATE events) and avoid double-refresh
+  // when the current tab is the one that made the change.
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedRefresh = useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      router.refresh();
+    }, 200);
+  }, [router]);
+
+  // Subscribe to Supabase Realtime postgres_changes so that changes
+  // made in another admin tab/window are reflected within ~1 second.
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel('admin-projects-sync')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'projects' },
+        () => debouncedRefresh(),
+      )
+      .subscribe();
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      supabase.removeChannel(channel).catch(() => {
+        // Channel may already be removed; ignore.
+      });
+    };
+  }, [debouncedRefresh]);
 
   // Toggle selection for deletion
   const toggleSelection = (id: string) => {
