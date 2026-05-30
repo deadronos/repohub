@@ -1,14 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { Project } from '@/types';
 import { createProject, updateProject } from '@/app/actions/projects';
 import { getActionError, getActionWarning } from '@/utils/actions';
+import { ProjectCreateSchema } from '@/utils/projects/schema';
+import type { ProjectCreateInput } from '@/utils/projects/form';
 import ProjectImageUploadField from '@/components/admin/ProjectImageUploadField';
 import { useProjectImageField } from '@/components/admin/useProjectImageField';
 
 const INPUT_CLASS =
   'p-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:border-cyan-500 focus:outline-none';
+
+const ERROR_INPUT_CLASS =
+  'p-3 bg-zinc-900 border border-red-700 rounded-lg text-white focus:border-red-500 focus:outline-none';
+
+type FieldErrors = Partial<Record<keyof ProjectCreateInput, string>>;
 
 type ProjectFormProps = {
   project?: Project | null;
@@ -18,10 +25,41 @@ type ProjectFormProps = {
 export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const errorId = 'form-error-message';
   const { imageState, fileInputRef, clearSelectedImage, handleImageChange } = useProjectImageField({
     onResetError: () => setFormError(null),
   });
+
+  /**
+   * Client-side validation using the shared Zod schema.
+   * Provides instant field-level feedback before form submission.
+   */
+  const validateClient = useCallback((formData: FormData): boolean => {
+    const data: Record<string, string> = {};
+    for (const [key, value] of formData.entries()) {
+      if (key === 'image' || key === 'id') continue;
+      if (typeof value === 'string') {
+        data[key] = value;
+      }
+    }
+
+    const result = ProjectCreateSchema.safeParse(data);
+    if (result.success) {
+      setFieldErrors({});
+      return true;
+    }
+
+    const errors: FieldErrors = {};
+    for (const issue of result.error.issues) {
+      const field = issue.path[0] as keyof ProjectCreateInput;
+      if (field && !errors[field]) {
+        errors[field] = issue.message;
+      }
+    }
+    setFieldErrors(errors);
+    return false;
+  }, []);
 
   async function handleSubmit(formData: FormData) {
     if (imageState.status === 'optimizing') {
@@ -34,8 +72,15 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
       return;
     }
 
+    // Client-side pre-validation
+    if (!validateClient(formData)) {
+      setFormError('Please fix the highlighted fields below.');
+      return;
+    }
+
     setLoading(true);
     setFormError(null);
+    setFieldErrors({});
 
     const preparedImage = imageState.status === 'ready' ? imageState.prepared : null;
     const submission = new FormData();
@@ -62,6 +107,10 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
     }
   }
 
+  function getFieldInputClass(fieldName: keyof ProjectCreateInput): string {
+    return fieldErrors[fieldName] ? ERROR_INPUT_CLASS : INPUT_CLASS;
+  }
+
   return (
     <form action={handleSubmit} className="flex flex-col gap-6">
       <input type="hidden" name="id" value={project?.id} />
@@ -86,8 +135,15 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
             defaultValue={project?.title}
             required
             placeholder="e.g. AI Portfolio"
-            className={INPUT_CLASS}
+            className={getFieldInputClass('title')}
+            aria-invalid={fieldErrors.title ? 'true' : 'false'}
+            aria-describedby={fieldErrors.title ? 'title-error' : undefined}
           />
+          {fieldErrors.title && (
+            <p id="title-error" className="text-red-400 text-xs" role="alert">
+              {fieldErrors.title}
+            </p>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="short_description" className="text-sm text-zinc-400">
@@ -99,8 +155,15 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
             defaultValue={project?.short_description || ''}
             required
             placeholder="Brief overview for the card..."
-            className={INPUT_CLASS}
+            className={getFieldInputClass('short_description')}
+            aria-invalid={fieldErrors.short_description ? 'true' : 'false'}
+            aria-describedby={fieldErrors.short_description ? 'short_description-error' : undefined}
           />
+          {fieldErrors.short_description && (
+            <p id="short_description-error" className="text-red-400 text-xs" role="alert">
+              {fieldErrors.short_description}
+            </p>
+          )}
         </div>
       </div>
 
@@ -112,8 +175,15 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
           defaultValue={project?.description || ''}
           rows={4}
           placeholder="Detailed project explanation..."
-          className={INPUT_CLASS}
+          className={getFieldInputClass('description')}
+          aria-invalid={fieldErrors.description ? 'true' : 'false'}
+          aria-describedby={fieldErrors.description ? 'description-error' : undefined}
         />
+        {fieldErrors.description && (
+          <p id="description-error" className="text-red-400 text-xs" role="alert">
+            {fieldErrors.description}
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -125,8 +195,15 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
             defaultValue={project?.repo_url || ''}
             type="url"
             placeholder="https://github.com/..."
-            className={INPUT_CLASS}
+            className={getFieldInputClass('repo_url')}
+            aria-invalid={fieldErrors.repo_url ? 'true' : 'false'}
+            aria-describedby={fieldErrors.repo_url ? 'repo_url-error' : undefined}
           />
+          {fieldErrors.repo_url && (
+            <p id="repo_url-error" className="text-red-400 text-xs" role="alert">
+              {fieldErrors.repo_url}
+            </p>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="demo_url" className="text-sm text-zinc-400">Demo URL</label>
@@ -136,8 +213,15 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
             defaultValue={project?.demo_url || ''}
             type="url"
             placeholder="https://..."
-            className={INPUT_CLASS}
+            className={getFieldInputClass('demo_url')}
+            aria-invalid={fieldErrors.demo_url ? 'true' : 'false'}
+            aria-describedby={fieldErrors.demo_url ? 'demo_url-error' : undefined}
           />
+          {fieldErrors.demo_url && (
+            <p id="demo_url-error" className="text-red-400 text-xs" role="alert">
+              {fieldErrors.demo_url}
+            </p>
+          )}
         </div>
       </div>
 
@@ -148,8 +232,15 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
           name="tags"
           defaultValue={project?.tags?.join(', ') || ''}
           placeholder="Next.js, TypeScript, AI"
-          className={INPUT_CLASS}
+          className={getFieldInputClass('tags')}
+          aria-invalid={fieldErrors.tags ? 'true' : 'false'}
+          aria-describedby={fieldErrors.tags ? 'tags-error' : undefined}
         />
+        {fieldErrors.tags && (
+          <p id="tags-error" className="text-red-400 text-xs" role="alert">
+            {fieldErrors.tags}
+          </p>
+        )}
       </div>
 
       <ProjectImageUploadField
