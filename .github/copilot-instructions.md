@@ -8,8 +8,9 @@
 ## Key flows (follow existing patterns)
 
 - **Public gallery**: server fetch in `app/page.tsx` using `createClient()` from `utils/supabase/server.ts`, then render the interactive client component `components/ProjectGallery.tsx`.
-- **Admin route protection**: `middleware.ts` delegates to `utils/supabase/middleware.ts`.
+- **Admin route protection**: `proxy.ts` delegates to `utils/supabase/middleware.ts`.
   - `updateSession()` refreshes cookies and redirects `/admin*` → `/login` when no user.
+  - Next.js 16 uses `proxy.ts` (the new convention) instead of `middleware.ts`.
   - Avoid adding logic between `createServerClient()` and `supabase.auth.getUser()` (see warning in `utils/supabase/middleware.ts`).
 - **Mutations**: use Next **Server Actions** in `app/actions/*` (`'use server'`).
   - After writes, call `revalidatePath('/')` and `revalidatePath('/admin')` (current behavior).
