@@ -11,11 +11,11 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import type { Project } from '@/types';
-import { deleteProjects, setProjectsFeatured, updateProjectOrder } from '@/app/actions/projects';
+import { cleanupOrphanImages, deleteProjects, setProjectsFeatured, updateProjectOrder } from '@/app/actions/projects';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
-import { getActionError, getActionWarning } from '@/utils/actions';
+import { getActionData, getActionError, getActionWarning } from '@/utils/actions';
 import { createClient } from '@/utils/supabase/client';
 import ProjectFormModal from '@/components/admin/ProjectFormModal';
 import AdminToolbar from '@/components/admin/AdminToolbar';
@@ -39,6 +39,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
   const [activeId, setActiveId] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [featureStatus, setFeatureStatus] = useState<'idle' | 'saving'>('idle');
+  const [cleanupStatus, setCleanupStatus] = useState<'idle' | 'cleaning' | 'cleaned'>('idle');
 
   // Sync state with server data when it changes (e.g. after router.refresh())
   useEffect(() => {
@@ -53,6 +54,15 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
     const timeout = setTimeout(() => setOrderStatus('idle'), 1500);
     return () => clearTimeout(timeout);
   }, [orderStatus]);
+
+  useEffect(() => {
+    if (cleanupStatus !== 'cleaned') {
+      return;
+    }
+
+    const timeout = setTimeout(() => setCleanupStatus('idle'), 3000);
+    return () => clearTimeout(timeout);
+  }, [cleanupStatus]);
 
   // Debounced refresh for Supabase Realtime to coalesce rapid changes
   // (e.g. drag-reorder fires many UPDATE events) and avoid double-refresh
@@ -121,6 +131,38 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
       }
       router.refresh();
     }
+  };
+
+  const handleCleanupStorage = async () => {
+    if (
+      !confirm(
+        'Scan project storage and permanently delete any image that no project references? This cannot be undone.',
+      )
+    ) {
+      return;
+    }
+
+    setFeedback(null);
+    setCleanupStatus('cleaning');
+
+    const result = await cleanupOrphanImages();
+    const actionError = getActionError(result);
+
+    if (actionError) {
+      setCleanupStatus('idle');
+      setFeedback({ tone: 'error', message: actionError });
+      return;
+    }
+
+    setCleanupStatus('cleaned');
+    const deleted = getActionData<{ deleted: number }>(result)?.deleted ?? 0;
+    setFeedback({
+      tone: 'warning',
+      message:
+        deleted === 0
+          ? 'Storage scan complete: no orphan images found.'
+          : `Storage scan complete: removed ${deleted} orphan image${deleted === 1 ? '' : 's'}.`,
+    });
   };
 
   const handleSetFeatured = async (isFeatured: boolean) => {
@@ -284,9 +326,11 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
         onFeatureSelected={() => void handleSetFeatured(true)}
         onUnfeatureSelected={() => void handleSetFeatured(false)}
         onDeleteSelected={handleDelete}
+        onCleanupStorage={() => void handleCleanupStorage()}
         selectedCount={selectedIds.size}
         orderStatus={orderStatus}
         featureStatus={featureStatus}
+        cleanupStatus={cleanupStatus}
       />
 
       {/* Grid of Projects */}

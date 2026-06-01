@@ -26,6 +26,18 @@ export function getActionWarning(result: unknown): string | null {
   return typeof warningValue === 'string' ? warningValue : null;
 }
 
+export function getActionData<T>(result: unknown): T | null {
+  if (!result || typeof result !== 'object') {
+    return null;
+  }
+
+  if (!('data' in result)) {
+    return null;
+  }
+
+  return (result as { data?: unknown }).data as T | null;
+}
+
 export const formatError = (error: unknown, fallback = 'Failed'): string => {
   if (process.env.NODE_ENV === 'development' && error && typeof error === 'object') {
     const message = (error as Record<string, unknown>).message;
