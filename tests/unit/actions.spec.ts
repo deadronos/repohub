@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getActionError, getActionWarning, formatError } from '@/utils/actions';
+import { getActionData, getActionError, getActionWarning, formatError } from '@/utils/actions';
 
 describe('Action Utils', () => {
   describe('getActionError', () => {
@@ -74,6 +74,31 @@ describe('Action Utils', () => {
       expect(getActionWarning({ data: true, warning: 'Cleanup incomplete' })).toBe(
         'Cleanup incomplete',
       );
+    });
+  });
+
+  describe('getActionData', () => {
+    it('should return null for non-object values', () => {
+      expect(getActionData(null)).toBeNull();
+      expect(getActionData(undefined)).toBeNull();
+      expect(getActionData('data')).toBeNull();
+      expect(getActionData(123)).toBeNull();
+    });
+
+    it('should return null when data is missing', () => {
+      expect(getActionData({})).toBeNull();
+      expect(getActionData({ error: 'Failed' })).toBeNull();
+    });
+
+    it('should return the data value typed as the requested type', () => {
+      const payload = { deleted: 5 };
+      const result = getActionData<{ deleted: number }>({ data: payload });
+      expect(result).toBe(payload);
+      expect(result?.deleted).toBe(5);
+    });
+
+    it('should return null even when data is explicitly null', () => {
+      expect(getActionData({ data: null })).toBeNull();
     });
   });
 });
