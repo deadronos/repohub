@@ -11,7 +11,7 @@ A **Cyber-Minimalist** portfolio and project gallery built with the latest web t
 - **Bento Grid Layout**: Responsive, masonry-style grid for project cards.
 - **Zero-Layout Shift Transitions**: Clicking a card expands it into a details modal using `framer-motion` layout animations.
 - **Secure Admin Dashboard**:
-  - Protected route `/admin` (Middleware + explicit admin allowlist).
+  - Protected route `/admin` (Edge proxy + explicit admin allowlist).
   - **CRUD Operations**: Create, Read, Update, and Delete projects.
   - **Image Upload**: Drag & drop upload directly to public Supabase Storage.
 - **Tech Stack**:

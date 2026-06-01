@@ -4,11 +4,17 @@ import * as nextCache from 'next/cache';
 
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
 }));
 
 describe('revalidateProjects', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('should invalidate the projects cache tag', () => {
+    revalidateProjects();
+    expect(nextCache.revalidateTag).toHaveBeenCalledWith('projects', 'max');
   });
 
   it('should invalidate the root path ("/")', () => {
