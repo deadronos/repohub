@@ -67,9 +67,6 @@ export async function isAdminEmailInDb(supabase: SupabaseClient): Promise<boolea
 /**
  * Validates that the ADMIN_EMAILS env var matches the admin table in DB.
  * Call this at application startup to ensure configuration alignment.
- *
- * TODO: Call this function at startup (e.g., in a server component or API route)
- * to validate env var / DB alignment before processing admin requests.
  */
 export async function validateAdminEmailsMatch(
   supabase: SupabaseClient,
@@ -99,6 +96,27 @@ export async function validateAdminEmailsMatch(
   }
 
   return { valid: discrepancies.length === 0, discrepancies };
+}
+
+/**
+ * Logs a console warning when the ADMIN_EMAILS env var and the
+ * `public.admin_emails` DB table are out of sync. Intended to be
+ * called from the admin dashboard server component so drift surfaces
+ * loudly in server logs without blocking the request.
+ */
+export async function warnIfAdminAllowlistsDiverge(supabase: SupabaseClient): Promise<void> {
+  const { valid, discrepancies } = await validateAdminEmailsMatch(supabase);
+
+  if (valid) {
+    return;
+  }
+
+  console.warn(
+    `[RepoHub] Admin allowlist drift detected between ADMIN_EMAILS env and ${ADMIN_TABLE} table.\n` +
+      `  This can cause admins to be redirected back to /login unexpectedly.\n` +
+      `  Discrepancies:\n` +
+      discrepancies.map((d) => `    - ${d}`).join('\n'),
+  );
 }
 
 export function buildLoginRedirectPath(message = ADMIN_ACCESS_DENIED_MESSAGE) {

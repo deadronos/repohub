@@ -118,4 +118,106 @@ describe('supabase admin allowlist', () => {
       consoleErrorSpy.mockRestore();
     });
   });
+
+  describe('validateAdminEmailsMatch', () => {
+    function makeDbQuery(data: Array<{ email: string }> | null, error: Error | null) {
+      const select = vi.fn().mockResolvedValue({ data, error });
+      const from = vi.fn().mockReturnValue({ select });
+      return { from, select };
+    }
+
+    it('reports valid when env and db allowlists are identical', async () => {
+      vi.stubEnv('ADMIN_EMAILS', 'admin@example.com,owner@example.com');
+      const { from } = makeDbQuery(
+        [{ email: 'admin@example.com' }, { email: 'owner@example.com' }],
+        null,
+      );
+      const { validateAdminEmailsMatch } = await importAdmin();
+
+      const result = await validateAdminEmailsMatch({ from } as never);
+
+      expect(result.valid).toBe(true);
+      expect(result.discrepancies).toEqual([]);
+    });
+
+    it('reports discrepancies when env has emails not in db', async () => {
+      vi.stubEnv('ADMIN_EMAILS', 'admin@example.com,ghost@example.com');
+      const { from } = makeDbQuery([{ email: 'admin@example.com' }], null);
+      const { validateAdminEmailsMatch } = await importAdmin();
+
+      const result = await validateAdminEmailsMatch({ from } as never);
+
+      expect(result.valid).toBe(false);
+      expect(result.discrepancies).toContain('ENV: ghost@example.com not in DB');
+    });
+
+    it('reports discrepancies when db has emails not in env', async () => {
+      vi.stubEnv('ADMIN_EMAILS', 'admin@example.com');
+      const { from } = makeDbQuery(
+        [{ email: 'admin@example.com' }, { email: 'orphan@example.com' }],
+        null,
+      );
+      const { validateAdminEmailsMatch } = await importAdmin();
+
+      const result = await validateAdminEmailsMatch({ from } as never);
+
+      expect(result.valid).toBe(false);
+      expect(result.discrepancies).toContain('DB: orphan@example.com not in ENV');
+    });
+
+    it('returns invalid with empty discrepancies on query failure', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.stubEnv('ADMIN_EMAILS', 'admin@example.com');
+      const { from } = makeDbQuery(null, new Error('boom'));
+      const { validateAdminEmailsMatch } = await importAdmin();
+
+      const result = await validateAdminEmailsMatch({ from } as never);
+
+      expect(result.valid).toBe(false);
+      expect(result.discrepancies).toEqual([]);
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('warnIfAdminAllowlistsDiverge', () => {
+    function makeDbQuery(data: Array<{ email: string }> | null, error: Error | null) {
+      const select = vi.fn().mockResolvedValue({ data, error });
+      const from = vi.fn().mockReturnValue({ select });
+      return from;
+    }
+
+    it('logs a warning when allowlists diverge', async () => {
+      vi.stubEnv('ADMIN_EMAILS', 'admin@example.com');
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const from = makeDbQuery(
+        [{ email: 'admin@example.com' }, { email: 'orphan@example.com' }],
+        null,
+      );
+      const { warnIfAdminAllowlistsDiverge } = await importAdmin();
+
+      await warnIfAdminAllowlistsDiverge({ from } as never);
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Admin allowlist drift detected'),
+      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('DB: orphan@example.com not in ENV'),
+      );
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    it('does not log when allowlists are aligned', async () => {
+      vi.stubEnv('ADMIN_EMAILS', 'admin@example.com');
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const from = makeDbQuery([{ email: 'admin@example.com' }], null);
+      const { warnIfAdminAllowlistsDiverge } = await importAdmin();
+
+      await warnIfAdminAllowlistsDiverge({ from } as never);
+
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
+
+      consoleWarnSpy.mockRestore();
+    });
+  });
 });
