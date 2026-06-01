@@ -10,6 +10,9 @@ import {
   getRefreshSpy,
   getUseSortableArgs,
   resetAdminDashboardMocks,
+  getPostgresChangeHandlers,
+  getRemoveChannelCalls,
+  resetSupabaseRealtimeMocks,
 } from '@/tests/helpers/adminDashboardMocks';
 
 const refreshSpy = getRefreshSpy();
@@ -43,6 +46,11 @@ vi.mock('@dnd-kit/utilities', async () => {
   return createDndKitUtilitiesMock();
 });
 
+vi.mock('@/utils/supabase/client', async () => {
+  const { createSupabaseClientMock } = await import('@/tests/helpers/adminDashboardMocks');
+  return createSupabaseClientMock();
+});
+
 const mockProjects: Project[] = [
   makeProject(),
   makeProject({
@@ -66,6 +74,7 @@ describe('AdminDashboard drag ordering', () => {
 
   beforeEach(() => {
     resetAdminDashboardMocks();
+    resetSupabaseRealtimeMocks();
     updateOrderMock.mockReset();
     deleteProjectsMock.mockReset();
     setProjectsFeaturedMock.mockReset();
@@ -374,5 +383,81 @@ describe('AdminDashboard drag ordering', () => {
     // Reverted
     expect(screen.getByText('Project One')).toBeInTheDocument();
     expect(screen.getByText('Project Two')).toBeInTheDocument();
+  });
+});
+
+describe('AdminDashboard realtime sync', () => {
+  beforeEach(() => {
+    resetAdminDashboardMocks();
+    resetSupabaseRealtimeMocks();
+    vi.restoreAllMocks();
+  });
+
+  it('subscribes to postgres_changes on mount', () => {
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    // The subscription should have registered a handler
+    expect(getPostgresChangeHandlers().length).toBe(1);
+  });
+
+  it('unsubscribes from the channel on unmount', () => {
+    const { unmount } = render(<AdminDashboard initialProjects={mockProjects} />);
+
+    expect(getRemoveChannelCalls()).toBe(0);
+
+    unmount();
+
+    expect(getRemoveChannelCalls()).toBe(1);
+  });
+
+  it('triggers a debounced router.refresh when a postgres change arrives', () => {
+    vi.useFakeTimers();
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    // Simulate a postgres change event from another tab
+    const handlers = getPostgresChangeHandlers();
+    expect(handlers.length).toBe(1);
+
+    act(() => {
+      handlers[0]?.();
+    });
+
+    // refresh should NOT have been called yet (debounced 200ms)
+    expect(refreshSpy).not.toHaveBeenCalled();
+
+    // Advance past the debounce window
+    act(() => {
+      vi.advanceTimersByTime(250);
+    });
+
+    expect(refreshSpy).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it('coalesces multiple rapid changes into a single refresh', () => {
+    vi.useFakeTimers();
+    render(<AdminDashboard initialProjects={mockProjects} />);
+
+    const handlers = getPostgresChangeHandlers();
+    expect(handlers.length).toBe(1);
+
+    // Simulate rapid changes (e.g. drag-reorder firing many UPDATE rows)
+    act(() => {
+      handlers[0]?.();
+      handlers[0]?.();
+      handlers[0]?.();
+    });
+
+    // None should have fired yet
+    expect(refreshSpy).not.toHaveBeenCalled();
+
+    // Advance past the debounce window
+    act(() => {
+      vi.advanceTimersByTime(250);
+    });
+
+    // Only one refresh despite three events
+    expect(refreshSpy).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
   });
 });

@@ -80,3 +80,48 @@ export function createDndKitUtilitiesMock() {
     },
   };
 }
+
+// ---- Supabase Realtime mocks -------------------------------------------
+
+type PostgresChangeHandler = () => void;
+const postgresChangeHandlers: PostgresChangeHandler[] = [];
+let removeChannelCalls: number = 0;
+
+export function getPostgresChangeHandlers() {
+  return postgresChangeHandlers;
+}
+
+export function getRemoveChannelCalls() {
+  return removeChannelCalls;
+}
+
+export function resetSupabaseRealtimeMocks() {
+  postgresChangeHandlers.length = 0;
+  removeChannelCalls = 0;
+}
+
+export function createSupabaseClientMock() {
+  // Build channel piecemeal to avoid self-referencing in the initializer.
+  const channel: Record<string, unknown> = {};
+
+  channel.on = vi
+    .fn()
+    .mockImplementation(
+      (_event: string, _filter: unknown, handler: PostgresChangeHandler) => {
+        postgresChangeHandlers.push(handler);
+        return channel;
+      },
+    );
+
+  channel.subscribe = vi.fn().mockReturnValue(channel);
+
+  return {
+    createClient: () => ({
+      channel: vi.fn().mockReturnValue(channel),
+      removeChannel: vi.fn().mockImplementation(() => {
+        removeChannelCalls++;
+        return Promise.resolve();
+      }),
+    }),
+  };
+}

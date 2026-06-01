@@ -23,8 +23,14 @@ alter table projects alter column sort_order set default nextval('projects_sort_
 -- Index for featured project filtering
 create index idx_projects_is_featured on projects(is_featured) where is_featured = true;
 
--- 2. Enable Row Level Security (RLS)
+-- 2. Enable Row Level Security (RLS) and Realtime
 alter table projects enable row level security;
+
+-- Required for Supabase Realtime postgres_changes to capture OLD values
+-- on UPDATE and DELETE events. Run this in the Supabase SQL editor:
+--   ALTER TABLE projects REPLICA IDENTITY FULL;
+-- Also enable Realtime for the `projects` table in the Supabase Dashboard
+-- (Database → Replication → enable for `projects`).
 
 -- 3. Create Policy: Everyone can READ
 create policy "Public projects are viewable by everyone"

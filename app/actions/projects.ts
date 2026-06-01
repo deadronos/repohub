@@ -9,6 +9,7 @@ import { revalidateProjects } from '@/utils/projects/revalidate';
 import { formatError, type ActionResult } from '@/utils/actions';
 import { PROJECTS_TABLE } from '@/utils/projects/constants';
 import { deleteProjectImages } from '@/utils/projects/storage';
+import { cleanupOrphanProjectImages } from '@/utils/projects/orphan-cleanup';
 import type { Project } from '@/types';
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -226,4 +227,20 @@ export async function deleteProjects(ids: string[]): Promise<ActionResult<true>>
 
   revalidateProjects();
   return warning ? { data: true, warning } : { data: true };
+}
+
+export async function cleanupOrphanImages(): Promise<ActionResult<{ deleted: number }>> {
+  const supabase = await createClient();
+  const userResult = await requireAdminOrUnauthorized(supabase);
+  if ('error' in userResult) {
+    return userResult;
+  }
+
+  const result = await cleanupOrphanProjectImages(supabase);
+  if (result.errors.length > 0) {
+    console.error('Orphan cleanup error:', result.errors);
+    return { error: result.errors.join('; ') };
+  }
+
+  return { data: { deleted: result.deleted } };
 }
