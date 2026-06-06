@@ -42,9 +42,11 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
   const [cleanupStatus, setCleanupStatus] = useState<'idle' | 'cleaning' | 'cleaned'>('idle');
 
   // Sync state with server data when it changes (e.g. after router.refresh())
-  useEffect(() => {
+  const [lastInitialProjects, setLastInitialProjects] = useState(initialProjects);
+  if (initialProjects !== lastInitialProjects) {
+    setLastInitialProjects(initialProjects);
     setProjects(initialProjects);
-  }, [initialProjects]);
+  }
 
   useEffect(() => {
     if (orderStatus !== 'saved') {

@@ -9,17 +9,24 @@ import { formatDate, formatNumber } from '@/utils/format';
 
 export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
   const [stats, setStats] = useState<GitHubStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!repoUrl);
   const [error, setError] = useState(false);
   const isMountedRef = useIsMountedRef();
 
-  useEffect(() => {
-    let cancelled = false;
+  const [prevRepoUrl, setPrevRepoUrl] = useState(repoUrl);
+  if (prevRepoUrl !== repoUrl) {
+    setPrevRepoUrl(repoUrl);
+    setStats(null);
+    setError(false);
+    setLoading(!!repoUrl);
+  }
 
+  useEffect(() => {
     if (!repoUrl) {
-      setLoading(false);
       return;
     }
+
+    let cancelled = false;
 
     async function load() {
       try {
