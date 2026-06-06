@@ -90,3 +90,17 @@ When a major docs correction happens, verify the corresponding code or config be
 - **Why it matters:** Users relying on assistive technology may miss important error or warning states.
 - **What changed:** Added `role="alert" aria-live="polite"` to feedback containers in AdminDashboard.
 - **Where it lives:** `components/AdminDashboard.tsx`
+
+### Sync-with-prop state should use the "compare and set during render" pattern
+
+- **Finding:** `eslint-plugin-react-hooks` flags synchronous `setState` calls inside `useEffect` (the `react-hooks/set-state-in-effect` rule) when the call exists only to mirror a prop into state.
+- **Why it matters:** Treating "sync to prop" with a side-effect causes a redundant render pass and trips a default error from a rule that is now part of the default Next.js lint config. It also leads to flashes of stale state on first render.
+- **What changed:** Both `AdminDashboard` (project list prop) and `GitHubStats` (repo URL prop) now derive state from the prop during render by comparing against a `lastX` snapshot, and initialize dependent state from the prop directly (e.g. `useState(!!repoUrl)`) so the first render is correct without an effect.
+- **Where it lives:** `components/AdminDashboard.tsx`, `components/GitHubStats.tsx`, `docs/agents/findings-and-learnings.md`
+
+### Dependency updates: ESLint major bumps must wait for the rest of the toolchain
+
+- **Finding:** `eslint-config-next@16.x` ships its own `eslint-plugin-react`, and that plugin is not yet compatible with ESLint 10. Bumping only `eslint` to 10 broke `npm run lint` with a `getFilename is not a function` error from the bundled plugin.
+- **Why it matters:** Major-version bumps for ESLint cannot be done in isolation; they require `eslint-config-next` (or any other plugin) to publish a compatible release first.
+- **What changed:** Stay on ESLint 9 for now and only consume patch-level bumps. Re-test ESLint 10 after `eslint-config-next` catches up.
+- **Where it lives:** `package.json`, `eslint.config.mjs`
