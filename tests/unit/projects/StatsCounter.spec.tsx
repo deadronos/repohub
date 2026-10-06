@@ -19,7 +19,7 @@ describe('StatsCounter', () => {
   let originalMatchMedia: typeof window.matchMedia;
 
   beforeEach(() => {
-    originalMatchMedia = window.matchMedia;
+    originalMatchMedia = window.matchMedia.bind(window);
   });
 
   afterEach(() => {

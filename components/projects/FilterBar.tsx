@@ -13,10 +13,8 @@ type FilterBarProps = {
   setSearchQuery: (query: string) => void;
 };
 
-const ACTIVE_PILL =
-  'bg-cyan-500/20 border-cyan-500 text-cyan-200';
-const INACTIVE_PILL =
-  'bg-zinc-800/40 border-zinc-700/50 text-zinc-400';
+const ACTIVE_PILL = 'bg-cyan-500/20 border-cyan-500 text-cyan-200';
+const INACTIVE_PILL = 'bg-zinc-800/40 border-zinc-700/50 text-zinc-400';
 
 export default function FilterBar({
   projects,

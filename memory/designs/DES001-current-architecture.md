@@ -162,13 +162,13 @@ Note: Next.js middleware typically uses a `middleware.ts` entrypoint. If the int
 
 ## Error Handling (As Built)
 
-| Area                 | Failure                          | Current behavior
-| -------------------- | -------------------------------- | ------------------------------------------------------------
-| Login                | invalid credentials              | redirects to `/login?message=Could not authenticate user`
-| Create/Update        | storage upload fails             | logs to `console.error`, continues (may store blank/old URL)
-| Create/Update/Delete | DB mutation fails                | logs to `console.error`, returns `{ error: 'Failed' }`
-| Auth                 | unauthenticated access to admin  | middleware redirect to `/login`
-| Global routes        | render-time error / not found    | `app/error.tsx` / `app/not-found.tsx` render themed UI
+| Area                 | Failure                         | Current behavior                                             |
+| -------------------- | ------------------------------- | ------------------------------------------------------------ |
+| Login                | invalid credentials             | redirects to `/login?message=Could not authenticate user`    |
+| Create/Update        | storage upload fails            | logs to `console.error`, continues (may store blank/old URL) |
+| Create/Update/Delete | DB mutation fails               | logs to `console.error`, returns `{ error: 'Failed' }`       |
+| Auth                 | unauthenticated access to admin | middleware redirect to `/login`                              |
+| Global routes        | render-time error / not found   | `app/error.tsx` / `app/not-found.tsx` render themed UI       |
 
 ## Security Notes
 

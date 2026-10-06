@@ -25,7 +25,7 @@ A **Cyber-Minimalist** portfolio and project gallery built with the latest web t
 
 ### 1. Prerequisites
 
-- Node.js 20.9+ (required by Next.js 16)
+- Node.js 22.22.2+ (Vitest 5 and jsdom 30 require it; Next.js 16 itself needs 20.9+)
 - A [Supabase](https://supabase.com) account
 
 ### 2. Installation

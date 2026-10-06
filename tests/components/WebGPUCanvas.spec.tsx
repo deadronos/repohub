@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Mock three/webgpu to simulate absence of WebGPURenderer export (causes fallback)
-vi.mock('three/webgpu', () => ({ }));
+vi.mock('three/webgpu', () => ({}));
 
 // Provide a mocked legacy WebGLRenderer implementation
 // Provide a test-friendly factory that returns a plain object. This

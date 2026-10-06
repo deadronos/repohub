@@ -6,19 +6,17 @@ import type {
   RendererCtor,
   RendererFactory,
   CanvasGlProp,
-  RootState
+  RootState,
 } from './types';
 import { isRecord, isRendererExport, hasInit } from './types';
 
 function createRendererInstSync(
   RendererFn: unknown,
   defaultProps: GLProps,
-  glProp: CanvasGlProp
+  glProp: CanvasGlProp,
 ): RendererInstance {
   const glOverrides: Record<string, unknown> =
-    isRecord(glProp) && typeof glProp !== 'function'
-      ? glProp
-      : {};
+    isRecord(glProp) && typeof glProp !== 'function' ? glProp : {};
 
   const rendererOptions: Record<string, unknown> = {
     canvas: defaultProps.canvas,
@@ -38,7 +36,7 @@ async function createRendererInst(
   RendererFn: unknown,
   defaultProps: GLProps,
   glProp: CanvasGlProp,
-  isAsync = false
+  isAsync = false,
 ): Promise<RendererInstance> {
   const rendererInstance = createRendererInstSync(RendererFn, defaultProps, glProp);
 
@@ -104,7 +102,7 @@ export function useWebGPURenderer() {
 export function useGLConfig(
   webGPUState: WebGPUState,
   LegacyRenderer: unknown,
-  glProp: CanvasGlProp
+  glProp: CanvasGlProp,
 ) {
   return useMemo(() => {
     const { Renderer } = webGPUState;
@@ -149,7 +147,7 @@ export function useGLConfig(
  */
 export function useRendererDetection(
   onRendererCreated?: (rendererType: 'webgpu' | 'webgl') => void,
-  onCreated?: (state: RootState) => void
+  onCreated?: (state: RootState) => void,
 ) {
   const [rendererType, setRendererType] = useState<'webgpu' | 'webgl' | null>(null);
   const hasNotified = useRef(false);

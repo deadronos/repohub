@@ -3,10 +3,7 @@ export type ProjectOrderUpdate = {
   sort_order: number;
 };
 
-export function buildProjectOrderUpdates(
-  ids: string[],
-  startAt = 1,
-): ProjectOrderUpdate[] {
+export function buildProjectOrderUpdates(ids: string[], startAt = 1): ProjectOrderUpdate[] {
   return ids.map((id, index) => ({
     id,
     sort_order: startAt + index,

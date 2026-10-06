@@ -25,8 +25,8 @@ export function HeroTitleBlock() {
         PROJECT HUB
       </h1>
       <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-300 md:text-lg">
-        A curated archive of playable experiments, immersive 3D ideas, and open-source tools.
-        Built for fast scanning, deep dives, and desktop-first exploration.
+        A curated archive of playable experiments, immersive 3D ideas, and open-source tools. Built
+        for fast scanning, deep dives, and desktop-first exploration.
       </p>
     </div>
   );
@@ -56,7 +56,12 @@ export function HeroButtons() {
   );
 }
 
-export function HeroStatsPanel({ projectCount, featuredCount, latestProjectLabel, topTag }: HeroHeaderContent) {
+export function HeroStatsPanel({
+  projectCount,
+  featuredCount,
+  latestProjectLabel,
+  topTag,
+}: HeroHeaderContent) {
   const hasTopTag = topTag.trim().length > 0;
 
   return (

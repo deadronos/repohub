@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { isWebGPUSupported, checkWebGPUAvailability, getWebGPUSupportMessage } from '@/utils/webgpu-support';
+import {
+  isWebGPUSupported,
+  checkWebGPUAvailability,
+  getWebGPUSupportMessage,
+} from '@/utils/webgpu-support';
 
 describe('WebGPU Support Utilities', () => {
   beforeEach(() => {
@@ -46,8 +50,8 @@ describe('WebGPU Support Utilities', () => {
       const mockRequestAdapter = vi.fn().mockResolvedValue({ name: 'mock-adapter' });
       vi.stubGlobal('navigator', {
         gpu: {
-          requestAdapter: mockRequestAdapter
-        }
+          requestAdapter: mockRequestAdapter,
+        },
       });
       vi.stubGlobal('window', {});
 
@@ -60,8 +64,8 @@ describe('WebGPU Support Utilities', () => {
       const mockRequestAdapter = vi.fn().mockResolvedValue(null);
       vi.stubGlobal('navigator', {
         gpu: {
-          requestAdapter: mockRequestAdapter
-        }
+          requestAdapter: mockRequestAdapter,
+        },
       });
       vi.stubGlobal('window', {});
 
@@ -73,8 +77,8 @@ describe('WebGPU Support Utilities', () => {
       const mockRequestAdapter = vi.fn().mockRejectedValue(new Error('GPU error'));
       vi.stubGlobal('navigator', {
         gpu: {
-          requestAdapter: mockRequestAdapter
-        }
+          requestAdapter: mockRequestAdapter,
+        },
       });
       vi.stubGlobal('window', {});
 

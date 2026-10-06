@@ -19,8 +19,7 @@ describe('findBestQualityUnderBytes', () => {
   });
 
   it('returns null when even the lowest quality is too large', async () => {
-    const encode = (quality: number) =>
-      Promise.resolve({ size: 900 + Math.round(quality * 50) });
+    const encode = (quality: number) => Promise.resolve({ size: 900 + Math.round(quality * 50) });
 
     const result = await findBestQualityUnderBytes(encode, {
       minQuality: 0.55,

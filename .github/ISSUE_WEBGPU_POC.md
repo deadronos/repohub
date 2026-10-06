@@ -7,6 +7,7 @@ React Three Fiber warns that `WebGlRenderer` is deprecated in favor of WebGPU. W
 ## Goal
 
 Produce a minimal, working PoC branch that:
+
 - removes the temporary `three` client alias
 - uses the WebGPU renderer (r3f/three) or selects WebGPU at runtime when supported
 - ensures particle animations and other rendering features are visually correct

@@ -26,7 +26,9 @@ describe('getNextProjectSortOrder', () => {
     const mockRpc = vi.fn().mockResolvedValue({ data: null, error: new Error('DB Error') });
     const mockSupabase = { rpc: mockRpc } as unknown as SupabaseClient;
 
-    await expect(getNextProjectSortOrder(mockSupabase)).rejects.toThrow('Failed to fetch sort order: DB Error');
+    await expect(getNextProjectSortOrder(mockSupabase)).rejects.toThrow(
+      'Failed to fetch sort order: DB Error',
+    );
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to fetch sort order:', expect.any(Error));
 
     consoleErrorSpy.mockRestore();

@@ -9,14 +9,16 @@ vi.mock('next/dynamic', async () => {
 });
 
 vi.mock('@/components/ParticleBackground', async () => {
-  const { createParticleBackgroundMock } = await import('@/tests/helpers/particleBackgroundLazyMocks');
+  const { createParticleBackgroundMock } =
+    await import('@/tests/helpers/particleBackgroundLazyMocks');
   return createParticleBackgroundMock();
 });
 
 describe('ParticleBackgroundLazy', () => {
   const originalRequestIdleCallback = (window as unknown as { requestIdleCallback?: unknown })
     .requestIdleCallback;
-  const originalCancelIdleCallback = (window as unknown as { cancelIdleCallback?: unknown }).cancelIdleCallback;
+  const originalCancelIdleCallback = (window as unknown as { cancelIdleCallback?: unknown })
+    .cancelIdleCallback;
 
   beforeEach(() => {
     dynamicImportCalls.count = 0;
@@ -24,19 +26,21 @@ describe('ParticleBackgroundLazy', () => {
 
   afterEach(() => {
     vi.useRealTimers();
-    (window as unknown as { requestIdleCallback?: unknown }).requestIdleCallback = originalRequestIdleCallback;
-    (window as unknown as { cancelIdleCallback?: unknown }).cancelIdleCallback = originalCancelIdleCallback;
+    (window as unknown as { requestIdleCallback?: unknown }).requestIdleCallback =
+      originalRequestIdleCallback;
+    (window as unknown as { cancelIdleCallback?: unknown }).cancelIdleCallback =
+      originalCancelIdleCallback;
   });
 
   it('defers dynamic import until requestIdleCallback fires', async () => {
     let capturedCallback: IdleRequestCallback | null = null;
 
-    (window as unknown as { requestIdleCallback: unknown }).requestIdleCallback = vi.fn(
-      (callback: IdleRequestCallback) => {
-        capturedCallback = callback;
-        return 123;
-      },
-    );
+    const requestIdleCallbackMock = vi.fn((callback: IdleRequestCallback) => {
+      capturedCallback = callback;
+      return 123;
+    });
+    (window as unknown as { requestIdleCallback: unknown }).requestIdleCallback =
+      requestIdleCallbackMock;
     (window as unknown as { cancelIdleCallback: unknown }).cancelIdleCallback = vi.fn();
 
     render(<ParticleBackgroundLazy />);
@@ -44,7 +48,7 @@ describe('ParticleBackgroundLazy', () => {
     expect(screen.queryByTestId('particle-bg')).not.toBeInTheDocument();
     expect(dynamicImportCalls.count).toBe(0);
     expect(capturedCallback).not.toBeNull();
-    expect(window.requestIdleCallback).toHaveBeenCalledWith(expect.any(Function), {
+    expect(requestIdleCallbackMock).toHaveBeenCalledWith(expect.any(Function), {
       timeout: 1500,
     });
 

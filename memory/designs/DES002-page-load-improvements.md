@@ -1,7 +1,7 @@
 # DES002 — Page Load Improvements (Lazy Background + Gallery Refactor)
 
 **Status:** Implemented (retroactive design)  
-**Updated:** 2025-12-18  
+**Updated:** 2025-12-18
 
 ## Problem
 

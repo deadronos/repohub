@@ -3,7 +3,7 @@
 ## Local setup
 
 - Package manager: `npm`
-- Required Node version: `>=20.9.0`
+- Required Node version: `>=22.22.2`
 - Start local dev: `npm run dev`
 
 ## Environment setup
@@ -29,11 +29,12 @@ Run these before handoff when your change affects runtime behavior:
 - `npm run test`
 - `npm run lint`
 - `npm run typecheck`
+- `npm run format:check`
 - `npm run build`
 
 Shortcut:
 
-- `npm run check` runs test + lint + typecheck
+- `npm run check` runs test + lint + typecheck + format:check
 
 ## Handoff checklist
 

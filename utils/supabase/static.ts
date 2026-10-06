@@ -8,7 +8,7 @@ function hasConfiguredSupabaseEnv() {
     if (process.env.NODE_ENV === 'development') {
       console.warn(
         '[RepoHub] Supabase env vars not set. Static client will return null.\n' +
-        '  Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY in .env.local',
+          '  Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY in .env.local',
       );
     }
     return false;

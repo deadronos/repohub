@@ -106,12 +106,10 @@ export function createSupabaseClientMock() {
 
   channel.on = vi
     .fn()
-    .mockImplementation(
-      (_event: string, _filter: unknown, handler: PostgresChangeHandler) => {
-        postgresChangeHandlers.push(handler);
-        return channel;
-      },
-    );
+    .mockImplementation((_event: string, _filter: unknown, handler: PostgresChangeHandler) => {
+      postgresChangeHandlers.push(handler);
+      return channel;
+    });
 
   channel.subscribe = vi.fn().mockReturnValue(channel);
 

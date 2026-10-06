@@ -58,7 +58,11 @@ export function useProjectImageField({ onResetError }: UseProjectImageFieldOptio
     }
 
     if (!selected.type.startsWith('image/')) {
-      setImageState({ status: 'error', original: selected, message: 'Please choose an image file.' });
+      setImageState({
+        status: 'error',
+        original: selected,
+        message: 'Please choose an image file.',
+      });
       return;
     }
 
@@ -107,7 +111,11 @@ export function useProjectImageField({ onResetError }: UseProjectImageFieldOptio
 
       if (error instanceof ImageOptimizationError) {
         if (error.code === 'not-image') {
-          setImageState({ status: 'error', original: selected, message: 'Please choose an image file.' });
+          setImageState({
+            status: 'error',
+            original: selected,
+            message: 'Please choose an image file.',
+          });
           return;
         }
 

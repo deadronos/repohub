@@ -7,7 +7,6 @@ import { Analytics } from '@vercel/analytics/next';
 // because Turbopack may attempt an HTTP/2 fetch that fails in some environments.
 // We provide CSS fallbacks in `globals.css` instead.
 
-
 export const metadata: Metadata = {
   title: 'Project Hub | Digital Portfolio',
   description: 'A curated collection of web experiments, games, and repositories.',

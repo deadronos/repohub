@@ -11,8 +11,8 @@
 
 ## Runtime / Tooling
 
-- Node.js 20.9+ (required by Next.js 16)
-- TypeScript 5
+- Node.js 22.22.2+ (Vitest 5 and jsdom 30 require it; Next.js 16 needs 20.9+)
+- TypeScript 6
 - ESLint 9 + `eslint-config-next`
 
 ## Environment Variables

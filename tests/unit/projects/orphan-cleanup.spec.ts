@@ -1,9 +1,18 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PROJECTS_BUCKET, PROJECTS_TABLE } from '@/utils/projects/constants';
 
-type StorageListResult = { data: Array<{ name: string; id: string | null }> | null; error: { message: string } | null };
-type DbSelectResult = { data: Array<{ image_url: string | null }> | null; error: { message: string } | null };
-type StorageRemoveResult = { data: Array<{ name: string }> | null; error: { message: string } | null };
+type StorageListResult = {
+  data: Array<{ name: string; id: string | null }> | null;
+  error: { message: string } | null;
+};
+type DbSelectResult = {
+  data: Array<{ image_url: string | null }> | null;
+  error: { message: string } | null;
+};
+type StorageRemoveResult = {
+  data: Array<{ name: string }> | null;
+  error: { message: string } | null;
+};
 
 interface FakeSupabaseOptions {
   storageList?: StorageListResult;
@@ -24,15 +33,9 @@ function makeFakeSupabase({
   dbSelect,
   storageRemove,
 }: FakeSupabaseOptions = {}): FakeSupabase {
-  const list = vi.fn().mockResolvedValue(
-    storageList ?? { data: [], error: null },
-  );
-  const remove = vi.fn().mockResolvedValue(
-    storageRemove ?? { data: [], error: null },
-  );
-  const select = vi.fn().mockResolvedValue(
-    dbSelect ?? { data: [], error: null },
-  );
+  const list = vi.fn().mockResolvedValue(storageList ?? { data: [], error: null });
+  const remove = vi.fn().mockResolvedValue(storageRemove ?? { data: [], error: null });
+  const select = vi.fn().mockResolvedValue(dbSelect ?? { data: [], error: null });
   const storage = { from: vi.fn().mockReturnValue({ list, remove }) };
   const from = vi.fn().mockReturnValue({ select });
   return { storage, from, list, remove, select };
@@ -118,11 +121,7 @@ describe('cleanupOrphanProjectImages', () => {
         error: null,
       },
       dbSelect: {
-        data: [
-          { image_url: null },
-          { image_url: '' },
-          { image_url: urlFor('1700000000-a.jpg') },
-        ],
+        data: [{ image_url: null }, { image_url: '' }, { image_url: urlFor('1700000000-a.jpg') }],
         error: null,
       },
     });

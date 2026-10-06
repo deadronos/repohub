@@ -23,7 +23,9 @@ export default function ProjectImageUploadField({
 }: ProjectImageUploadFieldProps) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor="image" className="text-sm text-zinc-400">Project Cover Image</label>
+      <label htmlFor="image" className="text-sm text-zinc-400">
+        Project Cover Image
+      </label>
       <div className="border border-dashed border-zinc-700 rounded-lg p-6 flex flex-col items-center justify-center text-zinc-500 hover:border-cyan-500/50 hover:bg-cyan-900/10 transition-colors cursor-pointer relative bg-zinc-900/50">
         <input
           id="image"
@@ -37,10 +39,13 @@ export default function ProjectImageUploadField({
         <Upload className="mb-2" />
         <span className="text-sm">Click to Replace / Upload</span>
       </div>
-      <p className="text-xs text-zinc-500 mt-1">Max file size: {formatBytes(PROJECT_IMAGE_MAX_BYTES)}.</p>
+      <p className="text-xs text-zinc-500 mt-1">
+        Max file size: {formatBytes(PROJECT_IMAGE_MAX_BYTES)}.
+      </p>
       {imageState.status === 'optimizing' && (
         <p className="text-xs text-cyan-300 mt-1">
-          Optimizing {formatBytes(imageState.original.size)} → &lt; {formatBytes(PROJECT_IMAGE_MAX_BYTES)}…
+          Optimizing {formatBytes(imageState.original.size)} → &lt;{' '}
+          {formatBytes(PROJECT_IMAGE_MAX_BYTES)}…
         </p>
       )}
       {imageState.status === 'ready' && (
@@ -63,7 +68,9 @@ export default function ProjectImageUploadField({
         </button>
       )}
       {currentImageUrl && (
-        <p className="text-xs text-zinc-500 mt-1">Current image: {currentImageUrl.split('/').pop()}</p>
+        <p className="text-xs text-zinc-500 mt-1">
+          Current image: {currentImageUrl.split('/').pop()}
+        </p>
       )}
     </div>
   );

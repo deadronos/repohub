@@ -53,11 +53,7 @@ export default function HomepageAtmosphere() {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      aria-hidden="true"
-      className="homepage-atmosphere"
-    >
+    <div ref={containerRef} aria-hidden="true" className="homepage-atmosphere">
       <div className="homepage-atmosphere__wash" />
 
       <div className="homepage-atmosphere__grid homepage-grid" />

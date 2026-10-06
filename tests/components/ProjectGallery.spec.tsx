@@ -2,7 +2,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ProjectGallery from '@/components/ProjectGallery';
 import type { Project } from '@/types';
-import { PROJECT_CARD_IMAGE_SIZES, PROJECT_MODAL_IMAGE_SIZES } from '@/components/projects/imageSizes';
+import {
+  PROJECT_CARD_IMAGE_SIZES,
+  PROJECT_MODAL_IMAGE_SIZES,
+} from '@/components/projects/imageSizes';
 import { makeProject } from '@/tests/fixtures/project';
 
 // Mock GitHubStatsDisplay
@@ -33,7 +36,6 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: vi.fn() }),
   usePathname: () => '/',
 }));
-
 
 const mockProjects: Project[] = [
   makeProject({
@@ -131,7 +133,7 @@ describe('ProjectGallery Component', () => {
     fireEvent.keyDown(window, { key: 'Escape' });
 
     await waitFor(() => {
-        expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
+      expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
     });
   });
 
@@ -144,7 +146,7 @@ describe('ProjectGallery Component', () => {
     fireEvent.click(closeButton);
 
     await waitFor(() => {
-        expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
+      expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
     });
   });
 
@@ -157,19 +159,21 @@ describe('ProjectGallery Component', () => {
     fireEvent.click(backdrop);
 
     await waitFor(() => {
-        expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
+      expect(screen.queryByText('A longer description for project one.')).not.toBeInTheDocument();
     });
   });
 
   it('handles projects with empty tags', () => {
-     const projectsWithEmptyTags = [{
-         ...mockProjects[0],
-         id: '3',
-         tags: [''],
-         title: 'Project Three'
-     }];
-     render(<ProjectGallery projects={projectsWithEmptyTags} />);
-     expect(screen.getByText('Project Three')).toBeInTheDocument();
+    const projectsWithEmptyTags = [
+      {
+        ...mockProjects[0],
+        id: '3',
+        tags: [''],
+        title: 'Project Three',
+      },
+    ];
+    render(<ProjectGallery projects={projectsWithEmptyTags} />);
+    expect(screen.getByText('Project Three')).toBeInTheDocument();
   });
 });
 

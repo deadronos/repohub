@@ -100,7 +100,7 @@ describe('utils/github', () => {
           headers: expect.objectContaining({
             Authorization: 'Bearer fake-token',
           }),
-        })
+        }),
       );
     });
 

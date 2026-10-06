@@ -33,10 +33,9 @@ describe('useEscapeKey', () => {
   it('should use the latest onEscape callback', () => {
     const onEscape1 = vi.fn();
     const onEscape2 = vi.fn();
-    renderHook(
-      ({ callback, enabled }) => useEscapeKey(callback, enabled),
-      { initialProps: { callback: onEscape1, enabled: true } },
-    ).rerender({ callback: onEscape2, enabled: true });
+    renderHook(({ callback, enabled }) => useEscapeKey(callback, enabled), {
+      initialProps: { callback: onEscape1, enabled: true },
+    }).rerender({ callback: onEscape2, enabled: true });
 
     act(() => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));

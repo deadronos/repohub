@@ -17,7 +17,7 @@ describe('ProjectImageUploadField', () => {
         onImageChange={vi.fn()}
         onClearImage={vi.fn()}
         imageState={defaultImageState}
-      />
+      />,
     );
     expect(screen.getByText('Click to Replace / Upload')).toBeInTheDocument();
     expect(screen.getByTestId('icon-upload')).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe('ProjectImageUploadField', () => {
           mimeType: 'image/png',
           wasOptimized: true,
         }}
-      />
+      />,
     );
 
     const clearBtn = screen.getByRole('button', { name: /Remove selected image/i });
@@ -61,7 +61,7 @@ describe('ProjectImageUploadField', () => {
           original: null,
           message: 'Error',
         }}
-      />
+      />,
     );
 
     const clearBtn = screen.getByRole('button', { name: /Remove selected image/i });

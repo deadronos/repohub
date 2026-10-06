@@ -1,6 +1,7 @@
 ## Active Task Progress
 
 ### Task: Optimize Tag Frequency Loop (`app/page.tsx`)
+
 - Identified nested loop creating unnecessary array allocations (`?? []`)
 - Created a microbenchmark to measure the impact
 - Implemented optimization: replace `project.tags ?? []` with an `if (tags)` check.
@@ -9,5 +10,6 @@
 - Requested code review and received a "Correct" rating.
 
 ### Next Steps
+
 - Commit changes.
 - Submit PR with benchmark results.

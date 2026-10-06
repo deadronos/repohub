@@ -22,6 +22,6 @@ For each new issue, record:
 ## Recently resolved drift
 
 - Vitest is the project test runner.
-- Canonical validation is `npm run test && npm run lint && npm run typecheck` (or `npm run check`) plus `npm run build`.
+- Canonical validation is `npm run test && npm run lint && npm run typecheck && npm run format:check` (or `npm run check`) plus `npm run build`.
 - Server Actions live in `app/actions/*`.
 - The admin allowlist in the app and the inline allowlist in `supabase/schema.sql` must be kept in sync.

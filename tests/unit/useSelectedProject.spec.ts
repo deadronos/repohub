@@ -39,7 +39,7 @@ describe('useSelectedProject', () => {
 
   it('should maintain referential identity of the return object when projects and state dont change', () => {
     const { result, rerender } = renderHook(({ projects }) => useSelectedProject(projects), {
-      initialProps: { projects: mockProjects }
+      initialProps: { projects: mockProjects },
     });
 
     const firstRenderResult = result.current;

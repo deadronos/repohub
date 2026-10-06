@@ -63,7 +63,7 @@ describe('AdminSortableGrid', () => {
         onDragCancel={vi.fn()}
         onToggleSelect={vi.fn()}
         onEdit={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByTestId('dnd-context')).toBeInTheDocument();
@@ -88,7 +88,7 @@ describe('AdminSortableGrid', () => {
         onDragCancel={vi.fn()}
         onToggleSelect={vi.fn()}
         onEdit={vi.fn()}
-      />
+      />,
     );
 
     const titles = screen.getAllByText(activeProject.title);

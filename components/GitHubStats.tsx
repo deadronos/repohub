@@ -64,15 +64,24 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
 
   return (
     <div className="flex gap-2 mt-2 items-center" data-testid="github-stats">
-      <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300" title="Stars">
+      <span
+        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300"
+        title="Stars"
+      >
         <Star className="w-3.5 h-3.5 text-(--neon-blue)" />
         <span className="font-medium tabular-nums">{formatNumber(stats.stars)}</span>
       </span>
-      <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300" title="Forks">
+      <span
+        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300"
+        title="Forks"
+      >
         <GitFork className="w-3.5 h-3.5 text-(--neon-pink)" />
         <span className="font-medium tabular-nums">{formatNumber(stats.forks)}</span>
       </span>
-      <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400" title="Last Updated">
+      <span
+        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400"
+        title="Last Updated"
+      >
         <Calendar className="w-3.5 h-3.5 text-zinc-500" />
         <span className="tabular-nums">{formatDate(stats.lastPushedAt)}</span>
       </span>

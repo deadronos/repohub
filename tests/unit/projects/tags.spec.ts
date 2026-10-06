@@ -11,8 +11,10 @@ import type { Project } from '@/types';
 describe('Project Tags Utils', () => {
   describe('normalizeTags', () => {
     it('normalizes tags by trimming and removing empty/invalid ones', () => {
-      expect(normalizeTags([' react ', '', 'next.js', null, '  '] as any))
-        .toEqual(['react', 'next.js']);
+      expect(normalizeTags([' react ', '', 'next.js', null, '  '] as any)).toEqual([
+        'react',
+        'next.js',
+      ]);
     });
 
     it('returns empty array for null or undefined', () => {
@@ -22,20 +24,19 @@ describe('Project Tags Utils', () => {
   });
 
   describe('extractAllTags', () => {
-    const makeProject = (tags: string[] | null): Project =>
-      ({
-        id: '1',
-        title: 'Test',
-        short_description: '',
-        description: '',
-        tags,
-        image_url: null,
-        created_at: '2023-01-01T00:00:00Z',
-        sort_order: 0,
-        demo_url: null,
-        repo_url: null,
-        is_featured: false,
-      });
+    const makeProject = (tags: string[] | null): Project => ({
+      id: '1',
+      title: 'Test',
+      short_description: '',
+      description: '',
+      tags,
+      image_url: null,
+      created_at: '2023-01-01T00:00:00Z',
+      sort_order: 0,
+      demo_url: null,
+      repo_url: null,
+      is_featured: false,
+    });
 
     it('returns empty array for null or undefined input', () => {
       expect(extractAllTags(null)).toEqual([]);
@@ -43,10 +44,7 @@ describe('Project Tags Utils', () => {
     });
 
     it('returns sorted tag counts', () => {
-      const projects = [
-        makeProject(['react', 'next.js']),
-        makeProject(['react', 'three.js']),
-      ];
+      const projects = [makeProject(['react', 'next.js']), makeProject(['react', 'three.js'])];
 
       expect(extractAllTags(projects)).toEqual([
         { tag: 'next.js', count: 1 },
@@ -75,19 +73,13 @@ describe('Project Tags Utils', () => {
     });
 
     it('handles projects with null tags', () => {
-      const projects = [
-        makeProject(null),
-        makeProject(['react']),
-      ];
+      const projects = [makeProject(null), makeProject(['react'])];
 
       expect(extractAllTags(projects)).toEqual([{ tag: 'react', count: 1 }]);
     });
 
     it('filters out empty string tags', () => {
-      const projects = [
-        makeProject(['']),
-        makeProject(['react', '']),
-      ];
+      const projects = [makeProject(['']), makeProject(['react', ''])];
 
       expect(extractAllTags(projects)).toEqual([{ tag: 'react', count: 1 }]);
     });

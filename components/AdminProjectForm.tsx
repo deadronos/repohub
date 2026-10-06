@@ -119,7 +119,11 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
       )}
 
       {formError && (
-        <div id={errorId} className="bg-red-900/30 text-red-300 p-3 rounded-lg border border-red-800 text-sm" role="alert">
+        <div
+          id={errorId}
+          className="bg-red-900/30 text-red-300 p-3 rounded-lg border border-red-800 text-sm"
+          role="alert"
+        >
           {formError}
         </div>
       )}
@@ -168,7 +172,9 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="description" className="text-sm text-zinc-400">Full Description</label>
+        <label htmlFor="description" className="text-sm text-zinc-400">
+          Full Description
+        </label>
         <textarea
           id="description"
           name="description"
@@ -188,7 +194,9 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
-          <label htmlFor="repo_url" className="text-sm text-zinc-400">Repo URL</label>
+          <label htmlFor="repo_url" className="text-sm text-zinc-400">
+            Repo URL
+          </label>
           <input
             id="repo_url"
             name="repo_url"
@@ -206,7 +214,9 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
           )}
         </div>
         <div className="flex flex-col gap-2">
-          <label htmlFor="demo_url" className="text-sm text-zinc-400">Demo URL</label>
+          <label htmlFor="demo_url" className="text-sm text-zinc-400">
+            Demo URL
+          </label>
           <input
             id="demo_url"
             name="demo_url"
@@ -226,7 +236,9 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="tags" className="text-sm text-zinc-400">Tags (comma separated)</label>
+        <label htmlFor="tags" className="text-sm text-zinc-400">
+          Tags (comma separated)
+        </label>
         <input
           id="tags"
           name="tags"
@@ -253,9 +265,7 @@ export default function ProjectForm({ project, onComplete }: ProjectFormProps) {
 
       <button
         type="submit"
-        disabled={
-          loading || imageState.status === 'optimizing' || imageState.status === 'error'
-        }
+        disabled={loading || imageState.status === 'optimizing' || imageState.status === 'error'}
         className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl mt-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (

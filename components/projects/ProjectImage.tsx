@@ -14,9 +14,17 @@ type ProjectImageProps = {
 };
 
 // Simple base64 blur placeholder (1x1 gray pixel, resized via CSS)
-const BLUR_DATA_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+const BLUR_DATA_URL =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 
-export default function ProjectImage({ imageUrl, alt, sizes, className, fallback, priority }: ProjectImageProps) {
+export default function ProjectImage({
+  imageUrl,
+  alt,
+  sizes,
+  className,
+  fallback,
+  priority,
+}: ProjectImageProps) {
   const [hasError, setHasError] = useState(false);
 
   if (!imageUrl || hasError) {

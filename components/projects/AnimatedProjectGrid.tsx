@@ -9,7 +9,10 @@ type AnimatedProjectGridProps = {
   onProjectClick: (id: string) => void;
 };
 
-export default function AnimatedProjectGrid({ projects, onProjectClick }: AnimatedProjectGridProps) {
+export default function AnimatedProjectGrid({
+  projects,
+  onProjectClick,
+}: AnimatedProjectGridProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (

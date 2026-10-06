@@ -21,7 +21,9 @@ describe('EmptyFilterState', () => {
     });
 
     it('applies glass-panel class', () => {
-      const { container } = render(<EmptyFilterState activeTags={[]} searchQuery="" onClearFilters={mockOnClear} />);
+      const { container } = render(
+        <EmptyFilterState activeTags={[]} searchQuery="" onClearFilters={mockOnClear} />,
+      );
       const panel = container.firstChild as HTMLElement;
       expect(panel.className).toContain('glass-panel');
     });
@@ -29,17 +31,27 @@ describe('EmptyFilterState', () => {
 
   describe('context message', () => {
     it('shows only tag message when only tags active', () => {
-      render(<EmptyFilterState activeTags={['React']} searchQuery="" onClearFilters={mockOnClear} />);
+      render(
+        <EmptyFilterState activeTags={['React']} searchQuery="" onClearFilters={mockOnClear} />,
+      );
       expect(screen.getByText("No projects match 'React'")).toBeTruthy();
     });
 
     it('shows only search message when only search active', () => {
-      render(<EmptyFilterState activeTags={[]} searchQuery="dungeon" onClearFilters={mockOnClear} />);
+      render(
+        <EmptyFilterState activeTags={[]} searchQuery="dungeon" onClearFilters={mockOnClear} />,
+      );
       expect(screen.getByText("No projects match 'dungeon'")).toBeTruthy();
     });
 
     it('shows combined message when both active', () => {
-      render(<EmptyFilterState activeTags={['React']} searchQuery="dungeon" onClearFilters={mockOnClear} />);
+      render(
+        <EmptyFilterState
+          activeTags={['React']}
+          searchQuery="dungeon"
+          onClearFilters={mockOnClear}
+        />,
+      );
       expect(screen.getByText("No projects match 'React' and 'dungeon'")).toBeTruthy();
     });
 
@@ -70,13 +82,17 @@ describe('EmptyFilterState', () => {
 
   describe('layout', () => {
     it('is responsive - full width on mobile', () => {
-      const { container } = render(<EmptyFilterState activeTags={[]} searchQuery="" onClearFilters={mockOnClear} />);
+      const { container } = render(
+        <EmptyFilterState activeTags={[]} searchQuery="" onClearFilters={mockOnClear} />,
+      );
       const panel = container.firstChild as HTMLElement;
       expect(panel.className).toContain('w-full');
     });
 
     it('is centered with max-w-md on desktop', () => {
-      const { container } = render(<EmptyFilterState activeTags={[]} searchQuery="" onClearFilters={mockOnClear} />);
+      const { container } = render(
+        <EmptyFilterState activeTags={[]} searchQuery="" onClearFilters={mockOnClear} />,
+      );
       const panel = container.firstChild as HTMLElement;
       expect(panel.className).toContain('max-w-md');
       expect(panel.className).toContain('mx-auto');

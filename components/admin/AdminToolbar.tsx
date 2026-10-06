@@ -64,9 +64,7 @@ export default function AdminToolbar({
       {featureStatus === 'saving' && (
         <span className="text-sm text-amber-300">Updating featured projects...</span>
       )}
-      {orderStatus === 'saving' && (
-        <span className="text-sm text-cyan-300">Saving order...</span>
-      )}
+      {orderStatus === 'saving' && <span className="text-sm text-cyan-300">Saving order...</span>}
       {orderStatus === 'saved' && <span className="text-sm text-emerald-300">Order saved</span>}
 
       <div className="ml-auto flex items-center gap-2">

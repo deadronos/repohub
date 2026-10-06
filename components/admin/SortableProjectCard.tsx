@@ -22,11 +22,18 @@ export default function SortableProjectCard({
   onEdit,
   disabled = false,
 }: SortableProjectCardProps) {
-  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } =
-    useSortable({
-      id: project.id,
-      disabled,
-    });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: project.id,
+    disabled,
+  });
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),

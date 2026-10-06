@@ -5,7 +5,11 @@ import { z } from 'zod';
  * Validates raw FormData values before they become a proper Project.
  */
 export const ProjectCreateSchema = z.object({
-  title: z.string().trim().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
+  title: z
+    .string()
+    .trim()
+    .min(1, 'Title is required')
+    .max(100, 'Title must be less than 100 characters'),
   short_description: z.string().trim().default(''),
   description: z.string().trim().default(''),
   repo_url: z
@@ -42,18 +46,12 @@ export const ProjectUrlSchema = z.object({
     .string()
     .trim()
     .optional()
-    .refine(
-      (val) => !val || /^https?:\/\/.+/.test(val),
-      { message: 'Invalid Repository URL' },
-    ),
+    .refine((val) => !val || /^https?:\/\/.+/.test(val), { message: 'Invalid Repository URL' }),
   demo_url: z
     .string()
     .trim()
     .optional()
-    .refine(
-      (val) => !val || /^https?:\/\/.+/.test(val),
-      { message: 'Invalid Demo URL' },
-    ),
+    .refine((val) => !val || /^https?:\/\/.+/.test(val), { message: 'Invalid Demo URL' }),
 });
 
 export type ProjectUrlInput = z.infer<typeof ProjectUrlSchema>;

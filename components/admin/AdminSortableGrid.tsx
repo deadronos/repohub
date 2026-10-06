@@ -9,10 +9,7 @@ import {
   type SensorDescriptor,
   type SensorOptions,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable';
+import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import type { Project } from '@/types';
 import AdminProjectCard from '@/components/admin/AdminProjectCard';
 import SortableProjectCard from '@/components/admin/SortableProjectCard';

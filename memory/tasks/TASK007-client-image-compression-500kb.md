@@ -2,7 +2,7 @@
 
 **Status:** Completed  
 **Added:** 2025-12-28  
-**Updated:** 2025-12-28  
+**Updated:** 2025-12-28
 
 ## Original Request
 
@@ -51,14 +51,14 @@ Design reference: `memory/designs/DES005-client-image-compression-500kb.md`.
 
 ### Subtasks
 
-| ID  | Description | Status | Updated | Notes |
-| --- | --- | --- | --- | --- |
-| 1.1 | Add constants + formatBytes helper | Complete | 2025-12-28 | `utils/projects/image-limits.ts`, `utils/format-bytes.ts` |
-| 1.2 | Implement client optimization utility | Complete | 2025-12-28 | `utils/images/optimize-image.ts`, `utils/images/quality-search.ts` |
-| 1.3 | Wire optimization into AdminProjectForm UX | Complete | 2025-12-28 | `components/AdminProjectForm.tsx` |
-| 1.4 | Add server-side upload error propagation | Complete | 2025-12-28 | `utils/projects/storage.ts`, `app/actions/projects.ts` |
-| 1.5 | Add unit tests | Complete | 2025-12-28 | `tests/unit/format-bytes.spec.ts`, `tests/unit/quality-search.spec.ts` |
-| 1.6 | Run checks and update Memory Bank | Complete | 2025-12-28 | `npm run test`, `npm run lint`, `npm run typecheck` |
+| ID  | Description                                | Status   | Updated    | Notes                                                                  |
+| --- | ------------------------------------------ | -------- | ---------- | ---------------------------------------------------------------------- |
+| 1.1 | Add constants + formatBytes helper         | Complete | 2025-12-28 | `utils/projects/image-limits.ts`, `utils/format-bytes.ts`              |
+| 1.2 | Implement client optimization utility      | Complete | 2025-12-28 | `utils/images/optimize-image.ts`, `utils/images/quality-search.ts`     |
+| 1.3 | Wire optimization into AdminProjectForm UX | Complete | 2025-12-28 | `components/AdminProjectForm.tsx`                                      |
+| 1.4 | Add server-side upload error propagation   | Complete | 2025-12-28 | `utils/projects/storage.ts`, `app/actions/projects.ts`                 |
+| 1.5 | Add unit tests                             | Complete | 2025-12-28 | `tests/unit/format-bytes.spec.ts`, `tests/unit/quality-search.spec.ts` |
+| 1.6 | Run checks and update Memory Bank          | Complete | 2025-12-28 | `npm run test`, `npm run lint`, `npm run typecheck`                    |
 
 ## Progress Log
 

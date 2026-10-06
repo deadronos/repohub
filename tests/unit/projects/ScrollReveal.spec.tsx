@@ -7,7 +7,7 @@ describe('ScrollReveal', () => {
     render(
       <ScrollReveal>
         <div data-testid="child">Content</div>
-      </ScrollReveal>
+      </ScrollReveal>,
     );
     expect(screen.getByTestId('child')).toBeTruthy();
   });
@@ -18,7 +18,7 @@ describe('ScrollReveal', () => {
         <div>Child 1</div>
         <div>Child 2</div>
         <div>Child 3</div>
-      </ScrollReveal>
+      </ScrollReveal>,
     );
     expect(screen.getByText('Child 1')).toBeTruthy();
     expect(screen.getByText('Child 2')).toBeTruthy();
@@ -30,8 +30,8 @@ describe('ScrollReveal', () => {
       <ScrollReveal>
         <span>Item 1</span>
         <span>Item 2</span>
-      </ScrollReveal>
-);
+      </ScrollReveal>,
+    );
     expect(container.querySelectorAll('div')).toHaveLength(2);
   });
 });

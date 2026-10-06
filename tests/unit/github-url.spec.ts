@@ -38,10 +38,10 @@ describe('utils/github-url', () => {
     });
 
     it('returns null for owner or repo with invalid characters', () => {
-        expect(parseGitHubUrl('https://github.com/owner!/repo')).toBeNull();
-        expect(parseGitHubUrl('https://github.com/owner/repo%21')).toBeNull();
-        expect(parseGitHubUrl('https://github.com/owner/repo%3F')).toBeNull();
-        expect(parseGitHubUrl('https://github.com/owner/repo%23')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/owner!/repo')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/owner/repo%21')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/owner/repo%3F')).toBeNull();
+      expect(parseGitHubUrl('https://github.com/owner/repo%23')).toBeNull();
     });
   });
 

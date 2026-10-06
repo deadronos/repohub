@@ -31,10 +31,7 @@ describe('Project Tags Utils', () => {
     });
 
     it('handles projects with null tags', () => {
-      const projects: Project[] = [
-        makeProject({ tags: null }),
-        makeProject({ tags: ['react'] }),
-      ];
+      const projects: Project[] = [makeProject({ tags: null }), makeProject({ tags: ['react'] })];
       expect(extractAllTags(projects)).toEqual([{ tag: 'react', count: 1 }]);
     });
 
@@ -113,13 +110,13 @@ describe('Project Tags Utils', () => {
     it('exports the rules object with all categories', () => {
       expect(PROJECT_TYPE_RULES).toBeDefined();
       expect(PROJECT_TYPE_RULES.Game).toEqual(
-        expect.arrayContaining(['three.js', 'webgl', 'game', 'r3f', 'react-three-fiber'])
+        expect.arrayContaining(['three.js', 'webgl', 'game', 'r3f', 'react-three-fiber']),
       );
       expect(PROJECT_TYPE_RULES.Tool).toEqual(
-        expect.arrayContaining(['docker', 'cli', 'sdk', 'api', 'tool'])
+        expect.arrayContaining(['docker', 'cli', 'sdk', 'api', 'tool']),
       );
       expect(PROJECT_TYPE_RULES.Experiment).toEqual(
-        expect.arrayContaining(['experiment', 'demo', 'prototype', 'mcp'])
+        expect.arrayContaining(['experiment', 'demo', 'prototype', 'mcp']),
       );
     });
   });

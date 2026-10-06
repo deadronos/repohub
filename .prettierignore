@@ -11,3 +11,10 @@ public
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Vendored / generated content not maintained as project source
+.agent
+.jules
+.github/skills
+.playwright-mcp
+qa-*.md
