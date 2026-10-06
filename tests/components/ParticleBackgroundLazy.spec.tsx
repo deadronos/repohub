@@ -31,12 +31,12 @@ describe('ParticleBackgroundLazy', () => {
   it('defers dynamic import until requestIdleCallback fires', async () => {
     let capturedCallback: IdleRequestCallback | null = null;
 
-    (window as unknown as { requestIdleCallback: unknown }).requestIdleCallback = vi.fn(
-      (callback: IdleRequestCallback) => {
-        capturedCallback = callback;
-        return 123;
-      },
-    );
+    const requestIdleCallbackMock = vi.fn((callback: IdleRequestCallback) => {
+      capturedCallback = callback;
+      return 123;
+    });
+    (window as unknown as { requestIdleCallback: unknown }).requestIdleCallback =
+      requestIdleCallbackMock;
     (window as unknown as { cancelIdleCallback: unknown }).cancelIdleCallback = vi.fn();
 
     render(<ParticleBackgroundLazy />);
@@ -44,7 +44,7 @@ describe('ParticleBackgroundLazy', () => {
     expect(screen.queryByTestId('particle-bg')).not.toBeInTheDocument();
     expect(dynamicImportCalls.count).toBe(0);
     expect(capturedCallback).not.toBeNull();
-    expect(window.requestIdleCallback).toHaveBeenCalledWith(expect.any(Function), {
+    expect(requestIdleCallbackMock).toHaveBeenCalledWith(expect.any(Function), {
       timeout: 1500,
     });
 

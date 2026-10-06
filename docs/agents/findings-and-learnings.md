@@ -98,9 +98,24 @@ When a major docs correction happens, verify the corresponding code or config be
 - **What changed:** Both `AdminDashboard` (project list prop) and `GitHubStats` (repo URL prop) now derive state from the prop during render by comparing against a `lastX` snapshot, and initialize dependent state from the prop directly (e.g. `useState(!!repoUrl)`) so the first render is correct without an effect.
 - **Where it lives:** `components/AdminDashboard.tsx`, `components/GitHubStats.tsx`, `docs/agents/findings-and-learnings.md`
 
-### Dependency updates: ESLint major bumps must wait for the rest of the toolchain
+### Dependency updates: some majors must wait for the rest of the toolchain
 
-- **Finding:** `eslint-config-next@16.x` ships its own `eslint-plugin-react`, and that plugin is not yet compatible with ESLint 10. Bumping only `eslint` to 10 broke `npm run lint` with a `getFilename is not a function` error from the bundled plugin.
-- **Why it matters:** Major-version bumps for ESLint cannot be done in isolation; they require `eslint-config-next` (or any other plugin) to publish a compatible release first.
-- **What changed:** Stay on ESLint 9 for now and only consume patch-level bumps. Re-test ESLint 10 after `eslint-config-next` catches up.
+- **Finding:** As of the 2026-10-06 upgrade pass, two majors cannot be adopted because first-party tooling still pins an older peer range. `eslint-config-next@16.3.8` bundles `eslint-plugin-react@7.37.5` (peer `eslint '^3 || … || ^9.7'`), which crashes under ESLint 10 with `contextOrFilename.getFilename is not a function`. `typescript-eslint@8.71.1` (the latest release) peers `typescript >=4.8.4 <6.1.0`, so TypeScript 7 cannot be installed without `--legacy-peer-deps`.
+- **Why it matters:** Major bumps cannot be treated as independent; a single plugin's peer range can force the whole toolchain to wait. Forcing the install with `--legacy-peer-deps` yields a broken lint/typecheck rather than a fix.
+- **What changed:** ESLint stays on 9.x (`^9.39.5`) and TypeScript stays on 6.x (`^6.0.3`) while every other dependency moved to its latest release. Re-test ESLint 10 and TypeScript 7 after `eslint-config-next` and `typescript-eslint` publish compatible peer ranges.
 - **Where it lives:** `package.json`, `eslint.config.mjs`
+- **Follow-up:** Watch `eslint-plugin-react` for an ESLint 10-compatible release and `typescript-eslint` for a TypeScript 7-compatible peer range.
+
+### @testing-library/jest-dom v7 needs the Vitest-specific entrypoint
+
+- **Finding:** In `@testing-library/jest-dom@7`, the bare `@testing-library/jest-dom` entrypoint only augments Jest's globals, so Vitest no longer sees the matcher types. `tsc` fails with `Property 'toBeInTheDocument' does not exist on type 'Assertion<…>'` even though the runtime matchers still work.
+- **Why it matters:** The matchers keep passing at runtime while type-checking fails, which is an easy failure to misread as a missing dependency.
+- **What changed:** Test setup imports `@testing-library/jest-dom/vitest` instead of the bare package.
+- **Where it lives:** `tests/setup.ts`
+
+### Vitest 5 + stricter type-aware lint surfaced unbound-method references
+
+- **Finding:** The dependency bump enabled `@typescript-eslint/unbound-method` (part of `recommendedTypeChecked`) to flag two test references to DOM methods used as values (`window.requestIdleCallback`, `window.matchMedia`).
+- **Why it matters:** Reading a method off an object without calling or binding it can silently detach `this`; the rule is a real correctness guard even in tests.
+- **What changed:** Capture the `vi.fn()` mock in a local instead of reading `window.requestIdleCallback`, and snapshot `window.matchMedia` with `.bind(window)` for restoration.
+- **Where it lives:** `tests/components/ParticleBackgroundLazy.spec.tsx`, `tests/unit/projects/StatsCounter.spec.tsx`
