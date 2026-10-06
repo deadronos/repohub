@@ -43,7 +43,7 @@ Backfilling the Memory Bank to reflect what is currently implemented in the repo
 
 ## Next Steps
 
-- Keep local and CI environments on Node.js `20.9+` or newer when validating Next.js 16 changes.
+- Keep local and CI environments on Node.js `22.22.2+` (Vitest 5 and jsdom 30 require it; CI uses Node `24.x`).
 - Create/maintain `DES001` with architecture + data flows.
 - Create/maintain `TASK001` with documentation backfill work tracked.
 - Maintain `memory/files/repo-map.md` (verified as existing).

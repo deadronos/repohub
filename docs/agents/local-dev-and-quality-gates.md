@@ -3,7 +3,7 @@
 ## Local setup
 
 - Package manager: `npm`
-- Required Node version: `>=20.9.0`
+- Required Node version: `>=22.22.2`
 - Start local dev: `npm run dev`
 
 ## Environment setup
