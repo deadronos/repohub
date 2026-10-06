@@ -1,8 +1,5 @@
 export type ImageOptimizationErrorCode =
-  | 'not-image'
-  | 'decode-failed'
-  | 'encode-failed'
-  | 'cannot-compress';
+  'not-image' | 'decode-failed' | 'encode-failed' | 'cannot-compress';
 
 export class ImageOptimizationError extends Error {
   code: ImageOptimizationErrorCode;

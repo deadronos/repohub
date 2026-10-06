@@ -17,9 +17,7 @@ function isFileEntry(entry: StorageListItem): boolean {
 export async function cleanupOrphanProjectImages(
   supabase: SupabaseClient,
 ): Promise<OrphanCleanupResult> {
-  const { data: files, error: listError } = await supabase.storage
-    .from(PROJECTS_BUCKET)
-    .list();
+  const { data: files, error: listError } = await supabase.storage.from(PROJECTS_BUCKET).list();
 
   if (listError) {
     return { deleted: 0, errors: [`Failed to list storage: ${listError.message}`] };
@@ -58,9 +56,7 @@ export async function cleanupOrphanProjectImages(
     return { deleted: 0, errors: [] };
   }
 
-  const { error: removeError } = await supabase.storage
-    .from(PROJECTS_BUCKET)
-    .remove(orphanPaths);
+  const { error: removeError } = await supabase.storage.from(PROJECTS_BUCKET).remove(orphanPaths);
 
   if (removeError) {
     return { deleted: 0, errors: [`Failed to remove orphans: ${removeError.message}`] };

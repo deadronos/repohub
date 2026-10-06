@@ -48,7 +48,7 @@ export default function StatsCounter({ value, label }: StatsCounterProps) {
           }
         });
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
 
     observer.observe(element);

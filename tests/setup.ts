@@ -8,13 +8,17 @@ class MockIntersectionObserver implements IntersectionObserver {
   readonly thresholds: ReadonlyArray<number> = [];
   readonly scrollMargin: string = '';
   private callbacks: Array<(entries: IntersectionObserverEntry[]) => void> = [];
-  disconnect() { this.callbacks = []; }
+  disconnect() {
+    this.callbacks = [];
+  }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   observe(_element: Element) {
     this.callbacks.push(() => {});
   }
   unobserve() {}
-  takeRecords(): IntersectionObserverEntry[] { return []; }
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
 }
 
 window.IntersectionObserver = MockIntersectionObserver;

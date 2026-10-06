@@ -14,7 +14,10 @@ const mockMatchMedia = (matches: boolean) => ({
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn(),
 });
-vi.stubGlobal('matchMedia', vi.fn().mockImplementation(() => mockMatchMedia(false)));
+vi.stubGlobal(
+  'matchMedia',
+  vi.fn().mockImplementation(() => mockMatchMedia(false)),
+);
 
 // Mock WebGPUCanvas to directly use Canvas mock in tests (no async loading)
 vi.mock('@/components/WebGPUCanvas', () => {
@@ -82,7 +85,10 @@ describe('ParticleBackground', () => {
       canvas.dispatchEvent(event);
 
       expect(event.defaultPrevented).toBe(true);
-      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'lost');
+      expect(screen.getByTestId('particle-background')).toHaveAttribute(
+        'data-webgl-status',
+        'lost',
+      );
     });
 
     expect(screen.getByTestId('r3f-canvas')).toHaveAttribute('data-frameloop', 'never');
@@ -96,7 +102,10 @@ describe('ParticleBackground', () => {
     await waitFor(() => {
       const lostEvent = new Event('webglcontextlost', { cancelable: true });
       canvas.dispatchEvent(lostEvent);
-      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'lost');
+      expect(screen.getByTestId('particle-background')).toHaveAttribute(
+        'data-webgl-status',
+        'lost',
+      );
     });
 
     act(() => {
@@ -129,7 +138,10 @@ describe('ParticleBackground', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'lost');
+      expect(screen.getByTestId('particle-background')).toHaveAttribute(
+        'data-webgl-status',
+        'lost',
+      );
     });
 
     // simulate context restored
@@ -158,7 +170,10 @@ describe('ParticleBackground gpu events', () => {
     await waitFor(() => {
       const lostEvent = new Event('gpucontextlost', { cancelable: true });
       canvas.dispatchEvent(lostEvent);
-      expect(screen.getByTestId('particle-background')).toHaveAttribute('data-webgl-status', 'lost');
+      expect(screen.getByTestId('particle-background')).toHaveAttribute(
+        'data-webgl-status',
+        'lost',
+      );
     });
 
     act(() => {

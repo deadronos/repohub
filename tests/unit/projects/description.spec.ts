@@ -3,9 +3,9 @@ import { stripTitlePrefix } from '@/utils/projects/description';
 
 describe('stripTitlePrefix', () => {
   it('strips title followed by dash separator', () => {
-    expect(stripTitlePrefix('Idle Dungeon Crawler', 'Idle Dungeon Crawler - A browser-based RPG')).toBe(
-      'A browser-based RPG',
-    );
+    expect(
+      stripTitlePrefix('Idle Dungeon Crawler', 'Idle Dungeon Crawler - A browser-based RPG'),
+    ).toBe('A browser-based RPG');
   });
 
   it('strips title followed by colon separator', () => {

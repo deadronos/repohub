@@ -29,7 +29,9 @@ export default function EmptyFilterState({
     <div className="glass-panel w-full mx-auto max-w-md flex flex-col items-center justify-center py-12 px-4 rounded-xl">
       <SearchX data-testid="search-icon" size={48} className="text-zinc-600 mb-4" />
       <h2 className="text-lg text-white mb-2">No projects found</h2>
-      <p className="text-zinc-400 text-sm mb-6 text-center">{buildMessage(activeTags, searchQuery)}</p>
+      <p className="text-zinc-400 text-sm mb-6 text-center">
+        {buildMessage(activeTags, searchQuery)}
+      </p>
       <button
         onClick={onClearFilters}
         className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-lg transition-colors"

@@ -19,9 +19,10 @@ vi.mock('@/components/HomepageAtmosphere', () => ({
 }));
 
 vi.mock('next/dynamic', () => ({
-  default: () => function MockProjectGallery() {
-    return <div data-testid="project-gallery" />;
-  },
+  default: () =>
+    function MockProjectGallery() {
+      return <div data-testid="project-gallery" />;
+    },
 }));
 
 import Home from '@/app/page';

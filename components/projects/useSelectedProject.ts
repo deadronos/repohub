@@ -7,7 +7,7 @@ export function useSelectedProject(projects: Project[]) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selectedProject = useMemo(
-    () => (selectedId ? projects.find((project) => project.id === selectedId) ?? null : null),
+    () => (selectedId ? (projects.find((project) => project.id === selectedId) ?? null) : null),
     [projects, selectedId],
   );
 

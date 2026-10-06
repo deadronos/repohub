@@ -2,8 +2,24 @@
 
 @theme {
   /* Provide safe fallbacks so the build doesn't fail if --font-geist-* isn't set */
-  --font-sans: var(--font-geist-sans, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial);
-  --font-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace);
+  --font-sans: var(
+    --font-geist-sans,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial
+  );
+  --font-mono: var(
+    --font-geist-mono,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    'Courier New',
+    monospace
+  );
 }
 
 :root {
@@ -65,11 +81,15 @@ body {
 
 @keyframes homepage-grid-pan {
   from {
-    background-position: 0 0, 0 0;
+    background-position:
+      0 0,
+      0 0;
   }
 
   to {
-    background-position: 132px 0, 0 132px;
+    background-position:
+      132px 0,
+      0 132px;
   }
 }
 
@@ -95,7 +115,9 @@ body {
 
 /* AnimatedCard enhanced hover visuals */
 .animated-card img {
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
 }
 
 .animated-card--hovered img {
@@ -111,7 +133,9 @@ body {
 }
 
 .animated-card span.text-cyan-200 {
-  transition: text-shadow 0.3s ease-out, box-shadow 0.3s ease-out;
+  transition:
+    text-shadow 0.3s ease-out,
+    box-shadow 0.3s ease-out;
 }
 
 .animated-card--hovered span.text-cyan-200 {
@@ -194,5 +218,10 @@ body {
 .homepage-atmosphere__fade {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, transparent 0%, rgba(5, 5, 16, 0.2) 55%, rgba(5, 5, 16, 0.72) 100%);
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(5, 5, 16, 0.2) 55%,
+    rgba(5, 5, 16, 0.72) 100%
+  );
 }

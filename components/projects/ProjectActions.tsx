@@ -6,7 +6,11 @@ type ProjectActionsProps = {
   variant?: 'default' | 'compact';
 };
 
-export default function ProjectActions({ demoUrl, repoUrl, variant = 'default' }: ProjectActionsProps) {
+export default function ProjectActions({
+  demoUrl,
+  repoUrl,
+  variant = 'default',
+}: ProjectActionsProps) {
   if (!demoUrl && !repoUrl) return null;
 
   const isCompact = variant === 'compact';

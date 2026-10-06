@@ -29,10 +29,7 @@ export default function WebGPUCanvas({
 
   const glConfig = useGLConfig(webGPUState, LegacyRenderer, glProp);
 
-  const { rendererType, handleCreated } = useRendererDetection(
-    onRendererCreated,
-    onCreated
-  );
+  const { rendererType, handleCreated } = useRendererDetection(onRendererCreated, onCreated);
 
   // Show nothing while loading the renderer to avoid double initialization or flickering
   if (webGPUState.loading) {

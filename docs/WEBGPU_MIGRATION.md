@@ -15,10 +15,11 @@ webpack: (config, { isServer }) => {
     config.resolve.alias['three'] = 'three/webgpu';
   }
   return config;
-}
+};
 ```
 
 This approach had several issues:
+
 - **Brittle**: Forced WebGPU for everything, even when not needed
 - **No fallback**: Would fail in browsers without WebGPU support
 - **Subtle bugs**: Buffer array writes don't always update GPU buffers reliably with this approach
@@ -47,11 +48,13 @@ The new implementation uses a proper runtime approach:
 ### Browser Support
 
 **WebGPU Support:**
+
 - Chrome/Edge 113+
 - Safari 18+ (macOS 14+)
 - Firefox: Experimental support (not enabled by default as of 2026)
 
 **Automatic Fallback:**
+
 - All other browsers automatically use WebGL2 backend
 - No user-visible difference in functionality
 - Slightly better performance in WebGPU-capable browsers
@@ -115,12 +118,8 @@ function MyComponent() {
   const [rendererType, setRendererType] = useState<'webgpu' | 'webgl' | null>(null);
 
   return (
-    <WebGPUCanvas
-      onRendererCreated={setRendererType}
-    >
-      {rendererType && (
-        <div>Using {rendererType.toUpperCase()} renderer</div>
-      )}
+    <WebGPUCanvas onRendererCreated={setRendererType}>
+      {rendererType && <div>Using {rendererType.toUpperCase()} renderer</div>}
     </WebGPUCanvas>
   );
 }
@@ -177,6 +176,7 @@ Tests use a mock WebGPUCanvas that immediately renders without async imports. Th
 ### Build Errors
 
 If you see "Failed to import WebGPURenderer" in the console:
+
 - This is expected in test environments
 - Check browser console for actual runtime errors
 - Fallback to WebGL should happen automatically
@@ -191,6 +191,7 @@ If you see "Failed to import WebGPURenderer" in the console:
 ### Type Errors
 
 If TypeScript complains about WebGPU types:
+
 - Ensure `@types/three` version matches `three` version
 - Run `npm install` to ensure all dependencies are current
 - Check `tsconfig.json` has `"types": ["vitest/globals"]`

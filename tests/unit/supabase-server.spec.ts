@@ -23,7 +23,7 @@ describe('supabase server', () => {
   });
 
   it('creates client with cookies', async () => {
-    const client = await createClient() as any;
+    const client = (await createClient()) as any;
 
     expect(ssr.createServerClient).toHaveBeenCalled();
     expect(client.options.cookies.getAll()).toEqual([{ name: 'test', value: '123' }]);
@@ -37,7 +37,7 @@ describe('supabase server', () => {
 
     vi.mocked(await import('next/headers')).cookies.mockResolvedValue(mockCookieStore as any);
 
-    const client = await createClient() as any;
+    const client = (await createClient()) as any;
     client.options.cookies.setAll([{ name: 'new', value: 'value', options: {} }]);
 
     expect(mockCookieStore.set).toHaveBeenCalledWith('new', 'value', {});
@@ -50,17 +50,19 @@ describe('supabase server', () => {
 
     const mockCookieStore = {
       getAll: vi.fn(),
-      set: vi.fn().mockImplementation(() => { throw new Error('Cannot set cookie'); }),
+      set: vi.fn().mockImplementation(() => {
+        throw new Error('Cannot set cookie');
+      }),
     };
 
     vi.mocked(await import('next/headers')).cookies.mockResolvedValue(mockCookieStore as any);
 
-    const client = await createClient() as any;
+    const client = (await createClient()) as any;
     client.options.cookies.setAll([{ name: 'new', value: 'value', options: {} }]);
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       'Ignored Supabase cookie set attempt from Server Component (this is expected behavior in Server Components):',
-      expect.any(Error)
+      expect.any(Error),
     );
 
     consoleWarnSpy.mockRestore();
@@ -74,12 +76,14 @@ describe('supabase server', () => {
 
     const mockCookieStore = {
       getAll: vi.fn(),
-      set: vi.fn().mockImplementation(() => { throw new Error('Cannot set cookie'); }),
+      set: vi.fn().mockImplementation(() => {
+        throw new Error('Cannot set cookie');
+      }),
     };
 
     vi.mocked(await import('next/headers')).cookies.mockResolvedValue(mockCookieStore as any);
 
-    const client = await createClient() as any;
+    const client = (await createClient()) as any;
     client.options.cookies.setAll([{ name: 'new', value: 'value', options: {} }]);
 
     expect(consoleWarnSpy).not.toHaveBeenCalled();

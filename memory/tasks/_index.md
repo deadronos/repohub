@@ -1,14 +1,14 @@
 ---
-post_title: "Tasks Index"
-author1: "AI Assistant"
-post_slug: "tasks-index"
-microsoft_alias: "n/a"
-featured_image: "https://example.com/placeholder.png"
-categories: ["Engineering"]
-tags: ["tasks", "memory"]
-ai_note: "Updated by AI."
-summary: "Index of project tasks and statuses."
-post_date: "2025-12-28"
+post_title: 'Tasks Index'
+author1: 'AI Assistant'
+post_slug: 'tasks-index'
+microsoft_alias: 'n/a'
+featured_image: 'https://example.com/placeholder.png'
+categories: ['Engineering']
+tags: ['tasks', 'memory']
+ai_note: 'Updated by AI.'
+summary: 'Index of project tasks and statuses.'
+post_date: '2025-12-28'
 ---
 
 # Tasks Index

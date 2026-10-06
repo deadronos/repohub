@@ -40,7 +40,7 @@ describe('SortableProjectCard', () => {
         isSelected={false}
         onToggleSelect={() => {}}
         onEdit={() => {}}
-      />
+      />,
     );
     expect(screen.getByText(project.title)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: `Reorder ${project.title}` })).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe('SortableProjectCard', () => {
         isSelected={false}
         onToggleSelect={() => {}}
         onEdit={() => {}}
-      />
+      />,
     );
     const div = container.firstChild as HTMLElement;
     expect(div).toHaveStyle('z-index: 20');

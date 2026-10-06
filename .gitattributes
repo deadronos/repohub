@@ -1,0 +1,3 @@
+# Normalize all text files to LF in the repository and working tree.
+# This prevents CRLF/LF churn and keeps Prettier's `endOfLine: "lf"` consistent.
+* text=auto eol=lf

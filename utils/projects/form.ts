@@ -68,9 +68,7 @@ export function parseProjectFormData(formData: FormData): ProjectFormData {
  * Validate project text fields using Zod schema.
  * Returns array of error messages or empty array if valid.
  */
-export function validateProjectFields(
-  data: ProjectCreateInput,
-): string[] {
+export function validateProjectFields(data: ProjectCreateInput): string[] {
   const result = ProjectCreateSchema.safeParse(data);
   if (result.success) return [];
 

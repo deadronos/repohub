@@ -3,7 +3,7 @@ import { getActionData, getActionError, getActionWarning, formatError } from '@/
 
 describe('Action Utils', () => {
   describe('getActionError', () => {
-        it('should return null for non-object values', () => {
+    it('should return null for non-object values', () => {
       expect(getActionError(null)).toBeNull();
       expect(getActionError(undefined)).toBeNull();
       expect(getActionError('error')).toBeNull();
@@ -30,7 +30,9 @@ describe('Action Utils', () => {
     });
 
     it('should return error string when other properties are also present', () => {
-      expect(getActionError({ error: 'Failed', status: 500, message: 'Additional info' })).toBe('Failed');
+      expect(getActionError({ error: 'Failed', status: 500, message: 'Additional info' })).toBe(
+        'Failed',
+      );
     });
   });
 

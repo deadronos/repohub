@@ -17,11 +17,7 @@ type ProjectGalleryProps = {
   projects: Project[];
 };
 
-function FilterSync({
-  activeTags,
-}: {
-  activeTags: Set<string>;
-}) {
+function FilterSync({ activeTags }: { activeTags: Set<string> }) {
   useFilterSync(activeTags);
   return null;
 }

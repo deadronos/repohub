@@ -35,13 +35,17 @@ describe('storage-helpers', () => {
 
   describe('formatMaxImageSizeError', () => {
     it('formats error with size limits', () => {
-      expect(formatMaxImageSizeError(2_000_000, 1_000_000)).toBe('Image is 2.0 MB. Max allowed is 1.0 MB.');
+      expect(formatMaxImageSizeError(2_000_000, 1_000_000)).toBe(
+        'Image is 2.0 MB. Max allowed is 1.0 MB.',
+      );
     });
   });
 
   describe('formatUploadTooLargeError', () => {
     it('formats generic upload error', () => {
-      expect(formatUploadTooLargeError(5_000_000)).toBe('Upload failed: image must be under 5.0 MB.');
+      expect(formatUploadTooLargeError(5_000_000)).toBe(
+        'Upload failed: image must be under 5.0 MB.',
+      );
     });
   });
 

@@ -5,7 +5,10 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * This avoids race conditions that can occur with SELECT max + 1 pattern.
  */
 export async function getNextProjectSortOrder(supabase: SupabaseClient): Promise<number> {
-  const { data, error } = await supabase.rpc('get_next_sort_order') as { data: number | null; error: Error | null };
+  const { data, error } = (await supabase.rpc('get_next_sort_order')) as {
+    data: number | null;
+    error: Error | null;
+  };
 
   if (error) {
     console.error('Failed to fetch sort order:', error);

@@ -27,7 +27,9 @@ describe('normalizeLoginFeedback', () => {
 
   it('should return the first element if input is an array', () => {
     expect(normalizeLoginFeedback(['custom error', 'other error'])).toBe('custom error');
-    expect(normalizeLoginFeedback(['invalid login credentials', 'other error'])).toBe(LOGIN_FEEDBACK_MESSAGE);
+    expect(normalizeLoginFeedback(['invalid login credentials', 'other error'])).toBe(
+      LOGIN_FEEDBACK_MESSAGE,
+    );
   });
 
   it('should return trimmed non-legacy messages', () => {

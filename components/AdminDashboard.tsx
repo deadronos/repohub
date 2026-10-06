@@ -11,7 +11,12 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import type { Project } from '@/types';
-import { cleanupOrphanImages, deleteProjects, setProjectsFeatured, updateProjectOrder } from '@/app/actions/projects';
+import {
+  cleanupOrphanImages,
+  deleteProjects,
+  setProjectsFeatured,
+  updateProjectOrder,
+} from '@/app/actions/projects';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
@@ -25,9 +30,7 @@ interface AdminDashboardProps {
   initialProjects: Project[];
 }
 
-type FeedbackState =
-  | { tone: 'error'; message: string }
-  | { tone: 'warning'; message: string };
+type FeedbackState = { tone: 'error'; message: string } | { tone: 'warning'; message: string };
 
 export default function AdminDashboard({ initialProjects }: AdminDashboardProps) {
   const router = useRouter();
@@ -83,10 +86,8 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
     const supabase = createClient();
     const channel = supabase
       .channel('admin-projects-sync')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'projects' },
-        () => debouncedRefresh(),
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () =>
+        debouncedRefresh(),
       )
       .subscribe();
 
@@ -226,7 +227,7 @@ export default function AdminDashboard({ initialProjects }: AdminDashboardProps)
   );
 
   const activeProject = activeId
-    ? projects.find((project) => project.id === activeId) ?? null
+    ? (projects.find((project) => project.id === activeId) ?? null)
     : null;
 
   const handleDragStart = (event: DragStartEvent) => {

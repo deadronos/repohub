@@ -8,9 +8,9 @@ export async function createNextDynamicMock() {
   return {
     default: (loader: () => Promise<unknown>) => {
       return function MockDynamicComponent(props: Record<string, unknown>) {
-        const [Component, setComponent] = React.useState<ComponentType<Record<string, unknown>> | null>(
-          null,
-        );
+        const [Component, setComponent] = React.useState<ComponentType<
+          Record<string, unknown>
+        > | null>(null);
 
         React.useEffect(() => {
           dynamicImportCalls.count += 1;

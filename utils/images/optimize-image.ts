@@ -6,9 +6,15 @@ import { decodeImage } from '@/utils/images/optimize/decode';
 import { ImageOptimizationError } from '@/utils/images/optimize/errors';
 import { getExtensionFromMimeType, replaceExtension } from '@/utils/images/optimize/filename';
 import { computeDownscaledDimensions } from '@/utils/images/optimize/resize';
-import type { ImageOptimizationOptions, ImageOptimizationResult } from '@/utils/images/optimize/types';
+import type {
+  ImageOptimizationOptions,
+  ImageOptimizationResult,
+} from '@/utils/images/optimize/types';
 
-export type { ImageOptimizationOptions, ImageOptimizationResult } from '@/utils/images/optimize/types';
+export type {
+  ImageOptimizationOptions,
+  ImageOptimizationResult,
+} from '@/utils/images/optimize/types';
 export type { ImageOptimizationErrorCode } from '@/utils/images/optimize/errors';
 export { ImageOptimizationError } from '@/utils/images/optimize/errors';
 
@@ -79,7 +85,10 @@ export async function optimizeImageToUnderBytes(
         async (quality) => {
           const blob = await canvasToBlob(canvas, mimeType, quality);
           if (!blob) {
-            throw new ImageOptimizationError('encode-failed', 'Browser failed to encode this image.');
+            throw new ImageOptimizationError(
+              'encode-failed',
+              'Browser failed to encode this image.',
+            );
           }
           return blob;
         },
@@ -94,7 +103,10 @@ export async function optimizeImageToUnderBytes(
       const blob = best?.value ?? minBlob;
       const extension = getExtensionFromMimeType(mimeType);
       const name = replaceExtension(file.name, extension);
-      const optimizedFile = new File([blob], name, { type: mimeType, lastModified: file.lastModified });
+      const optimizedFile = new File([blob], name, {
+        type: mimeType,
+        lastModified: file.lastModified,
+      });
 
       return {
         file: optimizedFile,

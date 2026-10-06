@@ -32,7 +32,7 @@ export default function ProjectModal({ project, onNext, onPrevious, onClose }: P
     if (!modal) return;
 
     const focusableElements = modal.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
@@ -163,19 +163,31 @@ export default function ProjectModal({ project, onNext, onPrevious, onClose }: P
           <div className="flex justify-between items-start gap-4 mb-4">
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 id="project-modal-title" className="text-3xl font-bold text-white text-glow">{project.title}</h2>
+                <h2 id="project-modal-title" className="text-3xl font-bold text-white text-glow">
+                  {project.title}
+                </h2>
                 <ProjectTypeBadge type={inferProjectType(project.tags ?? [])} />
                 {project.is_featured && (
-                  <StarIcon className="w-5 h-5 text-amber-400 fill-amber-400 shrink-0" aria-label="Featured" />
+                  <StarIcon
+                    className="w-5 h-5 text-amber-400 fill-amber-400 shrink-0"
+                    aria-label="Featured"
+                  />
                 )}
               </div>
               {project.repo_url && <GitHubStatsDisplay repoUrl={project.repo_url} />}
             </div>
-            <ProjectActions demoUrl={project.demo_url} repoUrl={project.repo_url} variant="compact" />
+            <ProjectActions
+              demoUrl={project.demo_url}
+              repoUrl={project.repo_url}
+              variant="compact"
+            />
           </div>
 
           <p className="text-zinc-300 leading-relaxed mb-6 whitespace-pre-wrap">
-            {stripTitlePrefix(project.title, project.description?.trim() || project.short_description)}
+            {stripTitlePrefix(
+              project.title,
+              project.description?.trim() || project.short_description,
+            )}
           </p>
 
           <ProjectTags tags={project.tags} variant="modal" />
