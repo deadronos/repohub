@@ -125,5 +125,12 @@ When a major docs correction happens, verify the corresponding code or config be
 - **Finding:** A `package-lock.json` written by npm 12 failed `npm ci` under Node 20's npm 10 with `Missing: typescript@5.9.3 from lock file`. The real cause was an _optional_ peer dependency (`tsconfck` → `typescript@^5.0.0`) that npm 12 skips but npm 10 tries to satisfy. npm 11 and npm 12 both accepted the same lockfile unchanged.
 - **Why it matters:** CI can fail before any project code runs even though `npm install`/`npm ci` succeed locally, and the error names an unrelated package.
 - **What changed:** CI now uses Node 24.x (npm 11) instead of 20.x, and `package.json` `engines.node` moved to `>=22.22.2` to match the Vitest 5 / jsdom 30 requirement. Keep CI's Node major at or above the npm that generated the lockfile.
-- **Where it lives:** `.github/workflows/ci.yml`, `.github/workflows/deploy-pages.yml`, `package.json`
+- **Where it lives:** `.github/workflows/ci.yml`, `package.json`
 - **Follow-up:** After bumping Node/npm locally, run `npm ci` (not just `npm install`) before pushing to catch lockfile/npm drift early.
+
+### Deployment is via Vercel; the GitHub Pages workflow was dead scaffold
+
+- **Finding:** `.github/workflows/deploy-pages.yml` came from the initial scaffold, never ran, targeted GitHub Pages (which was never enabled for the repo), and uploaded a `./dist` directory that `next build` never produces. The app is a full SSR Next.js app with dynamic routes and middleware, so it could not be hosted on Pages without a static export anyway.
+- **Why it matters:** A registered-but-broken deploy workflow grants `pages: write` / `id-token: write` and only fails when it finally fires, which is easy to overlook.
+- **What changed:** Removed the workflow. Vercel is the deploy path (status checks on PRs, `@vercel/analytics`).
+- **Where it lives:** `.github/workflows/`, `next.config.ts`, `package.json`
