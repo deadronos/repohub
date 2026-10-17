@@ -12,8 +12,8 @@
 ## Runtime / Tooling
 
 - Node.js 22.22.2+ (Vitest 5 and jsdom 30 require it; Next.js 16 needs 20.9+)
-- TypeScript 6
-- ESLint 9 + `eslint-config-next`
+- TypeScript 7 (native `tsc`)
+- oxlint (type-aware) for linting, oxfmt for formatting; ESLint and Prettier were removed because typescript-eslint blocked TypeScript 7
 
 ## Environment Variables
 

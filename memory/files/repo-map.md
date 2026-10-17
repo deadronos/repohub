@@ -69,7 +69,7 @@ Shared project UI primitives:
 
 - `next.config.ts` — Next Image remotePatterns for Supabase.
 - `env.example` — required env vars.
-- `eslint.config.mjs`, `tsconfig.json`, `postcss.config.mjs` — tooling.
+- `.oxlintrc.json`, `.oxfmtrc.json`, `tsconfig.json`, `postcss.config.mjs` — tooling.
 - `vitest.config.mts`, `tests/setup.ts` — Vitest + Testing Library config.
 
 ## Tests

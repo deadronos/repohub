@@ -105,6 +105,15 @@ When a major docs correction happens, verify the corresponding code or config be
 - **What changed:** ESLint stays on 9.x (`^9.39.5`) and TypeScript stays on 6.x (`^6.0.3`) while every other dependency moved to its latest release. Re-test ESLint 10 and TypeScript 7 after `eslint-config-next` and `typescript-eslint` publish compatible peer ranges.
 - **Where it lives:** `package.json`, `eslint.config.mjs`
 - **Follow-up:** Watch `eslint-plugin-react` for an ESLint 10-compatible release and `typescript-eslint` for a TypeScript 7-compatible peer range.
+- **Superseded 2026-10-17:** the ESLint/typescript-eslint stack was removed entirely; see the oxlint/oxfmt entry below.
+
+### ESLint + typescript-eslint were the only thing blocking TypeScript 7; oxlint/oxfmt unblocks it
+
+- **Finding:** `typescript-eslint` peers `typescript <6.1.0`, and `eslint-config-next` bundles old plugins (`eslint-plugin-react`, `eslint-plugin-import`, `eslint-plugin-jsx-a11y`) whose peers stop at ESLint 9, so neither TypeScript 7 nor ESLint 10 could be installed cleanly. `vite-tsconfig-paths` also peers `typescript ^5` through `tsconfck`, but it was unused because `vitest.config.mts` uses Vite's built-in `resolve.tsconfigPaths`.
+- **Why it matters:** Installing with `--legacy-peer-deps` would hide the conflict and ship an untested toolchain. The same ecosystem constraint will come back for any lint plugin that depends on typescript-eslint.
+- **What changed:** ESLint, `eslint-config-next`, `typescript-eslint`, and Prettier were replaced with `oxlint` (`--type-aware --type-check`, config in `.oxlintrc.json`) and `oxfmt` (config in `.oxfmtrc.json`, same style options as the old Prettier config). `typescript` is now 7.x. `vite-tsconfig-paths` was removed. The Next.js-specific lint rules are now covered only by oxlint's `nextjs` and `react` plugins; there is no longer an `eslint-config-next` equivalent.
+- **Where it lives:** `package.json`, `.oxlintrc.json`, `.oxfmtrc.json`, `tests/setup.ts`
+- **Follow-up:** If a Next.js rule is missed after this move, add it to `.oxlintrc.json` instead of restoring ESLint. The SpaceAutoBattler project made the same move (`vp lint` and `vp fmt`).
 
 ### @testing-library/jest-dom v7 needs the Vitest-specific entrypoint
 

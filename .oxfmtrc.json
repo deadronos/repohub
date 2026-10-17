@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "ignorePatterns": [
+    "node_modules",
+    ".next",
+    "out",
+    "build",
+    "dist",
+    "coverage",
+    "public",
+    ".vscode",
+    ".DS_Store",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    ".agent",
+    ".jules",
+    ".github/skills",
+    ".playwright-mcp",
+    "next-env.d.ts",
+    "qa-*.md"
+  ]
+}
