@@ -1,5 +1,12 @@
 # Findings and learnings
 
+## 2026-10-31: Admin locked out despite correct `ADMIN_EMAILS`
+
+- **Symptom:** login succeeded in Supabase but `/admin` redirected to "Admin access required"; logs showed `PGRST205 Could not find the table 'public.admin'`.
+- **Cause:** the live DB never had `public.admin_emails` created/seeded, so `is_admin_email()` returned false; separately `ADMIN_TABLE` pointed at a non-existent `admin` table, breaking the drift check.
+- **Fix:** `ADMIN_TABLE = 'admin_emails'`, an admin-only select policy so the drift check can read the table under the user session, and an idempotent `supabase/migrations/20261031_admin_emails.sql` for existing projects.
+- **Lesson:** schema changes to `supabase/schema.sql` are not applied to existing projects automatically — ship an idempotent migration alongside them, and keep table-name constants pinned to the schema.
+
 ## 2026-05-11: Admin and ordering hardening
 
 - Public homepage data should stay on `getCachedProjects()` so the documented cache/revalidation path is used.

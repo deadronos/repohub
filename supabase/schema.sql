@@ -64,6 +64,17 @@ as $$
   );
 $$;
 
+grant execute on function public.is_admin_email() to authenticated;
+
+-- Admins may read the allowlist (used by the app's env/DB drift check).
+create policy "Admins can read admin emails"
+  on public.admin_emails for select
+  to authenticated
+  using ( public.is_admin_email() );
+
+-- Seed your admin(s). Must be lowercase and match ADMIN_EMAILS.
+-- insert into public.admin_emails (email) values ('admin@example.com');
+
 -- 5. Create Policies: Only allowlisted admin emails can mutate projects
 create policy "Admins can insert projects"
   on projects for insert

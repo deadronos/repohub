@@ -74,7 +74,9 @@ Since there is no public sign-up page:
 1. Go to Supabase Dashboard -> **Authentication** -> **Users**.
 2. Click **Add User** and create your admin credentials.
 3. Add that exact email address to `ADMIN_EMAILS` in your environment.
-4. Add that same email address to the `public.admin_emails` table in your Supabase database to ensure database-level RLS policies grant you access.
+4. Add that same email address (lowercase) to the `public.admin_emails` table in your Supabase database, e.g. `insert into public.admin_emails (email) values ('you@example.com');`. Without this row, `/admin` redirects back to login with "Admin access required" even when `ADMIN_EMAILS` is correct.
+
+Existing projects created before the `admin_emails` table existed can run [`supabase/migrations/20261031_admin_emails.sql`](supabase/migrations/20261031_admin_emails.sql) (idempotent) in the SQL editor.
 
 ## 🏃‍♂️ Running Locally
 

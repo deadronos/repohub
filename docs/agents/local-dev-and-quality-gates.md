@@ -20,7 +20,7 @@ Common project variables:
 - `ADMIN_EMAILS`
 - `GITHUB_TOKEN` for GitHub API requests when you want higher rate limits
 
-If you change admin emails, keep `ADMIN_EMAILS` and the inline allowlist in `supabase/schema.sql` synchronized.
+If you change admin emails, keep `ADMIN_EMAILS` and the rows in the `public.admin_emails` table synchronized (see `supabase/migrations/20261031_admin_emails.sql`).
 
 ## Canonical validation
 
