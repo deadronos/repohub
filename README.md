@@ -78,6 +78,8 @@ Since there is no public sign-up page:
 
 Existing projects created before the `admin_emails` table existed can run [`supabase/migrations/20261031_admin_emails.sql`](supabase/migrations/20261031_admin_emails.sql) (idempotent) in the SQL editor.
 
+If creating a project fails with `Could not find the function public.get_next_sort_order`, run [`supabase/migrations/20261031_project_sort_order.sql`](supabase/migrations/20261031_project_sort_order.sql) (idempotent) in the SQL editor.
+
 ## 🏃‍♂️ Running Locally
 
 ```bash

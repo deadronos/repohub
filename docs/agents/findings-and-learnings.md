@@ -7,6 +7,13 @@
 - **Fix:** `ADMIN_TABLE = 'admin_emails'`, an admin-only select policy so the drift check can read the table under the user session, and an idempotent `supabase/migrations/20261031_admin_emails.sql` for existing projects.
 - **Lesson:** schema changes to `supabase/schema.sql` are not applied to existing projects automatically — ship an idempotent migration alongside them, and keep table-name constants pinned to the schema.
 
+## 2026-10-31: Project create fails with missing `get_next_sort_order`
+
+- **Symptom:** after admin login was fixed, creating a project from `/admin` failed; Vercel runtime logs showed `PGRST202 Could not find the function public.get_next_sort_order without parameters in the schema cache`.
+- **Cause:** `get_next_sort_order()` and `projects_sort_order_seq` exist only in `supabase/schema.sql`; the live DB predates them and no migration shipped them.
+- **Fix:** idempotent `supabase/migrations/20261031_project_sort_order.sql` (sequence, `setval` past current max, column default, function, grant, `notify pgrst, 'reload schema'`).
+- **Lesson:** same as the admin_emails incident — every object `schema.sql` adds needs a matching idempotent migration. Vercel Hobby retains only ~30m of runtime logs, so pull `vercel logs` right after reproducing.
+
 ## 2026-05-11: Admin and ordering hardening
 
 - Public homepage data should stay on `getCachedProjects()` so the documented cache/revalidation path is used.
