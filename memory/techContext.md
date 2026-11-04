@@ -36,6 +36,9 @@ Defined in `env.example` and expected in `.env.local`.
 - Tests: `npm run test` (or `npm run test:coverage`)
 - Typecheck: `npm run typecheck`
 - Lint: `npm run lint`
+- Format: `npm run format:check`
+- Build: `npm run build`
+- Shortcut: `npm run check` (test + lint + typecheck + format:check)
 
 ## Supabase Setup
 
