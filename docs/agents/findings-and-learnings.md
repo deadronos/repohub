@@ -157,3 +157,18 @@ When a major docs correction happens, verify the corresponding code or config be
 - **Why it matters:** A registered-but-broken deploy workflow grants `pages: write` / `id-token: write` and only fails when it finally fires, which is easy to overlook.
 - **What changed:** Removed the workflow. Vercel is the deploy path (status checks on PRs, `@vercel/analytics`).
 - **Where it lives:** `.github/workflows/`, `next.config.ts`, `package.json`
+
+### New oxlint releases can surface warnings on unchanged code; fix the pattern, not with state
+
+- **Finding:** After the 2026-11 upgrade (oxlint `1.88.0` → `1.91.0`), lint began reporting `react(immutability)` for values that are declared inside effects and reassigned by animation-frame callbacks or event listeners: the cursor/scroll trackers in `HomepageAtmosphere` and the `cancelled` flag in `GitHubStats`. The code was and is correct at runtime; the rule is the React Compiler's static check, and it only appears once the bundled rule set is new enough.
+- **Why it matters:** Warnings do not fail CI, so they are easy to ignore, but they dilute the signal from `npm run lint`. The naive "use state instead" fix suggested by the rule would add renders for values that intentionally must not trigger renders (per-frame cursor offsets, cancellation flags), which is worse than the warning.
+- **What changed:** `HomepageAtmosphere` keeps its animation-frame cursor/scroll values in a single mutable object created inside the effect; `GitHubStats` uses an `AbortController` as both the cancellation flag and the cleanup hook (`controller.abort()` in the effect return) instead of reassigning a captured `let`. Behavior is unchanged, and the two new warnings are gone.
+- **Where it lives:** `components/HomepageAtmosphere.tsx`, `components/GitHubStats.tsx`
+- **Follow-up:** On each lint/tooling bump, diff the warning count before/after (`npx oxlint --type-aware --type-check . --format=json`). Fix genuinely actionable warnings; for deliberate imperative patterns, use an idiomatic carry object/controller rather than turning hot-path values into React state.
+
+### Deprecated stub `@types/*` packages must be removed once the library ships its own types
+
+- **Finding:** `npm` reported `@types/react-window@2.0.0` and `@types/react-virtualized-auto-sizer@1.0.8` as deprecated stub definitions, because `react-window` and `react-virtualized-auto-sizer` already bundle their own `.d.ts` files.
+- **Why it matters:** Stub packages shadow the real types, add deprecation noise to every install, and are silently useless dead weight in `devDependencies`.
+- **What changed:** Both stub devDependencies were removed in the 2026-11 upgrade; `npx tsc --noEmit` and the full test suite pass against the types shipped by the libraries themselves.
+- **Where it lives:** `package.json`, `package-lock.json`

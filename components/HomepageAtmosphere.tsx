@@ -9,31 +9,30 @@ export default function HomepageAtmosphere() {
     const container = containerRef.current;
     if (!container) return;
 
-    let rafId = 0;
-    let cursorX = 0;
-    let cursorY = 0;
-    let scrollY = 0;
+    // Mutable effect-local state: these values are only read/written by
+    // animation-frame callbacks and event listeners, never during render.
+    const state = { rafId: 0, cursorX: 0, cursorY: 0, scrollY: 0 };
 
     const sync = () => {
-      container.style.setProperty('--cursor-x', String(cursorX));
-      container.style.setProperty('--cursor-y', String(cursorY));
-      container.style.setProperty('--scroll-y', String(scrollY));
-      rafId = 0;
+      container.style.setProperty('--cursor-x', String(state.cursorX));
+      container.style.setProperty('--cursor-y', String(state.cursorY));
+      container.style.setProperty('--scroll-y', String(state.scrollY));
+      state.rafId = 0;
     };
 
     const scheduleSync = () => {
-      if (rafId) return;
-      rafId = window.requestAnimationFrame(sync);
+      if (state.rafId) return;
+      state.rafId = window.requestAnimationFrame(sync);
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      cursorX = Math.round((event.clientX / window.innerWidth - 0.5) * 120);
-      cursorY = Math.round((event.clientY / window.innerHeight - 0.5) * 120);
+      state.cursorX = Math.round((event.clientX / window.innerWidth - 0.5) * 120);
+      state.cursorY = Math.round((event.clientY / window.innerHeight - 0.5) * 120);
       scheduleSync();
     };
 
     const handleScroll = () => {
-      scrollY = Math.min(window.scrollY, 1600);
+      state.scrollY = Math.min(window.scrollY, 1600);
       scheduleSync();
     };
 
@@ -46,8 +45,8 @@ export default function HomepageAtmosphere() {
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('scroll', handleScroll);
 
-      if (rafId) {
-        window.cancelAnimationFrame(rafId);
+      if (state.rafId) {
+        window.cancelAnimationFrame(state.rafId);
       }
     };
   }, []);

@@ -26,12 +26,14 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
       return;
     }
 
-    let cancelled = false;
+    // AbortController doubles as the cancellation flag so the effect cleanup
+    // never has to reassign a captured variable.
+    const controller = new AbortController();
 
     async function load() {
       try {
         const res = await fetchGitHubStatsAction(repoUrl);
-        if (cancelled || !isMountedRef.current) return;
+        if (controller.signal.aborted || !isMountedRef.current) return;
         if ('data' in res) {
           setStats(res.data);
         } else {
@@ -41,12 +43,12 @@ export default function GitHubStatsDisplay({ repoUrl }: { repoUrl: string }) {
         console.error(e);
         setError(true);
       } finally {
-        if (!cancelled && isMountedRef.current) setLoading(false);
+        if (!controller.signal.aborted && isMountedRef.current) setLoading(false);
       }
     }
     void load();
     return () => {
-      cancelled = true;
+      controller.abort();
     };
   }, [repoUrl, isMountedRef]);
 
