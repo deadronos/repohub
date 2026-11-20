@@ -175,6 +175,52 @@ describe('ProjectGallery Component', () => {
     render(<ProjectGallery projects={projectsWithEmptyTags} />);
     expect(screen.getByText('Project Three')).toBeInTheDocument();
   });
+
+  it('updates search input immediately on typing without waiting for debounce', () => {
+    render(<ProjectGallery projects={mockProjects} />);
+
+    const input = screen.getByPlaceholderText('Search projects...') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'Two' } });
+
+    expect(input.value).toBe('Two');
+  });
+
+  it('cycles modal Next/Previous only through visible filtered projects', () => {
+    const threeProjects: Project[] = [
+      ...mockProjects,
+      makeProject({
+        id: '3',
+        title: 'Project Three',
+        short_description: 'Description three.',
+        description: 'A longer description for project three.',
+        tags: ['react'],
+      }),
+    ];
+    render(<ProjectGallery projects={threeProjects} />);
+
+    // Filter by 'react' -> only Project One and Project Three are visible (Project Two is excluded)
+    fireEvent.click(screen.getByRole('button', { name: 'React (2)' }));
+    expect(screen.queryByText('Project Two')).not.toBeInTheDocument();
+
+    // Open modal on Project One
+    fireEvent.click(screen.getByText('Project One'));
+    expect(screen.getByText('A longer description for project one.')).toBeInTheDocument();
+
+    // Next should jump directly to Project Three, skipping filtered-out Project Two
+    fireEvent.click(screen.getByLabelText('Next project'));
+    expect(screen.getByText('A longer description for project three.')).toBeInTheDocument();
+
+    // Next again wraps back to Project One
+    fireEvent.click(screen.getByLabelText('Next project'));
+    expect(screen.getByText('A longer description for project one.')).toBeInTheDocument();
+  });
+
+  it('renders a single empty state when projects array is empty', () => {
+    render(<ProjectGallery projects={[]} />);
+
+    expect(screen.getByText('No projects yet')).toBeInTheDocument();
+    expect(screen.getByText('Check back later for new additions.')).toBeInTheDocument();
+  });
 });
 
 describe('ProjectGallery Layout Mocking', () => {

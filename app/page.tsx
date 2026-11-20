@@ -73,12 +73,6 @@ export default async function Home() {
           <ProjectGallery projects={projects} />
         </section>
       </div>
-
-      {!projects.length && (
-        <div className="text-center text-zinc-500 mt-20">
-          <p>No projects found. Time to build something.</p>
-        </div>
-      )}
     </main>
   );
 }

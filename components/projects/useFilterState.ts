@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState, useCallback } from 'react';
+import { useMemo, useRef, useState, useCallback, useEffect } from 'react';
 import type { Project } from '@/types';
 
 function matchesSearch(project: Project, query: string): boolean {
@@ -26,11 +26,21 @@ function matchesTags(project: Project, tags: Set<string>): boolean {
 
 export function useFilterState(projects: Project[]) {
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
+  const [inputValue, setInputValue] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, []);
+
   const setSearchQuery = useCallback((query: string) => {
+    setInputValue(query);
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
@@ -55,8 +65,10 @@ export function useFilterState(projects: Project[]) {
   const clearFilters = useCallback(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
+      debounceRef.current = null;
     }
     setActiveTags(new Set());
+    setInputValue('');
     setDebouncedQuery('');
   }, []);
 
@@ -68,6 +80,7 @@ export function useFilterState(projects: Project[]) {
   return useMemo(
     () => ({
       activeTags,
+      inputValue,
       searchQuery: debouncedQuery,
       filteredProjects,
       toggleTag,
@@ -75,6 +88,14 @@ export function useFilterState(projects: Project[]) {
       setSearchQuery,
       clearFilters,
     }),
-    [activeTags, debouncedQuery, filteredProjects, toggleTag, clearFilters, setSearchQuery],
+    [
+      activeTags,
+      inputValue,
+      debouncedQuery,
+      filteredProjects,
+      toggleTag,
+      clearFilters,
+      setSearchQuery,
+    ],
   );
 }

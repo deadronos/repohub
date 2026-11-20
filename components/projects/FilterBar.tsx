@@ -10,6 +10,7 @@ type FilterBarProps = {
   toggleTag: (tag: string) => void;
   clearFilters: () => void;
   searchQuery: string;
+  inputValue?: string;
   setSearchQuery: (query: string) => void;
 };
 
@@ -22,6 +23,7 @@ export default function FilterBar({
   toggleTag,
   clearFilters,
   searchQuery,
+  inputValue,
   setSearchQuery,
 }: FilterBarProps) {
   const allTags = extractAllTags(projects);
@@ -64,7 +66,7 @@ export default function FilterBar({
         />
         <input
           type="text"
-          value={searchQuery}
+          value={inputValue ?? searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search projects..."
           className="h-9 w-40 rounded-full border border-white/10 bg-white/[0.03] pl-8 pr-3 text-sm text-zinc-200 placeholder:text-zinc-500 backdrop-blur-sm transition-all duration-200 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/20 md:w-56"
