@@ -91,27 +91,12 @@ export function validateProjectUrls(data: ProjectUrlInput): string[] {
  * @deprecated Use {@link validateProjectFields} and {@link validateProjectUrls} directly.
  */
 export function validateProjectInput(input: ProjectInput): string[] {
-  const errors: string[] = [];
-
   const fieldResult = ProjectCreateSchema.safeParse({
     title: input.title,
     repo_url: input.repoUrl ?? '',
     demo_url: input.demoUrl ?? '',
   });
 
-  if (!fieldResult.success) {
-    for (const issue of fieldResult.error.issues) {
-      errors.push(issue.message);
-    }
-  }
-
-  if (input.repoUrl?.trim() && !isValidUrl(input.repoUrl.trim())) {
-    errors.push('Invalid Repository URL');
-  }
-
-  if (input.demoUrl?.trim() && !isValidUrl(input.demoUrl.trim())) {
-    errors.push('Invalid Demo URL');
-  }
-
-  return errors;
+  if (fieldResult.success) return [];
+  return fieldResult.error.issues.map((issue) => issue.message);
 }
