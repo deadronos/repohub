@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Play } from 'lucide-react';
 import type { Project } from '@/types';
 import { truncate } from '@/utils/string';
 import ProjectImage from '@/components/projects/ProjectImage';
@@ -21,6 +22,7 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
       tabIndex={0}
       aria-label={`View details for ${project.title}`}
       onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return;
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onClick(project.id);
@@ -35,10 +37,25 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
           imageUrl={project.image_url}
           alt={project.title}
           sizes={PROJECT_CARD_IMAGE_SIZES}
-          className="object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 grayscale group-hover:grayscale-0"
+          className="object-cover opacity-80 group-hover:opacity-95 transition-opacity duration-500"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-[#050510] via-[#050510]/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#050510] via-[#050510]/50 to-transparent" />
       </div>
+
+      {/* Quick-Play Link */}
+      {project.demo_url && (
+        <a
+          href={project.demo_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Play ${project.title}`}
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-4 right-4 z-20 inline-flex items-center gap-1.5 rounded-full bg-cyan-500/90 hover:bg-cyan-400 text-slate-950 font-semibold text-xs px-3 py-1.5 shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-200 opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 focus-visible:opacity-100 focus-visible:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          <Play size={12} className="fill-current" aria-hidden="true" />
+          <span>Play</span>
+        </a>
+      )}
 
       {/* Card Content */}
       <div className="absolute bottom-0 left-0 p-6 z-10 w-full">
