@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import type { Project } from '@/types';
 import ProjectModal from '@/components/ProjectModal';
@@ -12,25 +12,46 @@ import { useFilterState } from '@/components/projects/useFilterState';
 import { useFilterSync } from '@/components/projects/useFilterSync';
 import { useSelectedProject } from '@/components/projects/useSelectedProject';
 import { useEscapeKey } from '@/utils/hooks/useEscapeKey';
+import { extractAllTags } from '@/utils/projects/tags';
 
 type ProjectGalleryProps = {
   projects: Project[];
 };
 
-function FilterSync({ activeTags }: { activeTags: Set<string> }) {
-  useFilterSync(activeTags);
+function FilterSync({
+  activeTags,
+  setActiveTags,
+  availableTags,
+}: {
+  activeTags: Set<string>;
+  setActiveTags: (tags: Set<string>) => void;
+  availableTags: string[];
+}) {
+  useFilterSync(activeTags, setActiveTags, availableTags);
   return null;
 }
 
 export default function ProjectGallery({ projects }: ProjectGalleryProps) {
-  const { selectedId, selectedProject, setSelectedId, goToNext, goToPrevious } =
-    useSelectedProject(projects);
-  const { activeTags, searchQuery, filteredProjects, toggleTag, setSearchQuery, clearFilters } =
-    useFilterState(projects);
+  const {
+    activeTags,
+    inputValue,
+    searchQuery,
+    filteredProjects,
+    toggleTag,
+    setActiveTags,
+    setSearchQuery,
+    clearFilters,
+  } = useFilterState(projects);
 
-  useEscapeKey(() => setSelectedId(null), Boolean(selectedId));
+  const availableTags = useMemo(() => extractAllTags(projects).map(({ tag }) => tag), [projects]);
+
   const hasFilters = activeTags.size > 0 || searchQuery !== '';
   const visibleProjects = hasFilters ? filteredProjects : projects;
+
+  const { selectedId, selectedProject, setSelectedId, goToNext, goToPrevious } =
+    useSelectedProject(visibleProjects);
+
+  useEscapeKey(() => setSelectedId(null), Boolean(selectedId));
 
   if (projects.length === 0) {
     return (
@@ -49,11 +70,16 @@ export default function ProjectGallery({ projects }: ProjectGalleryProps) {
         toggleTag={toggleTag}
         clearFilters={clearFilters}
         searchQuery={searchQuery}
+        inputValue={inputValue}
         setSearchQuery={setSearchQuery}
       />
 
       <Suspense fallback={null}>
-        <FilterSync activeTags={activeTags} />
+        <FilterSync
+          activeTags={activeTags}
+          setActiveTags={setActiveTags}
+          availableTags={availableTags}
+        />
       </Suspense>
 
       {visibleProjects.length === 0 && hasFilters && (

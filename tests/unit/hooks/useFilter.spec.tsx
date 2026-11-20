@@ -55,6 +55,7 @@ describe('useFilterState', () => {
       const { result } = renderHook(() => useFilterState(mockProjects));
 
       expect(result.current.activeTags).toEqual(new Set());
+      expect(result.current.inputValue).toBe('');
       expect(result.current.searchQuery).toBe('');
     });
 
@@ -360,25 +361,53 @@ describe('useFilterState', () => {
       });
 
       expect(result.current.activeTags).toEqual(new Set());
+      expect(result.current.inputValue).toBe('');
       expect(result.current.searchQuery).toBe('');
       expect(result.current.filteredProjects).toHaveLength(5);
     });
-  });
 
-  describe('debounced search', () => {
-    it('should debounce search query updates by 300ms', () => {
+    it('should reset inputValue immediately and cancel pending debounce on clearFilters', () => {
       const { result } = renderHook(() => useFilterState(mockProjects));
 
       act(() => {
-        result.current.setSearchQuery('react');
+        result.current.setSearchQuery('dashboard');
       });
 
+      expect(result.current.inputValue).toBe('dashboard');
+      expect(result.current.searchQuery).toBe('');
+
+      act(() => {
+        result.current.clearFilters();
+      });
+
+      expect(result.current.inputValue).toBe('');
       expect(result.current.searchQuery).toBe('');
 
       act(() => {
         vi.advanceTimersByTime(300);
       });
 
+      expect(result.current.inputValue).toBe('');
+      expect(result.current.searchQuery).toBe('');
+    });
+  });
+
+  describe('debounced search', () => {
+    it('should update inputValue immediately while debouncing searchQuery by 300ms', () => {
+      const { result } = renderHook(() => useFilterState(mockProjects));
+
+      act(() => {
+        result.current.setSearchQuery('react');
+      });
+
+      expect(result.current.inputValue).toBe('react');
+      expect(result.current.searchQuery).toBe('');
+
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+
+      expect(result.current.inputValue).toBe('react');
       expect(result.current.searchQuery).toBe('react');
     });
 

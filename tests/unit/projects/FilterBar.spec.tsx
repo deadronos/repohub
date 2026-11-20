@@ -226,6 +226,21 @@ describe('FilterBar', () => {
       const input = screen.getByDisplayValue('dashboard');
       expect(input).toBeTruthy();
     });
+
+    it('search input prefers immediate inputValue over debounced searchQuery', () => {
+      render(
+        <FilterBar
+          projects={mockProjects}
+          activeTags={new Set()}
+          toggleTag={mockToggleTag}
+          clearFilters={mockClearFilters}
+          searchQuery=""
+          inputValue="dash"
+          setSearchQuery={mockSetSearchQuery}
+        />,
+      );
+      expect(screen.getByDisplayValue('dash')).toBeTruthy();
+    });
   });
 
   describe('edge cases', () => {

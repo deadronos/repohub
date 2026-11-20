@@ -1,3 +1,4 @@
+import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 const { getCachedProjectsMock, listProjectsMock } = vi.hoisted(() => ({
@@ -35,5 +36,17 @@ describe('Home page data fetching', () => {
 
     expect(getCachedProjectsMock).toHaveBeenCalledTimes(1);
     expect(listProjectsMock).not.toHaveBeenCalled();
+  });
+
+  it('does not render a duplicate empty-state message outside ProjectGallery', async () => {
+    getCachedProjectsMock.mockResolvedValue([]);
+
+    const ui = await Home();
+    render(ui);
+
+    expect(screen.getByTestId('project-gallery')).toBeInTheDocument();
+    expect(
+      screen.queryByText('No projects found. Time to build something.'),
+    ).not.toBeInTheDocument();
   });
 });
