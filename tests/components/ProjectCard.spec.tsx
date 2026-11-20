@@ -125,4 +125,53 @@ describe('ProjectCard component', () => {
     const descElement = container.querySelector('.line-clamp-2');
     expect(descElement).toHaveTextContent('A'.repeat(97) + '...');
   });
+
+  it('renders thumbnail image in color at rest without grayscale classes (#156)', () => {
+    const onClick = vi.fn();
+    const project: Project = {
+      ...baseProject,
+      image_url: '/img.png',
+    };
+
+    render(<ProjectCard project={project} onClick={onClick} />);
+    const img = screen.getByRole('img', { name: 'My Project' });
+
+    expect(img).not.toHaveClass('grayscale');
+    expect(img).not.toHaveClass('group-hover:grayscale-0');
+    expect(img).toHaveClass('opacity-80');
+    expect(img).toHaveClass('group-hover:opacity-95');
+  });
+
+  it('renders quick-play link when demo_url is present and stops propagation (#159)', () => {
+    const onClick = vi.fn();
+    const project: Project = {
+      ...baseProject,
+      demo_url: 'https://example.com/play',
+    };
+
+    render(<ProjectCard project={project} onClick={onClick} />);
+    const playLink = screen.getByRole('link', { name: 'Play My Project' });
+
+    expect(playLink).toHaveAttribute('href', 'https://example.com/play');
+    expect(playLink).toHaveAttribute('target', '_blank');
+    expect(playLink).toHaveAttribute('rel', 'noopener noreferrer');
+
+    fireEvent.click(playLink);
+    expect(onClick).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(playLink, { key: 'Enter' });
+    fireEvent.keyDown(playLink, { key: ' ' });
+    expect(onClick).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'View details for My Project' }));
+    expect(onClick).toHaveBeenCalledWith('p1');
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not render quick-play link when demo_url is null (#159)', () => {
+    const onClick = vi.fn();
+    render(<ProjectCard project={baseProject} onClick={onClick} />);
+
+    expect(screen.queryByRole('link', { name: /Play/i })).not.toBeInTheDocument();
+  });
 });
