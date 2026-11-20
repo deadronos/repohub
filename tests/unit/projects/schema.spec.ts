@@ -78,6 +78,46 @@ describe('ProjectCreateSchema', () => {
       expect(result.data.demo_url).toBe('');
     }
   });
+
+  it('should reject unsafe URL schemes like javascript: for repo_url and demo_url', () => {
+    const repoResult = ProjectCreateSchema.safeParse({
+      title: 'Test',
+      repo_url: 'javascript:alert(1)',
+    });
+    expect(repoResult.success).toBe(false);
+    if (!repoResult.success) {
+      expect(repoResult.error.issues.map((i) => i.message)).toContain('Invalid Repository URL');
+    }
+
+    const demoResult = ProjectCreateSchema.safeParse({
+      title: 'Test',
+      demo_url: 'javascript:alert(1)',
+    });
+    expect(demoResult.success).toBe(false);
+    if (!demoResult.success) {
+      expect(demoResult.error.issues.map((i) => i.message)).toContain('Invalid Demo URL');
+    }
+  });
+
+  it('should accept http:// and https:// URLs and whitespace-only optional URLs', () => {
+    const httpResult = ProjectCreateSchema.safeParse({
+      title: 'Test',
+      repo_url: 'http://github.com/user/repo',
+      demo_url: 'https://demo.example.com',
+    });
+    expect(httpResult.success).toBe(true);
+
+    const whitespaceResult = ProjectCreateSchema.safeParse({
+      title: 'Test',
+      repo_url: '   ',
+      demo_url: '   ',
+    });
+    expect(whitespaceResult.success).toBe(true);
+    if (whitespaceResult.success) {
+      expect(whitespaceResult.data.repo_url).toBe('');
+      expect(whitespaceResult.data.demo_url).toBe('');
+    }
+  });
 });
 
 describe('ProjectUpdateSchema', () => {
@@ -103,6 +143,21 @@ describe('ProjectUpdateSchema', () => {
     if (!result.success) {
       const messages = result.error.issues.map((i) => i.message);
       expect(messages).toContain('Project ID is required');
+    }
+  });
+
+  it('should reject unsafe URL schemes like javascript: in ProjectUpdateSchema', () => {
+    const result = ProjectUpdateSchema.safeParse({
+      id: 'abc-123',
+      title: 'Updated Project',
+      repo_url: 'javascript:alert(1)',
+      demo_url: 'data:text/html,<script>alert(1)</script>',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message);
+      expect(messages).toContain('Invalid Repository URL');
+      expect(messages).toContain('Invalid Demo URL');
     }
   });
 });

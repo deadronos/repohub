@@ -2,7 +2,6 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   parseProjectFormData,
   validateProjectFields,
-  validateProjectUrls,
   type ProjectFormData,
 } from '@/utils/projects/form';
 import { uploadProjectImage } from '@/utils/projects/storage';
@@ -18,10 +17,7 @@ export type PreparedProjectMutation = {
  * Validate project data using Zod schemas and return formatted errors.
  */
 function collectValidationErrors(parsed: ProjectFormData): string[] {
-  const errors: string[] = [];
-
-  // Validate text fields via Zod
-  const fieldErrors = validateProjectFields({
+  return validateProjectFields({
     title: parsed.title,
     short_description: parsed.short_description,
     description: parsed.description,
@@ -29,16 +25,6 @@ function collectValidationErrors(parsed: ProjectFormData): string[] {
     demo_url: parsed.demo_url,
     tags: parsed.tags.join(','),
   });
-  errors.push(...fieldErrors);
-
-  // Validate URLs specifically (with proper URL pattern check)
-  const urlErrors = validateProjectUrls({
-    repo_url: parsed.repo_url || undefined,
-    demo_url: parsed.demo_url || undefined,
-  });
-  errors.push(...urlErrors);
-
-  return errors;
 }
 
 export async function prepareProjectMutation(

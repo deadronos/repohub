@@ -47,3 +47,10 @@ next-env.d.ts
 
 # worktrees
 /.worktrees
+
+# QA / temporary artifacts
+0[1-9]-*.png
+qa-screenshot-*.png
+qa-*.md
+repohub-*.png
+verify_github_stats.py
