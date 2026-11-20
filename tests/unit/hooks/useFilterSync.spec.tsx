@@ -1,3 +1,4 @@
+import { StrictMode, useState } from 'react';
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useFilterSync } from '@/components/projects/useFilterSync';
@@ -80,5 +81,21 @@ describe('useFilterSync', () => {
 
     rerender({ activeTags: new Set(['typescript']) });
     expect(replaceMock).toHaveBeenCalledWith('/?tag=typescript', { scroll: false });
+  });
+
+  it('does not wipe initial URL tags under React.StrictMode double-invocation on mount', () => {
+    currentSearchParams = new URLSearchParams('tag=react');
+
+    const { result } = renderHook(
+      () => {
+        const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
+        useFilterSync(activeTags, setActiveTags, ['react', 'typescript']);
+        return activeTags;
+      },
+      { wrapper: StrictMode },
+    );
+
+    expect(result.current).toEqual(new Set(['react']));
+    expect(replaceMock).not.toHaveBeenCalled();
   });
 });

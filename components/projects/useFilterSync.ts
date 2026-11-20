@@ -3,6 +3,14 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
+function setsEqual(a: Set<string>, b: Set<string>): boolean {
+  if (a.size !== b.size) return false;
+  for (const item of a) {
+    if (!b.has(item)) return false;
+  }
+  return true;
+}
+
 export function useFilterSync(
   activeTags: Set<string>,
   setActiveTags: (tags: Set<string>) => void,
@@ -12,6 +20,7 @@ export function useFilterSync(
   const router = useRouter();
   const pathname = usePathname();
   const hasInitializedRef = useRef(false);
+  const pendingInitialTagsRef = useRef<Set<string> | null>(null);
 
   const validTagMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -33,9 +42,17 @@ export function useFilterSync(
       }
 
       if (urlTags.size > 0) {
+        pendingInitialTagsRef.current = urlTags;
         setActiveTags(urlTags);
         return;
       }
+    }
+
+    if (pendingInitialTagsRef.current !== null) {
+      if (!setsEqual(activeTags, pendingInitialTagsRef.current)) {
+        return;
+      }
+      pendingInitialTagsRef.current = null;
     }
 
     const currentQueryString = searchParams.toString();
